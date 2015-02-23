@@ -75,7 +75,7 @@ def train_conv_net(datasets,
     index = T.lscalar()
     x = T.matrix('x')   
     y = T.ivector('y')
-    Words = theano.shared(value = U, name = "Words").astype(theano.config.floatX)
+    Words = theano.shared(value = np.asarray(U, dtype=theano.config.floatX), name = "Words")
     zero_vec_tensor = T.vector()
     zero_vec = np.zeros(img_w)
     set_zero = theano.function([zero_vec_tensor], updates=[(Words, T.set_subtensor(Words[0,:], zero_vec_tensor))], allow_input_downcast = True)
