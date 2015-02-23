@@ -75,10 +75,10 @@ def train_conv_net(datasets,
     index = T.lscalar()
     x = T.matrix('x')   
     y = T.ivector('y')
-    Words = theano.shared(value = U, name = "Words")
+    Words = theano.shared(value = U, name = "Words").astype(theano.config.floatX)
     zero_vec_tensor = T.vector()
     zero_vec = np.zeros(img_w)
-    set_zero = theano.function([zero_vec_tensor], updates=[(Words, T.set_subtensor(Words[0,:], zero_vec_tensor))])
+    set_zero = theano.function([zero_vec_tensor], updates=[(Words, T.set_subtensor(Words[0,:], zero_vec_tensor))], allow_input_downcast = True)
     layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0],1,x.shape[1],Words.shape[1]))                                  
     conv_layers = []
     layer1_inputs = []
@@ -233,8 +233,10 @@ def sgd_updates_adadelta(params,cost,rho=0.95,epsilon=1e-6,norm_lim=9,word_vec_n
         exp_su = exp_sqr_ups[param]
         up_exp_sg = rho * exp_sg + (1 - rho) * T.sqr(gp)
         updates[exp_sg] = up_exp_sg
+        updates[exp_sg] = updates[exp_sg].astype(theano.config.floatX)
         step =  -(T.sqrt(exp_su + epsilon) / T.sqrt(up_exp_sg + epsilon)) * gp
         updates[exp_su] = rho * exp_su + (1 - rho) * T.sqr(step)
+        updates[exp_su] = updates[exp_su].astype(theano.config.floatX)
         stepped_param = param + step
         if (param.get_value(borrow=True).ndim == 2) and (param.name!='Words'):
             col_norms = T.sqrt(T.sum(T.sqr(stepped_param), axis=0))
@@ -242,7 +244,8 @@ def sgd_updates_adadelta(params,cost,rho=0.95,epsilon=1e-6,norm_lim=9,word_vec_n
             scale = desired_norms / (1e-7 + col_norms)
             updates[param] = stepped_param * scale
         else:
-            updates[param] = stepped_param      
+            updates[param] = stepped_param
+        updates[param] = updates[param].astype(theano.config.floatX)
     return updates 
 
 def as_floatX(variable):

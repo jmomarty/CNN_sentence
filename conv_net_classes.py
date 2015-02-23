@@ -363,6 +363,7 @@ class LeNetConvPoolLayer(object):
         """
 
         assert image_shape[1] == filter_shape[1]
+        input = input.astype(theano.config.floatX)
         self.input = input
         self.filter_shape = filter_shape
         self.image_shape = image_shape
