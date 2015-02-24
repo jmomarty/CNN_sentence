@@ -1,4 +1,3 @@
-#!/usr/bin/env python 
 """
 Sample code for
 Convolutional Neural Networks for Sentence Classification
@@ -224,7 +223,7 @@ def sgd_updates_adadelta(params,cost,rho=0.95,epsilon=1e-6,norm_lim=9,word_vec_n
         updates[exp_sg] = updates[exp_sg].astype(theano.config.floatX)
         step =  -(T.sqrt(exp_su + epsilon) / T.sqrt(up_exp_sg + epsilon)) * gp
         updates[exp_su] = rho * exp_su + (1 - rho) * T.sqr(step)
-        updates[exp_sg] = updates[exp_sg].astype(theano.config.floatX)
+        updates[exp_su] = updates[exp_su].astype(theano.config.floatX)
         stepped_param = param + step
         if (param.get_value(borrow=True).ndim == 2) and (param.name!='Words'):
             col_norms = T.sqrt(T.sum(T.sqr(stepped_param), axis=0))
@@ -337,6 +336,6 @@ if __name__=="__main__":
                           non_static=non_static,
                           batch_size=50,
                           dropout_rate=[0.5])
-    print "cv: " + str(0) + ", perf: " + str(perf)
+    print "test: " + str(0) + ", perf: " + str(perf)
     results.append(perf)
     print str(np.mean(results))
