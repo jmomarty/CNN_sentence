@@ -45,7 +45,82 @@ def build_data_cv(data_folder, cv=10, clean_string=True):
                       "split": np.random.randint(0,cv)}
             revs.append(datum)
     return revs, vocab
-    
+
+def build_data(train_folder, test_folder, clean_string=True):
+
+    revs = []
+    pos_train = train_folder[0]
+    neg_train = train_folder[1]
+    pos_test = test_folder[0]
+    neg_test = test_folder[1]
+    vocab = defaultdict(float)
+    with open(pos_train, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":1,
+                      "text": orig_rev,
+                      "num_words": len(orig_rev.split()),
+                      "split": 0}
+            revs.append(datum)
+    with open(neg_train, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":0,
+                      "text": orig_rev,
+                      "num_words": len(orig_rev.split()),
+                      "split": 0}
+            revs.append(datum)
+    with open(pos_test, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":1,
+                      "text": orig_rev,
+                      "num_words": len(orig_rev.split()),
+                      "split": 1}
+            revs.append(datum)
+    with open(neg_test, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":0,
+                      "text": orig_rev,
+                      "num_words": len(orig_rev.split()),
+                      "split": 1}
+            revs.append(datum)
+
+    return revs, vocab
+
 def get_W(word_vecs, k=300):
     """
     Get word matrix. W[i] is the vector for word indexed by i
@@ -124,9 +199,11 @@ def clean_str_sst(string):
 
 if __name__=="__main__":    
     w2v_file = sys.argv[1]     
-    data_folder = ["rt-polarity.pos","rt-polarity.neg"]    
+    train_folder = ["pos_train.txt","neg_train.txt"]
+    test_folder = ["pos_test.txt","neg_test.txt"]
     print "loading data...",        
-    revs, vocab = build_data_cv(data_folder, cv=10, clean_string=True)
+    #revs, vocab = build_data_cv(data_folder, cv=10, clean_string=True)
+    revs, vocab = build_data(train_folder,test_folder)
     max_l = np.max(pd.DataFrame(revs)["num_words"])
     print "data loaded!"
     print "number of sentences: " + str(len(revs))
