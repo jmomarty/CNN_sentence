@@ -8,6 +8,7 @@ Much of the code is modified from
 - https://github.com/mdenil/dropout (for dropout)
 - https://groups.google.com/forum/#!topic/pylearn-dev/3QbKtCumAW4 (for Adadelta)
 """
+
 import cPickle
 import numpy as np
 from collections import defaultdict, OrderedDict
@@ -36,6 +37,7 @@ def train_conv_net(datasets,
                    activations=[Iden],
                    sqr_norm_lim=9,
                    non_static=True):
+
     """
     Train a simple conv net
     img_h = sentence length (padded where necessary)
@@ -44,7 +46,8 @@ def train_conv_net(datasets,
     hidden_units = [x,y] x is the number of feature maps (per filter window), and y is the penultimate layer
     sqr_norm_lim = s^2 in the paper
     lr_decay = adadelta decay parameter
-    """    
+    """
+
     rng = np.random.RandomState(3435)
     img_h = len(datasets[0][0])-1  
     filter_w = img_w    
@@ -59,7 +62,7 @@ def train_conv_net(datasets,
                     ("learn_decay",lr_decay), ("conv_non_linear", conv_non_linear), ("non_static", non_static)
                     ,("sqr_norm_lim",sqr_norm_lim),("shuffle_batch",shuffle_batch)]
     print parameters    
-    
+
     #define model architecture
     index = T.lscalar()
     x = T.matrix('x')   
@@ -303,7 +306,6 @@ if __name__=="__main__":
     parser.add_argument('--folds', help='number of folds', type=int, default=10)
     parser.add_argument('--filter_hs', help='filter window size', default='3,4,5')
     parser.add_argument('--epochs', help='num epochs', type=int, default=25)
-
 
     args = parser.parse_args()
     non_static = getMode(args.mode)

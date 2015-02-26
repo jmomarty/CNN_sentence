@@ -5,14 +5,20 @@ import sys, re
 import pandas as pd
 
 def build_data_cv(data_folder, cv=10, clean_string=True):
+
     """
     Loads data and split into 10 folds.
     """
+
     revs = []
-    pos_file = data_folder[0]
-    neg_file = data_folder[1]
+    very_pos_file = data_folder[0]
+    pos_file = data_folder[1]
+    neutral_file = data_folder[2]
+    neg_file = data_folder[3]
+    very_neg_file = data_folder[4]
+
     vocab = defaultdict(float)
-    with open(pos_file, "rb") as f:
+    with open(very_pos_file, "rb") as f:
         for line in f:       
             rev = []
             rev.append(line.strip())
@@ -23,8 +29,40 @@ def build_data_cv(data_folder, cv=10, clean_string=True):
             words = set(orig_rev.split())
             for word in words:
                 vocab[word] += 1
-            datum  = {"y":1, 
+            datum  = {"y":0,
                       "text": orig_rev,                             
+                      "num_words": len(orig_rev.split()),
+                      "split": np.random.randint(0,cv)}
+            revs.append(datum)
+    with open(pos_file, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":1,
+                      "text": orig_rev,
+                      "num_words": len(orig_rev.split()),
+                      "split": np.random.randint(0,cv)}
+            revs.append(datum)
+    with open(neutral_file, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":2,
+                      "text": orig_rev,
                       "num_words": len(orig_rev.split()),
                       "split": np.random.randint(0,cv)}
             revs.append(datum)
@@ -39,8 +77,24 @@ def build_data_cv(data_folder, cv=10, clean_string=True):
             words = set(orig_rev.split())
             for word in words:
                 vocab[word] += 1
-            datum  = {"y":0, 
+            datum  = {"y":3,
                       "text": orig_rev,                             
+                      "num_words": len(orig_rev.split()),
+                      "split": np.random.randint(0,cv)}
+            revs.append(datum)
+    with open(very_neg_file, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":4,
+                      "text": orig_rev,
                       "num_words": len(orig_rev.split()),
                       "split": np.random.randint(0,cv)}
             revs.append(datum)
@@ -49,28 +103,19 @@ def build_data_cv(data_folder, cv=10, clean_string=True):
 def build_data(train_folder, test_folder, clean_string=True):
 
     revs = []
-    pos_train = train_folder[0]
-    neg_train = train_folder[1]
-    pos_test = test_folder[0]
-    neg_test = test_folder[1]
+    very_pos_file_train = train_folder[0]
+    pos_file_train = train_folder[1]
+    neutral_file_train = test_folder[0]
+    neg_file_train = test_folder[1]
+    very_neg_file_train = defaultdict(float)
+    very_pos_file = test_folder[0]
+    pos_file = test_folder[1]
+    neutral_file = test_folder[2]
+    neg_file = test_folder[3]
+    very_neg_file = test_folder[4]
+
     vocab = defaultdict(float)
-    with open(pos_train, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":1,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": 0}
-            revs.append(datum)
-    with open(neg_train, "rb") as f:
+    with open(very_pos_file, "rb") as f:
         for line in f:
             rev = []
             rev.append(line.strip())
@@ -84,9 +129,9 @@ def build_data(train_folder, test_folder, clean_string=True):
             datum  = {"y":0,
                       "text": orig_rev,
                       "num_words": len(orig_rev.split()),
-                      "split": 0}
+                      "split": 1}
             revs.append(datum)
-    with open(pos_test, "rb") as f:
+    with open(pos_file, "rb") as f:
         for line in f:
             rev = []
             rev.append(line.strip())
@@ -102,7 +147,55 @@ def build_data(train_folder, test_folder, clean_string=True):
                       "num_words": len(orig_rev.split()),
                       "split": 1}
             revs.append(datum)
-    with open(neg_test, "rb") as f:
+    with open(neutral_file, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":2,
+                      "text": orig_rev,
+                      "num_words": len(orig_rev.split()),
+                      "split": 1}
+            revs.append(datum)
+    with open(neg_file, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":3,
+                      "text": orig_rev,
+                      "num_words": len(orig_rev.split()),
+                      "split": 1}
+            revs.append(datum)
+    with open(very_neg_file, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":4,
+                      "text": orig_rev,
+                      "num_words": len(orig_rev.split()),
+                      "split": 1}
+            revs.append(datum)
+    with open(very_pos_file_train, "rb") as f:
         for line in f:
             rev = []
             rev.append(line.strip())
@@ -116,7 +209,71 @@ def build_data(train_folder, test_folder, clean_string=True):
             datum  = {"y":0,
                       "text": orig_rev,
                       "num_words": len(orig_rev.split()),
-                      "split": 1}
+                      "split": 0}
+            revs.append(datum)
+    with open(pos_file_train, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":1,
+                      "text": orig_rev,
+                      "num_words": len(orig_rev.split()),
+                      "split": 0}
+            revs.append(datum)
+    with open(neutral_file_train, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":2,
+                      "text": orig_rev,
+                      "num_words": len(orig_rev.split()),
+                      "split": 0}
+            revs.append(datum)
+    with open(neg_file_train, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":3,
+                      "text": orig_rev,
+                      "num_words": len(orig_rev.split()),
+                      "split": 0}
+            revs.append(datum)
+    with open(very_neg_file_train, "rb") as f:
+        for line in f:
+            rev = []
+            rev.append(line.strip())
+            if clean_string:
+                orig_rev = clean_str(" ".join(rev))
+            else:
+                orig_rev = " ".join(rev).lower()
+            words = set(orig_rev.split())
+            for word in words:
+                vocab[word] += 1
+            datum  = {"y":4,
+                      "text": orig_rev,
+                      "num_words": len(orig_rev.split()),
+                      "split": 0}
             revs.append(datum)
 
     return revs, vocab
@@ -199,8 +356,8 @@ def clean_str_sst(string):
 
 if __name__=="__main__":    
     w2v_file = sys.argv[1]     
-    train_folder = ["pos_train.txt","neg_train.txt"]
-    test_folder = ["pos_test.txt","neg_test.txt"]
+    train_folder = ["train_pos_very.txt","train_pos.txt","train_neutral.txt","train_neg.txt","train_neg_very.txt"]
+    test_folder = ["test_very_pos.txt","test_pos.txt","test_neutral.txt","test_neg.txt","test_neg_very.txt"]
     print "loading data...",        
     #revs, vocab = build_data_cv(data_folder, cv=10, clean_string=True)
     revs, vocab = build_data(train_folder,test_folder)
