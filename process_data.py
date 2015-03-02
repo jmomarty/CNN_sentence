@@ -123,12 +123,13 @@ def build_data(train_folder, test_folder, clean_string=True):
                 orig_rev = clean_str(" ".join(rev))
             else:
                 orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
+            split = orig_rev.split()
+            words = set(split)
             for word in words:
                 vocab[word] += 1
             datum  = {"y":0,
                       "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
+                      "num_words": len(split),
                       "split": 1}
             revs.append(datum)
     with open(pos_file, "rb") as f:
@@ -139,7 +140,8 @@ def build_data(train_folder, test_folder, clean_string=True):
                 orig_rev = clean_str(" ".join(rev))
             else:
                 orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
+            split = orig_rev.split()
+            words = set(split)
             for word in words:
                 vocab[word] += 1
             datum  = {"y":1,
@@ -155,7 +157,8 @@ def build_data(train_folder, test_folder, clean_string=True):
                 orig_rev = clean_str(" ".join(rev))
             else:
                 orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
+            split = orig_rev.split()
+            words = set(split)
             for word in words:
                 vocab[word] += 1
             datum  = {"y":2,
@@ -171,7 +174,8 @@ def build_data(train_folder, test_folder, clean_string=True):
                 orig_rev = clean_str(" ".join(rev))
             else:
                 orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
+            split = orig_rev.split()
+            words = set(split)
             for word in words:
                 vocab[word] += 1
             datum  = {"y":3,
@@ -187,7 +191,8 @@ def build_data(train_folder, test_folder, clean_string=True):
                 orig_rev = clean_str(" ".join(rev))
             else:
                 orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
+            split = orig_rev.split()
+            words = set(split)
             for word in words:
                 vocab[word] += 1
             datum  = {"y":4,
@@ -203,7 +208,8 @@ def build_data(train_folder, test_folder, clean_string=True):
                 orig_rev = clean_str(" ".join(rev))
             else:
                 orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
+            split = orig_rev.split()
+            words = set(split)
             for word in words:
                 vocab[word] += 1
             datum  = {"y":0,
@@ -219,7 +225,8 @@ def build_data(train_folder, test_folder, clean_string=True):
                 orig_rev = clean_str(" ".join(rev))
             else:
                 orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
+            split = orig_rev.split()
+            words = set(split)
             for word in words:
                 vocab[word] += 1
             datum  = {"y":1,
@@ -235,7 +242,8 @@ def build_data(train_folder, test_folder, clean_string=True):
                 orig_rev = clean_str(" ".join(rev))
             else:
                 orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
+            split = orig_rev.split()
+            words = set(split)
             for word in words:
                 vocab[word] += 1
             datum  = {"y":2,
@@ -251,7 +259,8 @@ def build_data(train_folder, test_folder, clean_string=True):
                 orig_rev = clean_str(" ".join(rev))
             else:
                 orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
+            split = orig_rev.split()
+            words = set(split)
             for word in words:
                 vocab[word] += 1
             datum  = {"y":3,
@@ -267,7 +276,8 @@ def build_data(train_folder, test_folder, clean_string=True):
                 orig_rev = clean_str(" ".join(rev))
             else:
                 orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
+            split = orig_rev.split()
+            words = set(split)
             for word in words:
                 vocab[word] += 1
             datum  = {"y":4,
