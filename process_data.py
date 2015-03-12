@@ -37,9 +37,10 @@ def build_data(train, test, clean=True):
 
     revs = []
     vocab = defaultdict(float)
+    c = 0
 
-    for k in sorted(train):
-        with open(train[k], "rb") as f:
+    for x in train:
+        with open(x, "rb") as f:
             for line in f:
                 rev = []
                 rev.append(line.strip())
@@ -50,12 +51,17 @@ def build_data(train, test, clean=True):
                 words = set(orig_rev.split())
                 for word in words:
                     vocab[word] += 1
-                datum  = {"y": k,
+                datum  = {"y": c,
                           "text": orig_rev,
                           "num_words": len(orig_rev.split()),
                           "split": 0}
                 revs.append(datum)
-        with open(train[k], "rb") as f:
+        c += 1
+
+    c = 0
+
+    for x in test:
+        with open(x, "rb") as f:
             for line in f:
                 rev = []
                 rev.append(line.strip())
@@ -66,11 +72,12 @@ def build_data(train, test, clean=True):
                 words = set(orig_rev.split())
                 for word in words:
                     vocab[word] += 1
-                datum  = {"y": k,
+                datum  = {"y": c,
                           "text": orig_rev,
                           "num_words": len(orig_rev.split()),
                           "split": 1}
                 revs.append(datum)
+        c += 1
 
     return revs, vocab
 
@@ -157,11 +164,18 @@ if __name__=="__main__":
     print "loading data...",        
     #revs, vocab = build_data_cv(data_folder, cv=10, clean_string=True)
     revs, vocab = build_data(train_folder,test_folder)
-    max_l = np.max(pd.DataFrame(revs)["num_words"])
+    pd_data_num_words = pd.DataFrame(revs)["num_words"]
+    max_l = np.max(pd_data_num_words)
+    mean_l = np.mean(pd_data_num_words)
+    class_dist = pd.DataFrame(revs)["y"].values
+    class_dist, _ = np.histogram(class_dist, bins = len(train_folder))
+
     print "data loaded!"
     print "number of sentences: " + str(len(revs))
     print "vocab size: " + str(len(vocab))
     print "max sentence length: " + str(max_l)
+    print "average sentence length: " + str(mean_l)
+    print "class distribution: " + str(class_dist)
     print "loading word2vec vectors...",
     w2v = load_bin_vec(w2v_file, vocab)
     print "word2vec loaded!"
