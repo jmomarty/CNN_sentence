@@ -4,287 +4,73 @@ from collections import defaultdict
 import sys, re
 import pandas as pd
 
-def build_data_cv(data_folder, cv=10, clean_string=True):
+def build_data_cv(data, cv=10, clean=True):
 
     """
     Loads data and split into 10 folds.
     """
 
     revs = []
-    very_pos_file = data_folder[0]
-    pos_file = data_folder[1]
-    neutral_file = data_folder[2]
-    neg_file = data_folder[3]
-    very_neg_file = data_folder[4]
-
     vocab = defaultdict(float)
-    with open(very_pos_file, "rb") as f:
-        for line in f:       
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":0,
-                      "text": orig_rev,                             
-                      "num_words": len(orig_rev.split()),
-                      "split": np.random.randint(0,cv)}
-            revs.append(datum)
-    with open(pos_file, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":1,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": np.random.randint(0,cv)}
-            revs.append(datum)
-    with open(neutral_file, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":2,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": np.random.randint(0,cv)}
-            revs.append(datum)
-    with open(neg_file, "rb") as f:
-        for line in f:       
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":3,
-                      "text": orig_rev,                             
-                      "num_words": len(orig_rev.split()),
-                      "split": np.random.randint(0,cv)}
-            revs.append(datum)
-    with open(very_neg_file, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            words = set(orig_rev.split())
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":4,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": np.random.randint(0,cv)}
-            revs.append(datum)
+
+    for k in sorted(data):
+        with open(data[k], "rb") as f:
+            for line in f:
+                rev = []
+                rev.append(line.strip())
+                if clean:
+                    orig_rev = clean_str(" ".join(rev))
+                else:
+                    orig_rev = " ".join(rev).lower()
+                words = set(orig_rev.split())
+                for word in words:
+                    vocab[word] += 1
+                datum  = {"y": k,
+                          "text": orig_rev,
+                          "num_words": len(orig_rev.split()),
+                          "split": np.random.randint(0,cv)}
+                revs.append(datum)
+
     return revs, vocab
 
-def build_data(train_folder, test_folder, clean_string=True):
+def build_data(train, test, clean=True):
 
     revs = []
-    very_pos_file_train = train_folder[0]
-    pos_file_train = train_folder[1]
-    neutral_file_train = train_folder[2]
-    neg_file_train = train_folder[3]
-    very_neg_file_train = train_folder[4]
-    very_pos_file = test_folder[0]
-    pos_file = test_folder[1]
-    neutral_file = test_folder[2]
-    neg_file = test_folder[3]
-    very_neg_file = test_folder[4]
-
     vocab = defaultdict(float)
-    with open(very_pos_file, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            split = orig_rev.split()
-            words = set(split)
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":0,
-                      "text": orig_rev,
-                      "num_words": len(split),
-                      "split": 1}
-            revs.append(datum)
-    with open(pos_file, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            split = orig_rev.split()
-            words = set(split)
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":1,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": 1}
-            revs.append(datum)
-    with open(neutral_file, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            split = orig_rev.split()
-            words = set(split)
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":2,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": 1}
-            revs.append(datum)
-    with open(neg_file, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            split = orig_rev.split()
-            words = set(split)
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":3,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": 1}
-            revs.append(datum)
-    with open(very_neg_file, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            split = orig_rev.split()
-            words = set(split)
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":4,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": 1}
-            revs.append(datum)
-    with open(very_pos_file_train, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            split = orig_rev.split()
-            words = set(split)
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":0,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": 0}
-            revs.append(datum)
-    with open(pos_file_train, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            split = orig_rev.split()
-            words = set(split)
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":1,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": 0}
-            revs.append(datum)
-    with open(neutral_file_train, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            split = orig_rev.split()
-            words = set(split)
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":2,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": 0}
-            revs.append(datum)
-    with open(neg_file_train, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            split = orig_rev.split()
-            words = set(split)
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":3,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": 0}
-            revs.append(datum)
-    with open(very_neg_file_train, "rb") as f:
-        for line in f:
-            rev = []
-            rev.append(line.strip())
-            if clean_string:
-                orig_rev = clean_str(" ".join(rev))
-            else:
-                orig_rev = " ".join(rev).lower()
-            split = orig_rev.split()
-            words = set(split)
-            for word in words:
-                vocab[word] += 1
-            datum  = {"y":4,
-                      "text": orig_rev,
-                      "num_words": len(orig_rev.split()),
-                      "split": 0}
-            revs.append(datum)
+
+    for k in sorted(train):
+        with open(train[k], "rb") as f:
+            for line in f:
+                rev = []
+                rev.append(line.strip())
+                if clean:
+                    orig_rev = clean_str(" ".join(rev))
+                else:
+                    orig_rev = " ".join(rev).lower()
+                words = set(orig_rev.split())
+                for word in words:
+                    vocab[word] += 1
+                datum  = {"y": k,
+                          "text": orig_rev,
+                          "num_words": len(orig_rev.split()),
+                          "split": 0}
+                revs.append(datum)
+        with open(train[k], "rb") as f:
+            for line in f:
+                rev = []
+                rev.append(line.strip())
+                if clean:
+                    orig_rev = clean_str(" ".join(rev))
+                else:
+                    orig_rev = " ".join(rev).lower()
+                words = set(orig_rev.split())
+                for word in words:
+                    vocab[word] += 1
+                datum  = {"y": k,
+                          "text": orig_rev,
+                          "num_words": len(orig_rev.split()),
+                          "split": 1}
+                revs.append(datum)
 
     return revs, vocab
 
