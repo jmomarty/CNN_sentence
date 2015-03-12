@@ -169,7 +169,6 @@ if __name__=="__main__":
     mean_l = np.mean(pd_data_num_words)
     class_dist = pd.DataFrame(revs)["y"].values
     class_dist, _ = np.histogram(class_dist, bins = len(train_folder))
-
     print "data loaded!"
     print "number of sentences: " + str(len(revs))
     print "vocab size: " + str(len(vocab))
