@@ -301,13 +301,13 @@ def parse_filter_hs(filter_hs):
     return map(int, filter_hs.split(','))
    
 if __name__=="__main__":
+
+    # Arguments for the program:
     parser = argparse.ArgumentParser(description='Convnet')
     parser.add_argument('mode', help='static/nonstatic')
     parser.add_argument('word_vectors', help='rand/word2vec')
-    parser.add_argument('--folds', help='number of folds', type=int, default=10)
     parser.add_argument('--filter_hs', help='filter window size', default='3,4,5')
     parser.add_argument('--epochs', help='num epochs', type=int, default=25)
-
     args = parser.parse_args()
     non_static = getMode(args.mode)
 
@@ -315,17 +315,20 @@ if __name__=="__main__":
     x = cPickle.load(open("mr.p","rb"))
     revs, W, W2, word_idx_map, vocab = x[0], x[1], x[2], x[3], x[4]
     print "data loaded!"
+
     if args.word_vectors=="rand":
         print "using: random vectors"
         U = W2
     elif args.word_vectors=="word2vec":
         print "using: word2vec vectors"
         U = W
-    results = []
-    print "running %d folds" %args.folds
+
     window_sizes= parse_filter_hs(args.filter_hs)
     print "window sizes", window_sizes
+
     datasets = make_idx_data_cv(revs, word_idx_map, 1, max_l=56,k=300, filter_h=5)
+
+    results = []
     perf = train_conv_net(datasets,
                           U,
                           lr_decay=0.95,
@@ -339,6 +342,4 @@ if __name__=="__main__":
                           non_static=non_static,
                           batch_size=50,
                           dropout_rate=[0.5])
-    print "test: " + str(0) + ", perf: " + str(perf)
-    results.append(perf)
-    print str(np.mean(results))
+    print "perf: " + str(perf)

@@ -159,8 +159,8 @@ def clean_str_sst(string):
 
 if __name__=="__main__":    
     w2v_file = sys.argv[1]     
-    train_folder = ["train_pos_very.txt","train_pos.txt","train_neutral.txt","train_neg.txt","train_neg_very.txt"]
-    test_folder = ["test_very_pos.txt","test_pos.txt","test_neutral.txt","test_neg.txt","test_neg_very.txt"]
+    train_folder = ["train_pos_very_short.txt","train_pos_short.txt","train_neutral_short.txt","train_neg_short.txt","train_neg_very_short.txt"]
+    test_folder = ["test_very_pos_short.txt","test_pos_short.txt","test_neutral_short.txt","test_neg_short.txt","test_neg_very_short.txt"]
     print "loading data...",        
     #revs, vocab = build_data_cv(data_folder, cv=10, clean_string=True)
     revs, vocab = build_data(train_folder,test_folder)
