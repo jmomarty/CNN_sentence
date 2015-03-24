@@ -169,6 +169,7 @@ if __name__=="__main__":
     w2v_file = args.word_vectors
 
     train_folder = args.train_files
+    print train_folder
     test_folder = args.test_files
 
     print "loading data...",
