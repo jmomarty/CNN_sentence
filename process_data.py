@@ -41,6 +41,7 @@ def build_data(train, test, clean=True):
     c = 0
 
     for x in train:
+        print x
         with open(x, "rb") as f:
             for line in f:
                 if clean:
