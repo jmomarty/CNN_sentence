@@ -161,7 +161,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(description='Data Processing')
     parser.add_argument('mode', help='cv/dev')
     parser.add_argument('word_vectors', help='w2v_file')
-    parser.add_argument('--train_files', nargs = '*', type = file)
+    parser.add_argument('--train_files', nargs = '*')
     parser.add_argument('--test_files', nargs = '*')
     parser.add_argument('--clean', default=True)
     args = parser.parse_args()
