@@ -160,15 +160,15 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(description='Data Processing')
     parser.add_argument('mode', help='cv/dev')
     parser.add_argument('word_vectors', help='w2v_file')
-    parser.add_argument('--train_files')
-    parser.add_argument('--test_files')
+    parser.add_argument('--train_files', nargs = '*')
+    parser.add_argument('--test_files', nargs = '*')
     parser.add_argument('--clean', default=True)
     args = parser.parse_args()
 
     w2v_file = args.word_vectors
 
-    train_folder = eval(args.train_files)
-    test_folder = eval(args.test_files)
+    train_folder = args.train_files
+    test_folder = args.test_files
 
     print "loading data...",
     if args.mode != "dev":
