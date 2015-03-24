@@ -3,11 +3,12 @@ import cPickle
 from collections import defaultdict
 import sys, re
 import pandas as pd
+import argparse
 
 def build_data_cv(data, cv=10, clean=True):
 
     """
-    Loads data and split into 10 folds.
+    Loads data and split into cv folds.
     """
 
     revs = []
@@ -42,18 +43,16 @@ def build_data(train, test, clean=True):
     for x in train:
         with open(x, "rb") as f:
             for line in f:
-                rev = []
-                rev.append(line.strip())
                 if clean:
-                    orig_rev = clean_str(" ".join(rev))
+                    line = clean_str(line)
                 else:
-                    orig_rev = " ".join(rev).lower()
-                words = set(orig_rev.split())
-                for word in words:
+                    line = line.lower()
+                words = line.split()
+                for word in set(words):
                     vocab[word] += 1
                 datum  = {"y": c,
-                          "text": orig_rev,
-                          "num_words": len(orig_rev.split()),
+                          "text": [line],
+                          "num_words": len(words),
                           "split": 0}
                 revs.append(datum)
         c += 1
@@ -63,19 +62,17 @@ def build_data(train, test, clean=True):
     for x in test:
         with open(x, "rb") as f:
             for line in f:
-                rev = []
-                rev.append(line.strip())
                 if clean:
-                    orig_rev = clean_str(" ".join(rev))
+                    line = clean_str(line)
                 else:
-                    orig_rev = " ".join(rev).lower()
-                words = set(orig_rev.split())
-                for word in words:
+                    line = line.lower()
+                words = line.split()
+                for word in set(words):
                     vocab[word] += 1
                 datum  = {"y": c,
-                          "text": orig_rev,
-                          "num_words": len(orig_rev.split()),
-                          "split": 1}
+                          "text": [line],
+                          "num_words": len(words),
+                          "split": 0}
                 revs.append(datum)
         c += 1
 
@@ -157,13 +154,28 @@ def clean_str_sst(string):
     string = re.sub(r"\s{2,}", " ", string)    
     return string.strip().lower()
 
-if __name__=="__main__":    
-    w2v_file = sys.argv[1]     
-    train_folder = ["train_pos_very_short.txt","train_pos_short.txt","train_neutral_short.txt","train_neg_short.txt","train_neg_very_short.txt"]
-    test_folder = ["test_very_pos_short.txt","test_pos_short.txt","test_neutral_short.txt","test_neg_short.txt","test_neg_very_short.txt"]
-    print "loading data...",        
-    #revs, vocab = build_data_cv(data_folder, cv=10, clean_string=True)
-    revs, vocab = build_data(train_folder,test_folder)
+if __name__=="__main__":
+
+    # Arguments for the program:
+    parser = argparse.ArgumentParser(description='Data Processing')
+    parser.add_argument('mode', help='cv/dev')
+    parser.add_argument('word_vectors', help='w2v_file')
+    parser.add_argument('--train_files')
+    parser.add_argument('--test_files')
+    parser.add_argument('--clean', default=True)
+    args = parser.parse_args()
+
+    w2v_file = args.word_vectors
+
+    train_folder = args.train_files.split(" ")
+    test_folder = args.test_files.split(" ")
+
+    print "loading data...",
+    if args.mode != "dev":
+        revs, vocab = build_data_cv(train_folder, int(args.mode), args.clean)
+    else:
+        revs, vocab = build_data(train_folder, test_folder, args.clean)
+
     pd_data_num_words = pd.DataFrame(revs)["num_words"]
     max_l = np.max(pd_data_num_words)
     mean_l = np.mean(pd_data_num_words)
@@ -175,6 +187,7 @@ if __name__=="__main__":
     print "max sentence length: " + str(max_l)
     print "average sentence length: " + str(mean_l)
     print "class distribution: " + str(class_dist)
+
     print "loading word2vec vectors...",
     w2v = load_bin_vec(w2v_file, vocab)
     print "word2vec loaded!"
@@ -184,6 +197,7 @@ if __name__=="__main__":
     rand_vecs = {}
     add_unknown_words(rand_vecs, vocab)
     W2, _ = get_W(rand_vecs)
+
     cPickle.dump([revs, W, W2, word_idx_map, vocab], open("mr.p", "wb"))
     print "dataset created!"
     
