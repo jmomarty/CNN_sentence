@@ -167,8 +167,8 @@ if __name__=="__main__":
 
     w2v_file = args.word_vectors
 
-    train_folder = args.train_files.split(" ")
-    test_folder = args.test_files.split(" ")
+    train_folder = eval(args.train_files)
+    test_folder = eval(args.test_files)
 
     print "loading data...",
     if args.mode != "dev":
