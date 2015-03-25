@@ -308,11 +308,13 @@ if __name__=="__main__":
     parser.add_argument('word_vectors', help='rand/word2vec')
     parser.add_argument('--filter_hs', help='filter window size', default='3,4,5')
     parser.add_argument('--epochs', help='num epochs', type=int, default=25)
+    parser.add_argument('--input', default='data.p')
+    parser.add_argument('--classes', default=5)
     args = parser.parse_args()
     non_static = getMode(args.mode)
 
     print "loading data...",
-    x = cPickle.load(open("mr.p","rb"))
+    x = cPickle.load(open(args.input,"rb"))
     revs, W, W2, word_idx_map, vocab = x[0], x[1], x[2], x[3], x[4]
     print "data loaded!"
 
@@ -328,13 +330,14 @@ if __name__=="__main__":
 
     datasets = make_idx_data_cv(revs, word_idx_map, 1, max_l=56,k=300, filter_h=5)
 
+    num_classes = int(args.classes)
     results = []
     perf = train_conv_net(datasets,
                           U,
                           lr_decay=0.95,
                           filter_hs=window_sizes,
                           conv_non_linear="relu",
-                          hidden_units=[100,2],
+                          hidden_units=[100,num_classes],
                           use_valid_set=True,
                           shuffle_batch=True,
                           n_epochs=args.epochs,

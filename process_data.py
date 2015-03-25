@@ -41,7 +41,6 @@ def build_data(train, test, clean=True):
     c = 0
 
     for x in train:
-        print x
         with open(x, "rb") as f:
             for line in f:
                 if clean:
@@ -52,7 +51,7 @@ def build_data(train, test, clean=True):
                 for word in set(words):
                     vocab[word] += 1
                 datum  = {"y": c,
-                          "text": [line],
+                          "text": line,
                           "num_words": len(words),
                           "split": 0}
                 revs.append(datum)
@@ -71,7 +70,7 @@ def build_data(train, test, clean=True):
                 for word in set(words):
                     vocab[word] += 1
                 datum  = {"y": c,
-                          "text": [line],
+                          "text": line,
                           "num_words": len(words),
                           "split": 0}
                 revs.append(datum)
@@ -164,12 +163,12 @@ if __name__=="__main__":
     parser.add_argument('--train_files', nargs = '*')
     parser.add_argument('--test_files', nargs = '*')
     parser.add_argument('--clean', default=True)
+    parser.add_argument('--output', default='data.p')
     args = parser.parse_args()
 
     w2v_file = args.word_vectors
 
     train_folder = args.train_files
-    print train_folder
     test_folder = args.test_files
 
     print "loading data...",
@@ -200,6 +199,6 @@ if __name__=="__main__":
     add_unknown_words(rand_vecs, vocab)
     W2, _ = get_W(rand_vecs)
 
-    cPickle.dump([revs, W, W2, word_idx_map, vocab], open("mr.p", "wb"))
+    cPickle.dump([revs, W, W2, word_idx_map, vocab], open(args.output, "wb"))
     print "dataset created!"
     
