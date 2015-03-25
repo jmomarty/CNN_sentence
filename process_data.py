@@ -72,7 +72,7 @@ def build_data(train, test, clean=True):
                 datum  = {"y": c,
                           "text": line,
                           "num_words": len(words),
-                          "split": 0}
+                          "split": 1}
                 revs.append(datum)
         c += 1
 
