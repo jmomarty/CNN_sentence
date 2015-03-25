@@ -10,8 +10,6 @@ parser = argparse.ArgumentParser(description='Data Stats')
 parser.add_argument('--input', default='mr.p')
 args = parser.parse_args()
 
-w2v_file = args.word_vectors
-
 train_folder = args.train_files
 test_folder = args.test_files
 
