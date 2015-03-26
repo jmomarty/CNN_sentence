@@ -178,9 +178,11 @@ def train_conv_net(datasets,
                 set_zero(zero_vec)
         train_losses = [test_model(i) for i in xrange(n_train_batches)]
         train_perf = 1 - np.mean(train_losses)
-        val_losses = [val_model(i) for i in xrange(n_val_batches)]
-        val_perf = 1- np.mean(val_losses)                        
-        print('epoch %i, train perf %f %%, val perf %f' % (epoch, train_perf * 100., val_perf*100.))
+        test_loss = test_model_all(test_set_x,test_set_y)
+        test_perf = 1 - test_loss
+        # val_losses = [val_model(i) for i in xrange(n_val_batches)]
+        # val_perf = 1- np.mean(val_losses)
+        print('epoch %i, train perf %f %%, test perf %f' % (epoch, train_perf * 100., test_perf*100.))
     test_loss = test_model_all(test_set_x,test_set_y)        
     test_perf = 1 - test_loss
     return test_perf
@@ -338,7 +340,7 @@ if __name__=="__main__":
                           filter_hs=window_sizes,
                           conv_non_linear="relu",
                           hidden_units=[100,num_classes],
-                          use_valid_set=True,
+                          use_valid_set=False,
                           shuffle_batch=True,
                           n_epochs=args.epochs,
                           sqr_norm_lim=9,
