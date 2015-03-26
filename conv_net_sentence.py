@@ -168,9 +168,11 @@ def train_conv_net(datasets,
     cost_epoch = 0    
     while (epoch < n_epochs):        
         epoch = epoch + 1
+        print str(epoch) + "\n"
         if shuffle_batch:
             for minibatch_index in np.random.permutation(range(n_train_batches)):
                 cost_epoch = train_model(minibatch_index)
+                print "cost at epoch : " + str(cost_epoch), "\n"
                 set_zero(zero_vec)
         else:
             for minibatch_index in xrange(n_train_batches):
