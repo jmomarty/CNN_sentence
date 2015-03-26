@@ -158,7 +158,7 @@ def train_conv_net(datasets,
     test_layer1_input = T.concatenate(test_pred_layers, 1)
     test_y_pred = classifier.predict(test_layer1_input)
     test_error = T.mean(T.neq(test_y_pred, y))
-    test_model_all = theano.function([x,y], test_error)   
+    test_model_all = theano.function([x,y], test_error, allow_input_downcast = True)
     
     #start training over mini-batches
     print '... training'
