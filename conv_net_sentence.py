@@ -177,7 +177,8 @@ def train_conv_net(datasets,
                 counter += 1
                 cost_epoch = train_model(minibatch_index)
                 if counter % 1000 == 0:
-                    print "cost at epoch : " + str(cost_epoch), "\n"
+                    print('epoch %i, test perf %f' % (epoch, test_perf*100.))
+                    print "epoch %i, counter %f,  cost : %g " % (epoch, counter, str(cost_epoch))
                 set_zero(zero_vec)
         else:
             for minibatch_index in xrange(n_train_batches):
