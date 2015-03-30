@@ -177,19 +177,19 @@ def train_conv_net(datasets,
                 counter += 1
                 cost_epoch = train_model(minibatch_index)
                 if counter % 1000 == 0:
-                    print "epoch %i, counter %f,  cost : %g " % (str(epoch), str(counter), str(cost_epoch))
+                    print "epoch %i, counter %f,  cost : %g " % (epoch, counter, cost_epoch)
                 set_zero(zero_vec)
         else:
             for minibatch_index in xrange(n_train_batches):
                 cost_epoch = train_model(minibatch_index)  
                 set_zero(zero_vec)
-        # train_losses = [train_model(i) for i in xrange(n_train_batches)]
-        # train_perf = 1 - np.mean(train_losses)
-        test_loss = test_model_all(test_set_x,test_set_y)
-        test_perf = 1 - test_loss
-        # val_losses = [val_model(i) for i in xrange(n_val_batches)]
-        # val_perf = 1- np.mean(val_losses)
-        # print('epoch %i, train perf %f %%, test perf %f' % (epoch, train_perf * 100., test_perf*100.))
+        train_losses = [train_model(i) for i in xrange(n_train_batches)]
+        train_perf = 1 - np.mean(train_losses)
+        # test_loss = test_model_all(test_set_x,test_set_y)
+        # test_perf = 1 - test_loss
+        val_losses = [val_model(i) for i in xrange(n_val_batches)]
+        val_perf = 1- np.mean(val_losses)
+        print('epoch %i, train perf %f %%, val perf %f' % (epoch, train_perf * 100., val_perf*100.))
         print('epoch %i, test perf %f' % (epoch, test_perf*100.))
         cPickle.dump(params, file)
     test_loss = test_model_all(test_set_x,test_set_y)        
@@ -299,7 +299,26 @@ def make_idx_data_cv(revs, word_idx_map, cv, max_l=51, k=300, filter_h=5):
     print train.shape
     test = np.array(test,dtype="int")
     return [train, test]     
-  
+
+def make_idx_data_tdt(revs, word_idx_map, max_l=51, k=300, filter_h=5):
+    """
+    Transforms sentences into a 2-d matrix.
+    """
+    train, dev, test = [], [], []
+    for rev in revs:
+        sent = get_idx_from_sent(rev["text"], word_idx_map, max_l, k, filter_h)
+        sent.append(rev["y"])
+        if rev["split"]==1:
+            dev.append(sent)
+        if rev["split"]==2:
+            test.append(sent)
+        else:
+            train.append(sent)
+    train = np.array(train,dtype="int")
+    dev = np.array(dev, dtype="int")
+    test = np.array(test,dtype="int")
+    return [train, dev, test]
+
 def getMode(mode):
     if mode=='nonstatic':
       print "model architecture: CNN-non-static"
@@ -339,10 +358,11 @@ if __name__=="__main__":
     window_sizes= parse_filter_hs(args.filter_hs)
     print "window sizes", window_sizes
 
-    datasets = make_idx_data_cv(revs, word_idx_map, 1, max_l=56,k=300, filter_h=5)
+    datasets = make_idx_data_tdt(revs, word_idx_map, max_l=56,k=300, filter_h=5)
 
     num_classes = int(args.classes)
     results = []
+
     perf = train_conv_net(datasets,
                           U,
                           lr_decay=0.95,

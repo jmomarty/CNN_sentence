@@ -78,6 +78,68 @@ def build_data(train, test, clean=True):
 
     return revs, vocab
 
+def build_data_tdt(train, dev, test, clean=True):
+
+    revs = []
+    vocab = defaultdict(float)
+    c = 0
+
+    for x in train:
+        with open(x, "rb") as f:
+            for line in f:
+                if clean:
+                    line = clean_str(line)
+                else:
+                    line = line.lower()
+                words = line.split()
+                for word in set(words):
+                    vocab[word] += 1
+                datum  = {"y": c,
+                          "text": line,
+                          "num_words": len(words),
+                          "split": 0}
+                revs.append(datum)
+        c += 1
+
+    c = 0
+
+    for x in dev:
+        with open(x, "rb") as f:
+            for line in f:
+                if clean:
+                    line = clean_str(line)
+                else:
+                    line = line.lower()
+                words = line.split()
+                for word in set(words):
+                    vocab[word] += 1
+                datum  = {"y": c,
+                          "text": line,
+                          "num_words": len(words),
+                          "split": 1}
+                revs.append(datum)
+        c += 1
+    c = 0
+
+    for x in test:
+        with open(x, "rb") as f:
+            for line in f:
+                if clean:
+                    line = clean_str(line)
+                else:
+                    line = line.lower()
+                words = line.split()
+                for word in set(words):
+                    vocab[word] += 1
+                datum  = {"y": c,
+                          "text": line,
+                          "num_words": len(words),
+                          "split": 2}
+                revs.append(datum)
+        c += 1
+
+    return revs, vocab
+
 def get_W(word_vecs, k=300):
     """
     Get word matrix. W[i] is the vector for word indexed by i
@@ -161,6 +223,7 @@ if __name__=="__main__":
     parser.add_argument('mode', help='cv/dev')
     parser.add_argument('word_vectors', help='w2v_file')
     parser.add_argument('--train_files', nargs = '*')
+    parser.add_argument('--dev_files', nargs = '*')
     parser.add_argument('--test_files', nargs = '*')
     parser.add_argument('--clean', default=True)
     parser.add_argument('--output', default='data.p')
@@ -169,13 +232,14 @@ if __name__=="__main__":
     w2v_file = args.word_vectors
 
     train_folder = args.train_files
+    dev_folder = args.dev_files
     test_folder = args.test_files
 
     print "loading data...",
     if args.mode != "dev":
         revs, vocab = build_data_cv(train_folder, int(args.mode), args.clean)
     else:
-        revs, vocab = build_data(train_folder, test_folder, args.clean)
+        revs, vocab = build_data(train_folder, dev_folder, test_folder, args.clean)
 
     pd_data_num_words = pd.DataFrame(revs)["num_words"]
     max_l = np.max(pd_data_num_words)
