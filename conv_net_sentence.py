@@ -48,6 +48,8 @@ def train_conv_net(datasets,
     lr_decay = adadelta decay parameter
     """
 
+    file = open("weights.pkl", "wb")
+
     rng = np.random.RandomState(3435)
     img_h = len(datasets[0][0])-1  
     filter_w = img_w    
@@ -166,25 +168,30 @@ def train_conv_net(datasets,
     val_perf = 0
     test_perf = 0       
     cost_epoch = 0    
-    while (epoch < n_epochs):        
+    while (epoch < n_epochs):
         epoch = epoch + 1
         print str(epoch) + "\n"
         if shuffle_batch:
+            counter = 0
             for minibatch_index in np.random.permutation(range(n_train_batches)):
+                counter += 1
                 cost_epoch = train_model(minibatch_index)
-                print "cost at epoch : " + str(cost_epoch), "\n"
+                if counter % 1000 == 0:
+                    print "cost at epoch : " + str(cost_epoch), "\n"
                 set_zero(zero_vec)
         else:
             for minibatch_index in xrange(n_train_batches):
                 cost_epoch = train_model(minibatch_index)  
                 set_zero(zero_vec)
-        train_losses = [test_model(i) for i in xrange(n_train_batches)]
-        train_perf = 1 - np.mean(train_losses)
+        # train_losses = [train_model(i) for i in xrange(n_train_batches)]
+        # train_perf = 1 - np.mean(train_losses)
         test_loss = test_model_all(test_set_x,test_set_y)
         test_perf = 1 - test_loss
         # val_losses = [val_model(i) for i in xrange(n_val_batches)]
         # val_perf = 1- np.mean(val_losses)
-        print('epoch %i, train perf %f %%, test perf %f' % (epoch, train_perf * 100., test_perf*100.))
+        # print('epoch %i, train perf %f %%, test perf %f' % (epoch, train_perf * 100., test_perf*100.))
+        print('epoch %i, test perf %f' % (epoch, test_perf*100.))
+        cPickle.dump(params, file)
     test_loss = test_model_all(test_set_x,test_set_y)        
     test_perf = 1 - test_loss
     return test_perf
