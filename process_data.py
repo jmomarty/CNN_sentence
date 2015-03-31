@@ -241,7 +241,7 @@ if __name__=="__main__":
     if args.mode != "dev":
         revs, vocab = build_data_cv(train_folder, int(args.mode), args.clean)
     else:
-        revs, vocab = build_data(train_folder, dev_folder, test_folder, args.clean)
+        revs, vocab = build_data_tdt(train_folder, dev_folder, test_folder, args.clean)
 
     pd_data_num_words = pd.DataFrame(revs)["num_words"]
     max_l = np.max(pd_data_num_words)
