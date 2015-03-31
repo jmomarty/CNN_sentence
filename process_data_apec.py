@@ -16,10 +16,9 @@ def build_data_apec(corpus, target):
 
     revs = []
     vocab = defaultdict(float)
-    c = codecs.open(corpus, "rb", encoding = "utf-8")
-    t = codecs.open(target, "rb", encoding = "utf-8")
+    c = open(corpus, "rb")
+    t = open(target, "rb")
     for line, target in izip(c,t):
-        target = target.replace(u"[",u"").replace(u"]",u"").split(u" > ")[0]
         if random.random() > 0.9:
             datum  = {"y": target,
                       "text": line,
