@@ -78,8 +78,8 @@ def train_conv_net(datasets,
     print int(layer0_input.shape[2])
     layer1 = DropoutHiddenLayer(rng,
                                 input=layer0_input,
-                                n_in = layer0_input.shape[2],
-                                n_out = layer0_input.shape[3],
+                                n_in = img_h*img_w,
+                                n_out = img_h*img_w,
                                 activation = activations[0],
                                 dropout_rate = dropout_rate[0],
                                 use_bias = True)
