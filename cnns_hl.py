@@ -75,6 +75,7 @@ def train_conv_net(datasets,
     set_zero = theano.function([zero_vec_tensor], updates=[(Words, T.set_subtensor(Words[0,:], zero_vec_tensor))], allow_input_downcast = True)
     layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0],1,x.shape[1],Words.shape[1]))                                  
     conv_layers = []
+    print layer0_input.shape[2], layer0_input.shape[3]
     layer1 = DropoutHiddenLayer(rng,
                                 input=layer0_input,
                                 n_in = layer0_input.shape[2],
