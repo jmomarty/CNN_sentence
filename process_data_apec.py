@@ -22,7 +22,6 @@ def build_data_apec(corpus, target):
     tc = 0
     for line, target in izip(c,t):
         if target in targets:
-            target = targets[target]
             if random.random() > 0.9:
                 datum  = {"y": targets[target],
                           "text": line,
