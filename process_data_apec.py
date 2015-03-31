@@ -27,12 +27,12 @@ def build_data_apec(corpus, target):
             targets[target] = tc
             tc+=1
         if random.random() > 0.9:
-            datum  = {"y": target,
+            datum  = {"y": targets[target],
                       "text": line,
                       "num_words": len(line.split(" ")),
                       "split": 1}
         else:
-            datum  = {"y": target,
+            datum  = {"y": targets[target],
                       "text": line,
                       "num_words": len(line.split(" ")),
                       "split": 0}
@@ -248,7 +248,7 @@ if __name__=="__main__":
     max_l = np.max(pd_data_num_words)
     mean_l = np.mean(pd_data_num_words)
     class_dist = pd.DataFrame(revs)["y"].values
-    class_dist, _ = np.histogram(class_dist, bins = 20)
+    class_dist, _ = np.histogram(class_dist, bins = 70)
     print "data loaded!"
     print "number of sentences: " + str(len(revs))
     print "vocab size: " + str(len(vocab))
