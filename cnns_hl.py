@@ -98,7 +98,8 @@ def train_conv_net(datasets,
     classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
     
     #define parameters of the model and update functions using adadelta
-    params = classifier.params     
+    params = layer1.params
+    params += classifier.params
     for conv_layer in conv_layers:
         params += conv_layer.params
     if non_static:
