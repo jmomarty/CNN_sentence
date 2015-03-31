@@ -227,9 +227,11 @@ if __name__=="__main__":
     parser.add_argument('--test_files', nargs = '*')
     parser.add_argument('--clean', default=True)
     parser.add_argument('--output', default='data.p')
+    parser.add_argument('--w2v_size', default=300)
     args = parser.parse_args()
 
     w2v_file = args.word_vectors
+    w2v_size = int(args.w2v_size)
 
     train_folder = args.train_files
     dev_folder = args.dev_files
@@ -257,11 +259,11 @@ if __name__=="__main__":
     w2v = load_bin_vec(w2v_file, vocab)
     print "word2vec loaded!"
     print "num words already in word2vec: " + str(len(w2v))
-    add_unknown_words(w2v, vocab)
-    W, word_idx_map = get_W(w2v)
+    add_unknown_words(w2v, vocab, k = w2v_size)
+    W, word_idx_map = get_W(w2v, k = w2v_size)
     rand_vecs = {}
-    add_unknown_words(rand_vecs, vocab)
-    W2, _ = get_W(rand_vecs)
+    add_unknown_words(rand_vecs, vocab, k = w2v_size)
+    W2, _ = get_W(rand_vecs, k = w2v_size)
 
     cPickle.dump([revs, W, W2, word_idx_map, vocab], open(args.output, "wb"))
     print "dataset created!"
