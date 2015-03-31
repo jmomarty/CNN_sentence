@@ -18,7 +18,14 @@ def build_data_apec(corpus, target):
     vocab = defaultdict(float)
     c = open(corpus[0], "rb")
     t = open(target[0], "rb")
+    targets = {}
+    tc = 0
     for line, target in izip(c,t):
+        if target in targets:
+            target = targets[target]
+        else:
+            targets[target] = tc
+            tc+=1
         if random.random() > 0.9:
             datum  = {"y": target,
                       "text": line,
