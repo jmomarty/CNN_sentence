@@ -78,13 +78,13 @@ def train_conv_net(datasets,
     print x.shape.eval()
     layer1 = DropoutHiddenLayer(rng,
                                 input=layer0_input,
-                                n_in = x.shape.eval()[0]*img_h*img_w,
-                                n_out = x.shape.eval()[0]*img_h*img_w,
+                                n_in = img_h*img_w,
+                                n_out = img_h*img_w,
                                 activation = activations[0],
                                 dropout_rate = dropout_rate[0],
                                 use_bias = True)
 
-    layer1_input = layer1.output
+    layer1_input = layer1.output.reshape((1,1,x.shape[1],Words.shape[1]))
     layer2_inputs = []
     for i in xrange(len(filter_hs)):
         filter_shape = filter_shapes[i]
