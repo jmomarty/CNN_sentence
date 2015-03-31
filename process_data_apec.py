@@ -8,7 +8,7 @@ import codecs
 from itertools import izip
 import random
 
-def build_data_apec(corpus, target):
+def build_data_apec(target, corpus):
 
     """
     Loads data and split into cv folds.
