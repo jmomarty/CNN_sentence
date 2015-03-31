@@ -23,19 +23,29 @@ def build_data_apec(corpus, target):
     for line, target in izip(c,t):
         if target in targets:
             target = targets[target]
+            if random.random() > 0.9:
+                datum  = {"y": targets[target],
+                          "text": line,
+                          "num_words": len(line.split(" ")),
+                          "split": 1}
+            else:
+                datum  = {"y": targets[target],
+                          "text": line,
+                          "num_words": len(line.split(" ")),
+                          "split": 0}
         else:
             targets[target] = tc
             tc+=1
-        if random.random() > 0.9:
-            datum  = {"y": targets[target],
-                      "text": line,
-                      "num_words": len(line.split(" ")),
-                      "split": 1}
-        else:
-            datum  = {"y": targets[target],
-                      "text": line,
-                      "num_words": len(line.split(" ")),
-                      "split": 0}
+            if random.random() > 0.9:
+                datum  = {"y": targets[target],
+                          "text": line,
+                          "num_words": len(line.split(" ")),
+                          "split": 1}
+            else:
+                datum  = {"y": targets[target],
+                          "text": line,
+                          "num_words": len(line.split(" ")),
+                          "split": 0}
         revs.append(datum)
 
     return revs, vocab
