@@ -124,7 +124,7 @@ def train_conv_net(datasets,
         test_set_y = np.asarray(datasets[2][:,-1],"int32")
         n_val_batches = int(val_set.shape[0] / batch_size)
         print "n_val_batches : " + str(n_val_batches)
-        val_model = theano.function([index], classifier.errors(y),
+        val_errors = theano.function([index], classifier.errors(y),
             givens={
                   x: val_set_x[index * batch_size: (index + 1) * batch_size],
                   y: val_set_y[index * batch_size: (index + 1) * batch_size]})
@@ -137,7 +137,7 @@ def train_conv_net(datasets,
             train_set_x, train_set_y = shared_dataset((train_set[:,:img_h],train_set[:,-1]))
             val_set_x, val_set_y = shared_dataset((val_set[:,:img_h],val_set[:,-1]))
             n_val_batches = n_batches - n_train_batches
-            val_model = theano.function([index], classifier.errors(y),
+            val_errors = theano.function([index], classifier.errors(y),
                  givens={
                     x: val_set_x[index * batch_size: (index + 1) * batch_size],
                     y: val_set_y[index * batch_size: (index + 1) * batch_size]})
@@ -153,7 +153,11 @@ def train_conv_net(datasets,
     train_model = theano.function([index], cost, updates=grad_updates,
           givens={
             x: train_set_x[index*batch_size:(index+1)*batch_size],
-            y: train_set_y[index*batch_size:(index+1)*batch_size]})     
+            y: train_set_y[index*batch_size:(index+1)*batch_size]})
+    train_errors = theano.function([index], classifier.errors(y),
+      givens={
+        x: train_set_x[index*batch_size:(index+1)*batch_size],
+        y: train_set_y[index*batch_size:(index+1)*batch_size]})
     test_pred_layers = []
     test_size = test_set_x.shape[0]
     test_layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((test_size,1,img_h,Words.shape[1]))
@@ -186,11 +190,11 @@ def train_conv_net(datasets,
             for minibatch_index in xrange(n_train_batches):
                 cost_epoch = train_model(minibatch_index)  
                 set_zero(zero_vec)
-        train_losses = [train_model(i) for i in xrange(n_train_batches)]
+        train_losses = [train_errors(i) for i in xrange(n_train_batches)]
         train_perf = 1 - np.mean(train_losses)
         # test_loss = test_model_all(test_set_x,test_set_y)
         # test_perf = 1 - test_loss
-        val_losses = [val_model(i) for i in xrange(n_val_batches)]
+        val_losses = [val_errors(i) for i in xrange(n_val_batches)]
         val_perf = 1- np.mean(val_losses)
         print('epoch %i, train perf %f %%, val perf %f' % (epoch, train_perf * 100., val_perf*100.))
         # print('epoch %i, test perf %f' % (epoch, test_perf*100.))
