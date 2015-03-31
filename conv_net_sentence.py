@@ -340,9 +340,10 @@ if __name__=="__main__":
     parser.add_argument('--epochs', help='num epochs', type=int, default=25)
     parser.add_argument('--input', default='data.p')
     parser.add_argument('--classes', default=5)
+    parser.add_argument('--w2v_size', default=300)
     args = parser.parse_args()
     non_static = getMode(args.mode)
-
+    w2v_size = int(args.w2v_size)
     print "loading data...",
     x = cPickle.load(open(args.input,"rb"))
     revs, W, W2, word_idx_map, vocab = x[0], x[1], x[2], x[3], x[4]
@@ -358,13 +359,14 @@ if __name__=="__main__":
     window_sizes= parse_filter_hs(args.filter_hs)
     print "window sizes", window_sizes
 
-    datasets = make_idx_data_tdt(revs, word_idx_map, max_l=56,k=300, filter_h=5)
+    datasets = make_idx_data_tdt(revs, word_idx_map, max_l=56,k=w2v_size, filter_h=5)
 
     num_classes = int(args.classes)
     results = []
 
     perf = train_conv_net(datasets,
                           U,
+                          img_w=w2v_size,
                           lr_decay=0.95,
                           filter_hs=window_sizes,
                           conv_non_linear="relu",
