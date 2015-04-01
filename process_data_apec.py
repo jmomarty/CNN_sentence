@@ -21,6 +21,8 @@ def build_data_apec(target, corpus):
     targets = {}
     tc = 0
     for line, target in izip(c,t):
+        for word in set(line.split()):
+            vocab[word] += 1
         if target in targets:
             if random.random() > 0.9:
                 datum  = {"y": targets[target],
