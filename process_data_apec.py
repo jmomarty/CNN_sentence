@@ -21,6 +21,7 @@ def build_data_apec(target, corpus):
     targets = {}
     tc = 0
     for line, target in izip(c,t):
+        line = line.strip()
         for word in set(line.split()):
             vocab[word] += 1
         if target in targets:

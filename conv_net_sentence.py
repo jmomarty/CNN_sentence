@@ -321,7 +321,7 @@ def make_idx_data_tdt(revs, word_idx_map, max_l=51, k=300, filter_h=5):
             test.append(sent)
         else:
             train.append(sent)
-    # train = np.array(train, dtype="int")
+    train = np.array(train, dtype="int")
     dev = np.array(dev, dtype="int")
     test = np.array(test,dtype="int")
     return [train, dev, test]
