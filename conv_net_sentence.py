@@ -298,12 +298,12 @@ def make_idx_data_cv(revs, word_idx_map, cv, max_l=51, k=300, filter_h=5):
     for rev in revs:
         sent = get_idx_from_sent(rev["text"], word_idx_map, max_l, k, filter_h)   
         sent.append(rev["y"])
+        print sent
         if rev["split"]==cv:
             test.append(sent)
         else:
             train.append(sent)
     train = np.array(train,dtype="int")
-    print train.shape
     test = np.array(test,dtype="int")
     return [train, test]     
 
