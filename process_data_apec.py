@@ -25,7 +25,7 @@ def build_data_apec(target, corpus):
         for word in set(line.split()):
             vocab[word] += 1
         if target in targets:
-            if random.random() > 0.999:
+            if random.random() > 0.9997:
                 datum  = {"y": targets[target],
                           "text": line,
                           "num_words": len(line.split(" ")),
@@ -38,7 +38,7 @@ def build_data_apec(target, corpus):
         else:
             targets[target] = tc
             tc += 1
-            if random.random() > 0.999:
+            if random.random() > 0.9997:
                 datum  = {"y": targets[target],
                           "text": line,
                           "num_words": len(line.split(" ")),
