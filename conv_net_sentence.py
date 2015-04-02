@@ -285,10 +285,8 @@ def get_idx_from_sent(sent, word_idx_map, max_l=51, k=300, filter_h=5):
     words = sent.split()
     for word in words:
         if word in word_idx_map:
-            try:
-                print word_idx_map[word][0]
-            except:
-                x.append(word_idx_map[word])
+            print word_idx_map[word][0]
+            x.append(word_idx_map[word])
     while len(x) < max_l+2*pad:
         x.append(0)
     return x
