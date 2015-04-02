@@ -302,9 +302,9 @@ def make_idx_data_cv(revs, word_idx_map, cv, max_l=51, k=300, filter_h=5):
             test.append(sent)
         else:
             train.append(sent)
-    print test
     train = np.array(train)
     test = np.array(test)
+    print test
     print train.shape, test.shape
     return [train, test]     
 
