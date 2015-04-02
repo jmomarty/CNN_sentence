@@ -37,7 +37,7 @@ def build_data_apec(target, corpus):
                           "split": 0}
         else:
             targets[target] = tc
-            tc+=1
+            tc += 1
             if random.random() > 0.9:
                 datum  = {"y": targets[target],
                           "text": line,
@@ -118,7 +118,6 @@ def build_data_tdt(train, dev, test, clean=True):
                           "split": 0}
                 revs.append(datum)
         c += 1
-
     c = 0
 
     for x in dev:

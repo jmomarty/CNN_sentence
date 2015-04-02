@@ -285,10 +285,7 @@ def get_idx_from_sent(sent, word_idx_map, max_l=51, k=300, filter_h=5):
     words = sent.split()
     for word in words:
         if word in word_idx_map:
-            try:
-                print word_idx_map[word][0]
-            except:
-                x.append(word_idx_map[word])
+            x.append(word_idx_map[word])
     while len(x) < max_l+2*pad:
         x.append(0)
     return x
@@ -301,10 +298,10 @@ def make_idx_data_cv(revs, word_idx_map, cv, max_l=51, k=300, filter_h=5):
     for rev in revs:
         sent = get_idx_from_sent(rev["text"], word_idx_map, max_l, k, filter_h)   
         sent.append(rev["y"])
-        if rev["split"]==cv:            
-            test.append(sent)        
-        else:  
-            train.append(sent)   
+        if rev["split"]==cv:
+            test.append(sent)
+        else:
+            train.append(sent)
     train = np.array(train,dtype="int")
     print train.shape
     test = np.array(test,dtype="int")
@@ -369,7 +366,7 @@ if __name__=="__main__":
     window_sizes= parse_filter_hs(args.filter_hs)
     print "window sizes", window_sizes
 
-    datasets = make_idx_data_tdt(revs, word_idx_map, max_l=56,k=w2v_size, filter_h=5)
+    datasets = make_idx_data_cv(revs, word_idx_map, 1, max_l=56,k=w2v_size, filter_h=5)
 
     num_classes = int(args.classes)
     results = []
