@@ -377,7 +377,7 @@ if __name__=="__main__":
                           filter_hs=window_sizes,
                           conv_non_linear="relu",
                           hidden_units=[100,num_classes],
-                          use_valid_set=False,
+                          use_valid_set=True,
                           shuffle_batch=True,
                           n_epochs=args.epochs,
                           sqr_norm_lim=9,
