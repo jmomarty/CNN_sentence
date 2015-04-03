@@ -82,7 +82,7 @@ def train_conv_net(datasets,
                                 activation = activations[0],
                                 dropout_rate = dropout_rate[0],
                                 use_bias = True)
-
+    print x
     layer1_input = layer1.output.reshape((1,1,x.shape[1],Words.shape[1]))
     layer2_inputs = []
     for i in xrange(len(filter_hs)):
