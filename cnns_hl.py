@@ -312,9 +312,9 @@ def make_idx_data_cv(revs, word_idx_map, cv, max_l=51, k=300, filter_h=5):
             test.append(sent)        
         else:  
             train.append(sent)   
-    train = np.array(train,dtype="int")
+    train = np.array(train)
     print train.shape
-    test = np.array(test,dtype="int")
+    test = np.array(test)
     return [train, test]     
 
 def make_idx_data_tdt(revs, word_idx_map, max_l=51, k=300, filter_h=5):
@@ -376,7 +376,7 @@ if __name__=="__main__":
     window_sizes= parse_filter_hs(args.filter_hs)
     print "window sizes", window_sizes
 
-    datasets = make_idx_data_tdt(revs, word_idx_map, max_l=56,k=w2v_size, filter_h=5)
+    datasets = make_idx_data_cv(revs, word_idx_map, 1, max_l=56,k=w2v_size, filter_h=5)
 
     num_classes = int(args.classes)
     results = []
