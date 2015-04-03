@@ -242,6 +242,7 @@ def sgd_updates_adadelta(params,cost,rho=0.95,epsilon=1e-6,norm_lim=9,word_vec_n
     gparams = []
     for param in params:
         empty = np.zeros_like(param.get_value())
+        print empty.shape
         exp_sqr_grads[param] = theano.shared(value=as_floatX(empty),name="exp_grad_%s" % param.name, borrow = True)
         gp = T.grad(cost, param)
         exp_sqr_ups[param] = theano.shared(value=as_floatX(empty), name="exp_grad_%s" % param.name, borrow = True)
