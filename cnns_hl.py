@@ -78,7 +78,7 @@ def train_conv_net(datasets,
     layer1 = DropoutHiddenLayer(rng,
                                 input=layer0_input,
                                 n_in = img_w,
-                                n_out = 20,
+                                n_out = 30,
                                 activation = activations[0],
                                 dropout_rate = dropout_rate[0],
                                 use_bias = True)
@@ -87,7 +87,7 @@ def train_conv_net(datasets,
     for i in xrange(len(filter_hs)):
         filter_shape = filter_shapes[i]
         pool_size = pool_sizes[i]
-        conv_layer = LeNetConvPoolLayer(rng, input=layer1_input,image_shape=(batch_size, 1, img_h, img_w),
+        conv_layer = LeNetConvPoolLayer(rng, input=layer1_input,image_shape=(batch_size, 1, img_h, 30),
                                 filter_shape=filter_shape, poolsize=pool_size, non_linear=conv_non_linear)
         layer1_input = conv_layer.output.flatten(2)
         conv_layers.append(conv_layer)
