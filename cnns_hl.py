@@ -79,10 +79,9 @@ def train_conv_net(datasets,
                                 input=layer0_input,
                                 n_in = img_w,
                                 n_out = img_w,
-                                activation = activations[0],
+                                activation = "relu",
                                 dropout_rate = dropout_rate[0],
                                 use_bias = True)
-    print x
     layer1_input = layer1.output.reshape((x.shape[0],1,x.shape[1],Words.shape[1]))
     layer2_inputs = []
     for i in xrange(len(filter_hs)):
@@ -160,7 +159,7 @@ def train_conv_net(datasets,
     #          givens={
     #             x: train_set_x[index * batch_size: (index + 1) * batch_size],
     #             y: train_set_y[index * batch_size: (index + 1) * batch_size]})
-    train_model = theano.function([index], cost, updates=grad_updates,
+    train_model = theano.function([index], [cost, classifier.errors(y)], updates=grad_updates,
           givens={
             x: train_set_x[index*batch_size:(index+1)*batch_size],
             y: train_set_y[index*batch_size:(index+1)*batch_size]})
@@ -187,20 +186,21 @@ def train_conv_net(datasets,
     cost_epoch = 0    
     while (epoch < n_epochs):
         epoch = epoch + 1
+        train_losses = []
         print str(epoch) + "\n"
         if shuffle_batch:
             counter = 0
             for minibatch_index in np.random.permutation(range(n_train_batches)):
                 counter += 1
-                cost_epoch = train_model(minibatch_index)
+                cost_epoch, error_epoch = train_model(minibatch_index)
                 if counter % 1000 == 0:
                     print "epoch %i, counter %f,  cost : %g " % (epoch, counter, cost_epoch)
                 set_zero(zero_vec)
+                train_losses.append(error_epoch)
         else:
             for minibatch_index in xrange(n_train_batches):
                 cost_epoch = train_model(minibatch_index)  
                 set_zero(zero_vec)
-        train_losses = [train_errors(i) for i in xrange(n_train_batches)]
         train_perf = 1 - np.mean(train_losses)
         # test_loss = test_model_all(test_set_x,test_set_y)
         # test_perf = 1 - test_loss
@@ -353,7 +353,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(description='Convnet')
     parser.add_argument('mode', help='static/nonstatic')
     parser.add_argument('word_vectors', help='rand/word2vec')
-    parser.add_argument('--filter_hs', help='filter window size', default='3,4,5')
+    parser.add_argument('--filter_hs', help='filter window size', default='2,3,4,5,6')
     parser.add_argument('--epochs', help='num epochs', type=int, default=25)
     parser.add_argument('--input', default='data.p')
     parser.add_argument('--classes', default=5)
@@ -387,12 +387,12 @@ if __name__=="__main__":
                           lr_decay=0.95,
                           filter_hs=window_sizes,
                           conv_non_linear="relu",
-                          hidden_units=[100,num_classes],
+                          hidden_units=[200,num_classes],
                           use_valid_set=False,
                           shuffle_batch=True,
                           n_epochs=args.epochs,
                           sqr_norm_lim=9,
                           non_static=non_static,
-                          batch_size=25,
+                          batch_size=10,
                           dropout_rate=[0.5])
     print "perf: " + str(perf)
