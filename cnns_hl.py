@@ -376,7 +376,7 @@ if __name__=="__main__":
     window_sizes= parse_filter_hs(args.filter_hs)
     print "window sizes", window_sizes
 
-    datasets = make_idx_data_cv(revs, word_idx_map, 1, max_l=56,k=w2v_size, filter_h=5)
+    datasets = make_idx_data_cv(revs, word_idx_map, 1, max_l=900,k=w2v_size, filter_h=5)
 
     num_classes = int(args.classes)
     results = []
