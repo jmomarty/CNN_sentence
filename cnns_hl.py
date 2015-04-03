@@ -52,7 +52,7 @@ def train_conv_net(datasets,
 
     rng = np.random.RandomState(3435)
     img_h = len(datasets[0][0])-1  
-    filter_w = img_w    
+    filter_w = 30
     feature_maps = hidden_units[0]
     filter_shapes = []
     pool_sizes = []
