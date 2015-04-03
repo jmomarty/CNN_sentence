@@ -79,7 +79,7 @@ def train_conv_net(datasets,
                                 input=layer0_input,
                                 n_in = img_w,
                                 n_out = img_w,
-                                activation = "relu",
+                                activation = "RelU",
                                 dropout_rate = dropout_rate[0],
                                 use_bias = True)
     layer1_input = layer1.output.reshape((x.shape[0],1,x.shape[1],Words.shape[1]))

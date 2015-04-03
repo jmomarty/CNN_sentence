@@ -28,7 +28,7 @@ class HiddenLayer(object):
         self.activation = activation
 
         if W is None:            
-            if activation.func_name == "ReLU":
+            if activation == "ReLU":
                 W_values = numpy.asarray(0.01 * rng.standard_normal(size=(n_in, n_out)), dtype=theano.config.floatX)
             else:                
                 W_values = numpy.asarray(rng.uniform(low=-numpy.sqrt(6. / (n_in + n_out)), high=numpy.sqrt(6. / (n_in + n_out)),
