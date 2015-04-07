@@ -276,7 +276,8 @@ class LogisticRegression(object):
         self.y_pred = T.argmax(self.p_y_given_x, axis=1)
 
         # parameters of the model
-        self.params = [self.W, self.b, n_params]
+        self.params = [self.W, self.b]
+        self.params += n_params
 
     def negative_log_likelihood(self, y):
         """Return the mean of the negative log-likelihood of the prediction
@@ -392,7 +393,8 @@ class LeNetConvPoolLayer(object):
         else:
             pooled_out = downsample.max_pool_2d(input=conv_out, ds=self.poolsize, ignore_border=True)
             self.output = pooled_out + self.b.dimshuffle('x', 0, 'x', 'x')
-        self.params = [self.W, self.b, n_params]
+        self.params = [self.W, self.b]
+        self.params += n_params
         
     def predict(self, new_data, batch_size):
         """
