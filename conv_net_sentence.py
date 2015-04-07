@@ -184,7 +184,7 @@ def train_conv_net(datasets,
             for minibatch_index in np.random.permutation(range(n_train_batches)):
                 counter += 1
                 cost_epoch, error_epoch = train_model(minibatch_index)
-                if counter % 1000 == 0:
+                if counter % 25 == 0:
                     print "epoch %i, counter %f,  cost : %g " % (int(epoch), counter, cost_epoch)
                 set_zero(zero_vec)
                 train_losses.append(error_epoch)
