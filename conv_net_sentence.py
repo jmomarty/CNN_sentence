@@ -382,6 +382,6 @@ if __name__=="__main__":
                           n_epochs=args.epochs,
                           sqr_norm_lim=9,
                           non_static=non_static,
-                          batch_size=50,
+                          batch_size=30,
                           dropout_rate=[0.5])
     print "perf: " + str(perf)
