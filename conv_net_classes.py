@@ -10,6 +10,7 @@ Much of the code is modified from
 """
 
 import numpy
+import numpy as np
 import theano.tensor.shared_randomstreams
 import theano
 import theano.tensor as T
@@ -405,4 +406,27 @@ class LeNetConvPoolLayer(object):
             pooled_out = downsample.max_pool_2d(input=conv_out, ds=self.poolsize, ignore_border=True)
             output = pooled_out + self.b.dimshuffle('x', 0, 'x', 'x')
         return output
-        
+
+def normalization_layer(input_variable, layer_shape):
+    if len(layer_shape) == 4:
+        # conv bc01 but layer_shape is (new_c, old_c, w, h)
+        np_G = np.ones(layer_shape[0]).astype(theano.config.floatX)
+        np_B = np.zeros(layer_shape[0]).astype(theano.config.floatX)
+        G = theano.shared(np_G)
+        B = theano.shared(np_B)
+        normed = (input_variable - input_variable.mean(
+            axis=(0, 2, 3), keepdims=True)) / (input_variable.std(
+                axis=(0, 2, 3), keepdims=True) + 1E-6)
+        out = G.dimshuffle('x', 0, 'x', 'x') * normed + B.dimshuffle(
+            'x', 0, 'x', 'x')
+    else:
+        np_G = np.ones(layer_shape[1]).astype(theano.config.floatX)
+        np_B = np.zeros(layer_shape[1]).astype(theano.config.floatX)
+        G = theano.shared(np_G)
+        B = theano.shared(np_B)
+        normed = (input_variable - input_variable.mean(
+            axis=0, keepdims=True)) / (input_variable.std(
+                axis=0, keepdims=True) + 1E-6)
+        out = G * normed + B
+    params = [G, B]
+    return out, params

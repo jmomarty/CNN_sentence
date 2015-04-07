@@ -34,7 +34,7 @@ def train_conv_net(datasets,
                    lr_decay = 0.95,
                    conv_non_linear="relu",
                    use_valid_set=True,
-                   activations=[Iden],
+                   activations=["ReLU"],
                    sqr_norm_lim=9,
                    non_static=True):
 
