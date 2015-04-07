@@ -150,7 +150,7 @@ def train_conv_net(datasets,
     #          givens={
     #             x: train_set_x[index * batch_size: (index + 1) * batch_size],
     #             y: train_set_y[index * batch_size: (index + 1) * batch_size]})
-    train_model = theano.function([index], [cost, classifier.errors(y)], updates=grad_updates,
+    train_model = theano.function([index], cost, updates=grad_updates,
           givens={
             x: train_set_x[index*batch_size:(index+1)*batch_size],
             y: train_set_y[index*batch_size:(index+1)*batch_size]})
@@ -183,15 +183,15 @@ def train_conv_net(datasets,
             counter = 0
             for minibatch_index in np.random.permutation(range(n_train_batches)):
                 counter += 1
-                cost_epoch, error_epoch = train_model(minibatch_index)
-                if counter % 50 == 0:
-                    print "epoch %i, counter %f,  cost : %g " % (epoch, counter, cost_epoch)
+                cost_epoch = train_model(minibatch_index)
+                if counter % 25 == 0:
+                    print "epoch %i, counter %f,  cost : %g " % (int(epoch), counter, cost_epoch)
                 set_zero(zero_vec)
-                train_losses.append(error_epoch)
         else:
             for minibatch_index in xrange(n_train_batches):
                 cost_epoch = train_model(minibatch_index)
                 set_zero(zero_vec)
+        train_losses = [train_errors(i) for i in xrange(n_train_batches)]
         train_perf = 1 - np.mean(train_losses)
         # test_loss = test_model_all(test_set_x,test_set_y)
         # test_perf = 1 - test_loss
