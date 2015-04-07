@@ -239,15 +239,15 @@ class LogisticRegression(object):
     :type input: theano.tensor.TensorType
     :param input: symbolic variable that describes the input of the
     architecture (one minibatch)
-    
+
     :type n_in: int
     :param n_in: number of input units, the dimension of the space in
     which the datapoints lie
-    
+
     :type n_out: int
     :param n_out: number of output units, the dimension of the space in
     which the labels lie
-    
+
     """
 
         # initialize with 0 the weights W as a matrix of shape (n_in, n_out)
@@ -267,9 +267,9 @@ class LogisticRegression(object):
             self.b = b
 
         l = T.dot(input, self.W) + self.b
-        n, n_params = normalization_layer(l, (n_in, n_out))
+        # n, n_params = normalization_layer(l, (n_in, n_out))
         # compute vector of class-membership probabilities in symbolic form
-        self.p_y_given_x = T.nnet.softmax(n)
+        self.p_y_given_x = T.nnet.softmax(l)
 
         # compute prediction as class whose probability is maximal in
         # symbolic form
@@ -277,7 +277,7 @@ class LogisticRegression(object):
 
         # parameters of the model
         self.params = [self.W, self.b]
-        self.params += n_params
+        # self.params += n_params
 
     def negative_log_likelihood(self, y):
         """Return the mean of the negative log-likelihood of the prediction
@@ -383,18 +383,18 @@ class LeNetConvPoolLayer(object):
         # convolve input feature maps with filters
         conv_out = conv.conv2d(input=input, filters=self.W,filter_shape=self.filter_shape, image_shape=self.image_shape)
         conv_out += self.b.dimshuffle('x', 0, 'x', 'x')
-        n, n_params = normalization_layer(conv_out, filter_shape)
+        # n, n_params = normalization_layer(conv_out, filter_shape)
         if self.non_linear=="tanh":
-            conv_out_tanh = T.tanh(n)
+            conv_out_tanh = T.tanh(conv_out)
             self.output = downsample.max_pool_2d(input=conv_out_tanh, ds=self.poolsize, ignore_border=True)
         elif self.non_linear=="relu":
-            conv_out_tanh = ReLU(n)
+            conv_out_tanh = ReLU(conv_out)
             self.output = downsample.max_pool_2d(input=conv_out_tanh, ds=self.poolsize, ignore_border=True)
         else:
             pooled_out = downsample.max_pool_2d(input=conv_out, ds=self.poolsize, ignore_border=True)
             self.output = pooled_out + self.b.dimshuffle('x', 0, 'x', 'x')
         self.params = [self.W, self.b]
-        self.params += n_params
+        # self.params += n_params
         
     def predict(self, new_data, batch_size):
         """
