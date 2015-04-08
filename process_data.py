@@ -178,7 +178,6 @@ def load_bin_vec(fname, vocab):
             if word in vocab:
                 word_vecs[word] = np.fromstring(f.read(binary_len), dtype='float32')
             else:
-                print word
                 f.read(binary_len)
     return word_vecs
 
