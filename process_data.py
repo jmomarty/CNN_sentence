@@ -24,12 +24,12 @@ def build_data_cv(data, cv=10, clean=True):
                 if clean:
                     orig_rev = clean_str(" ".join(rev))
                 else:
-                    orig_rev = " ".join(rev).lower()
+                    orig_rev = u" ".join(rev).lower()
                 words = set(orig_rev.split())
                 for word in words:
                     vocab[word] += 1
                 datum  = {"y": k,
-                          "text": orig_rev,
+                          "text": unicode(orig_rev),
                           "num_words": len(orig_rev.split()),
                           "split": np.random.randint(0,cv)}
                 revs.append(datum)
