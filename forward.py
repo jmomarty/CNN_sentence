@@ -1,14 +1,3 @@
-"""
-Sample code for
-Convolutional Neural Networks for Sentence Classification
-http://arxiv.org/pdf/1408.5882v2.pdf
-
-Much of the code is modified from
-- deeplearning.net (for ConvNet classes)
-- https://github.com/mdenil/dropout (for dropout)
-- https://groups.google.com/forum/#!topic/pylearn-dev/3QbKtCumAW4 (for Adadelta)
-"""
-
 import cPickle
 import numpy as np
 from collections import defaultdict, OrderedDict
@@ -48,7 +37,9 @@ def train_conv_net(datasets,
     lr_decay = adadelta decay parameter
     """
 
-    file = open("weights.pkl", "wb")
+    file = open("weights.pkl", "rb")
+    params_loaded = cPickle.load(file)
+    file.close()
 
     rng = np.random.RandomState(3435)
     img_h = len(datasets[0][0])-1  
@@ -70,6 +61,7 @@ def train_conv_net(datasets,
     x = T.matrix('x')   
     y = T.ivector('y')
     Words = theano.shared(value = np.asarray(U, dtype=theano.config.floatX), name = "Words")
+
     zero_vec_tensor = T.vector()
     zero_vec = np.zeros(img_w)
     set_zero = theano.function([zero_vec_tensor], updates=[(Words, T.set_subtensor(Words[0,:], zero_vec_tensor))], allow_input_downcast = True)
@@ -188,8 +180,6 @@ def train_conv_net(datasets,
                     print "epoch %i, counter %f,  cost : %g " % (int(epoch), counter, cost_epoch)
                 set_zero(zero_vec)
                 train_losses.append(error_epoch)
-                for param in params:
-                    cPickle.dump(param, file, protocol=cPickle.HIGHEST_PROTOCOL)
         else:
             for minibatch_index in xrange(n_train_batches):
                 cost_epoch = train_model(minibatch_index)
@@ -201,7 +191,7 @@ def train_conv_net(datasets,
         val_perf = 1- np.mean(val_losses)
         print('epoch %i, train perf %f %%, val perf %f' % (epoch, train_perf * 100., val_perf*100.))
         # print('epoch %i, test perf %f' % (epoch, test_perf*100.))
-
+        cPickle.dump(params, file)
     test_loss = test_model_all(test_set_x,test_set_y)        
     test_perf = 1 - test_loss
     return test_perf
