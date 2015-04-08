@@ -21,16 +21,16 @@ def build_data_cv(data, cv=10, clean=True):
             for line in f:
                 rev = []
                 rev.append(line.strip())
-                if clean:
-                    orig_rev = clean_str(" ".join(rev))
-                else:
-                    orig_rev = u" ".join(rev).lower()
-                words = set(orig_rev.split())
+                # if clean:
+                #     orig_rev = clean_str(" ".join(rev))
+                # else:
+                #     orig_rev = u" ".join(rev).lower()
+                words = set(rev.split())
                 for word in words:
-                    vocab[word] += 1
+                    vocab[unicode(word)] += 1
                 datum  = {"y": k,
-                          "text": unicode(orig_rev),
-                          "num_words": len(orig_rev.split()),
+                          "text": unicode(rev),
+                          "num_words": len(rev.split()),
                           "split": np.random.randint(0,cv)}
                 revs.append(datum)
 
