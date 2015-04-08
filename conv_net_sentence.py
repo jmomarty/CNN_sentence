@@ -189,7 +189,7 @@ def train_conv_net(datasets,
                 set_zero(zero_vec)
                 train_losses.append(error_epoch)
                 for param in params:
-                    cPickle.dump(param, file, protocol=cPickle.HIGHEST_PROTOCOL)
+                    cPickle.dump(param.get_value(), file, protocol=cPickle.HIGHEST_PROTOCOL)
         else:
             for minibatch_index in xrange(n_train_batches):
                 cost_epoch = train_model(minibatch_index)
