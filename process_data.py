@@ -159,8 +159,7 @@ def load_bin_vec(fname, vocab):
     """
     Loads 300x1 word vecs from Google (Mikolov) word2vec
     """
-    if "discutent" in vocab:
-        print "YEEEES"
+
     word_vecs = {}
     with open(fname, "rb") as f:
         header = f.readline()
@@ -170,11 +169,11 @@ def load_bin_vec(fname, vocab):
             word = []
             while True:
                 ch = f.read(1)
-                if ch == ' ':
+                if ch == '\n':
                     word = ''.join(word)
                     break
                 if ch != '\n':
-                    word.append(ch)   
+                    word.append(ch)
             if word in vocab:
                 word_vecs[word] = np.fromstring(f.read(binary_len), dtype='float32')
             else:
