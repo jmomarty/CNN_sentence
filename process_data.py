@@ -225,7 +225,7 @@ if __name__=="__main__":
     parser.add_argument('--train_files', nargs = '*')
     parser.add_argument('--dev_files', nargs = '*')
     parser.add_argument('--test_files', nargs = '*')
-    parser.add_argument('--clean', default=True)
+    parser.add_argument('--clean', default=False)
     parser.add_argument('--output', default='data.p')
     parser.add_argument('--w2v_size', default=300)
     args = parser.parse_args()
@@ -236,7 +236,7 @@ if __name__=="__main__":
     train_folder = args.train_files
     dev_folder = args.dev_files
     test_folder = args.test_files
-
+    print train_folder
     print "loading data...",
     if args.mode != "dev":
         revs, vocab = build_data_cv(train_folder, int(args.mode), args.clean)

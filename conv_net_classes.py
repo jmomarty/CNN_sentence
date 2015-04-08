@@ -333,7 +333,7 @@ class LogisticRegression(object):
 class LeNetConvPoolLayer(object):
     """Pool Layer of a convolutional network """
 
-    def __init__(self, rng, input, filter_shape, image_shape, poolsize=(2, 2), non_linear="tanh"):
+    def __init__(self, rng, input, filter_shape, image_shape, name ='Model', poolsize=(2, 2), non_linear="tanh", params=None):
         """
         Allocate a LeNetConvPoolLayer with shared variable internal parameters.
 
@@ -370,16 +370,34 @@ class LeNetConvPoolLayer(object):
         #   pooling size
         fan_out = (filter_shape[0] * numpy.prod(filter_shape[2:]) /numpy.prod(poolsize))
         # initialize weights with random weights
+        # if params == None:
+        #     print '... creating model weights/bias'
+        #     if self.non_linear=="none" or self.non_linear=="relu":
+        #         self.W = theano.shared(numpy.asarray(rng.uniform(low=-0.01,high=0.01,size=filter_shape),
+        #                                             dtype=theano.config.floatX),borrow=True,name=str(name) + "W_conv")
+        #     else:
+        #         W_bound = numpy.sqrt(6. / (fan_in + fan_out))
+        #         self.W = theano.shared(numpy.asarray(rng.uniform(low=-W_bound, high=W_bound, size=filter_shape),
+        #             dtype=theano.config.floatX),borrow=True,name=str(name) + "W_conv")
+        #     b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
+        #     self.b = theano.shared(value=b_values, borrow=True, name=str(name) + "b_conv")
+        # else:
+        #     print '... restoring model weights/bias'
+        #     if self.non_linear=="none" or self.non_linear=="relu":
+        #         self.W = theano.shared(params[str(name)+"_W_conv"], dtype=theano.config.floatX),borrow = True, name=str(name) + "_W_conv")
+        #     else:
+        #         self.W = theano.shared(params[str(name)+"_W_conv"]),
+        #             dtype=theano.config.floatX),borrow=True,name=str(name) + "_W_conv")
+        #         self.b = theano.shared(params[str(name)+"_b_conv"], borrow=True, name=str(name) + "_b_conv")
         if self.non_linear=="none" or self.non_linear=="relu":
-            self.W = theano.shared(numpy.asarray(rng.uniform(low=-0.01,high=0.01,size=filter_shape), 
+            self.W = theano.shared(numpy.asarray(rng.uniform(low=-0.01,high=0.01,size=filter_shape),
                                                 dtype=theano.config.floatX),borrow=True,name="W_conv")
         else:
             W_bound = numpy.sqrt(6. / (fan_in + fan_out))
             self.W = theano.shared(numpy.asarray(rng.uniform(low=-W_bound, high=W_bound, size=filter_shape),
-                dtype=theano.config.floatX),borrow=True,name="W_conv")   
+                dtype=theano.config.floatX),borrow=True,name="W_conv")
         b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
         self.b = theano.shared(value=b_values, borrow=True, name="b_conv")
-        
         # convolve input feature maps with filters
         conv_out = conv.conv2d(input=input, filters=self.W,filter_shape=self.filter_shape, image_shape=self.image_shape)
         conv_out += self.b.dimshuffle('x', 0, 'x', 'x')
