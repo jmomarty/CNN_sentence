@@ -14,7 +14,7 @@ def build_data_cv(data, cv=10, clean=True):
     revs = []
     vocab = defaultdict(float)
 
-    for k in sorted(data):
+    for k in len(data):
         with open(data[k], "rb") as f:
             for line in f:
                 rev = []
