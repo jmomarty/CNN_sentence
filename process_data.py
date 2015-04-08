@@ -161,7 +161,7 @@ def load_bin_vec(fname, vocab):
     Loads 300x1 word vecs from Google (Mikolov) word2vec
     """
     word_vecs = {}
-    w2v = gensim.models.Word2Vec.load_word2vec_format('fname', binary=True)
+    w2v = gensim.models.Word2Vec.load_word2vec_format(fname, binary=True)
     for word in vocab:
         if word in w2v:
             word_vecs[word] = w2v[word]
