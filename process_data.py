@@ -6,6 +6,7 @@ import sys, re
 import pandas as pd
 import argparse
 import gensim
+import codecs
 
 def build_data_cv(data, cv=10, clean=True):
 
@@ -17,7 +18,7 @@ def build_data_cv(data, cv=10, clean=True):
     vocab = defaultdict(float)
 
     for k in range(len(data)):
-        with open(data[k], "rb") as f:
+        with codecs.open(data[k], "rb", encoding="utf-8") as f:
             for line in f:
                 # rev = []
                 # rev.append(line.strip())
