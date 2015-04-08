@@ -40,6 +40,7 @@ def train_conv_net(datasets,
     file = open("weights.pkl", "rb")
     params_loaded = cPickle.load(file)
     file.close()
+    print params_loaded
 
     rng = np.random.RandomState(3435)
     img_h = len(datasets[0][0])-1  
