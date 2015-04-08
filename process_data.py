@@ -4,6 +4,7 @@ from collections import defaultdict
 import sys, re
 import pandas as pd
 import argparse
+import gensim
 
 def build_data_cv(data, cv=10, clean=True):
 
@@ -169,7 +170,7 @@ def load_bin_vec(fname, vocab):
             word = []
             while True:
                 ch = f.read(1)
-                if ch == '\n':
+                if ch == ' ':
                     word = ''.join(word)
                     break
                 if ch != '\n':
