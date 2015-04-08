@@ -19,18 +19,18 @@ def build_data_cv(data, cv=10, clean=True):
     for k in range(len(data)):
         with open(data[k], "rb") as f:
             for line in f:
-                rev = []
-                rev.append(line.strip())
+                # rev = []
+                # rev.append(line.strip())
                 # if clean:
                 #     orig_rev = clean_str(" ".join(rev))
                 # else:
                 #     orig_rev = u" ".join(rev).lower()
-                words = set(rev.split())
+                words = set(line.split())
                 for word in words:
                     vocab[unicode(word)] += 1
                 datum  = {"y": k,
-                          "text": unicode(rev),
-                          "num_words": len(rev.split()),
+                          "text": unicode(line),
+                          "num_words": len(line.split()),
                           "split": np.random.randint(0,cv)}
                 revs.append(datum)
 
