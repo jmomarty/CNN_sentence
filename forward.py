@@ -60,7 +60,7 @@ def train_conv_net(datasets,
     index = T.lscalar()
     x = T.matrix('x')   
     y = T.ivector('y')
-    Words = theano.shared(value = np.asarray(U, dtype=theano.config.floatX), name = "Words")
+    Words = theano.shared(value = params_loaded[2], name = "Words")
 
     zero_vec_tensor = T.vector()
     zero_vec = np.zeros(img_w)
@@ -73,13 +73,14 @@ def train_conv_net(datasets,
         pool_size = pool_sizes[i]
         conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
                                 filter_shape=filter_shape, poolsize=pool_size, non_linear=conv_non_linear)
+        conv_layer.params = params_loaded[i+1]
         layer1_input = conv_layer.output.flatten(2)
         conv_layers.append(conv_layer)
         layer1_inputs.append(layer1_input)
     layer1_input = T.concatenate(layer1_inputs,1)
     hidden_units[0] = feature_maps*len(filter_hs)    
     classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
-    
+    classifier.params = params_loaded[0]
     #define parameters of the model and update functions using adadelta
     params = classifier.params     
     for conv_layer in conv_layers:
