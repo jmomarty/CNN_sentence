@@ -185,9 +185,10 @@ def add_unknown_words(word_vecs, vocab, min_df=1, k=300):
     0.25 is chosen so the unknown vectors have (approximately) same variance as pre-trained ones
     """
     for word in vocab:
-        if word not in word_vecs and vocab[word] >= min_df:
+        if word not in word_vecs:
             print word
-            word_vecs[word] = np.random.uniform(-0.25,0.25,k)  
+            if vocab[word] >= min_df:
+                word_vecs[word] = np.random.uniform(-0.25,0.25,k)
 
 def clean_str(string, TREC=False):
     """
