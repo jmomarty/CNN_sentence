@@ -176,6 +176,7 @@ def load_bin_vec(fname, vocab):
             if word in vocab:
                word_vecs[word] = np.fromstring(f.read(binary_len), dtype='float32')  
             else:
+                print word
                 f.read(binary_len)
     return word_vecs
 
@@ -186,7 +187,6 @@ def add_unknown_words(word_vecs, vocab, min_df=1, k=300):
     """
     for word in vocab:
         if word not in word_vecs:
-            print word
             if vocab[word] >= min_df:
                 word_vecs[word] = np.random.uniform(-0.25,0.25,k)
 
