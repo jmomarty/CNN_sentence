@@ -154,8 +154,10 @@ def load_bin_vec(fname, vocab):
     word_vecs = {}
     w2v = gensim.models.Word2Vec.load_word2vec_format(fname, binary=True)
     for word in w2v.vocab:
-        if word or unidecode(word) in vocab:
+        if word in vocab:
             word_vecs[word] = w2v[word]
+        if unidecode(word) in vocab:
+            word_vecs[unidecode(word)] = w2v[word]
     return word_vecs
 
 def add_unknown_words(word_vecs, vocab, min_df=1, k=300):
