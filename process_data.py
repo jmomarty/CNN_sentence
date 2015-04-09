@@ -7,6 +7,7 @@ import pandas as pd
 import argparse
 import gensim
 import codecs
+from unidecode import unidecode
 
 def build_data_cv(data, cv=10, clean=True):
 
@@ -152,9 +153,9 @@ def load_bin_vec(fname, vocab):
     """
     word_vecs = {}
     w2v = gensim.models.Word2Vec.load_word2vec_format(fname, binary=True)
-    for word in vocab:
-        if unicode(word) in w2v:
-            word_vecs[word] = w2v[unicode(word)]
+    for word in w2v:
+        if word or unidecode(word) in vocab:
+            word_vecs[word] = w2v[word]
         else:
             print word
     return word_vecs
