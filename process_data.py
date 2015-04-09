@@ -157,7 +157,7 @@ def load_bin_vec(fname, vocab):
         if word in vocab:
             word_vecs[word] = w2v[word]
             if word == u"rudesse":
-                print "YEAH"
+                print "YEAH CHIENNE"
         if unidecode(word) in vocab:
             word_vecs[unidecode(word)] = w2v[word]
 
