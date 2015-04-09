@@ -156,8 +156,6 @@ def load_bin_vec(fname, vocab):
     for word in w2v:
         if word or unidecode(word) in vocab:
             word_vecs[word] = w2v[word]
-        else:
-            print word
     return word_vecs
 
 def add_unknown_words(word_vecs, vocab, min_df=1, k=300):
