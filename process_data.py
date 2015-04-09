@@ -166,6 +166,9 @@ def add_unknown_words(word_vecs, vocab, min_df=1, k=300):
     For words that occur in at least min_df documents, create a separate word vector.    
     0.25 is chosen so the unknown vectors have (approximately) same variance as pre-trained ones
     """
+    if u"nutritifs" in word_vecs:
+        print "YEAH SALOPE"
+
     for word in vocab:
         if word == u"nutritifs":
             print "YEAH SALOPE"
