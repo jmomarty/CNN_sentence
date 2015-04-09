@@ -169,12 +169,9 @@ def add_unknown_words(word_vecs, vocab, min_df=1, k=300):
         if word not in word_vecs:
             if vocab[word] >= min_df:
                 word_vecs[word] = np.random.uniform(-0.25,0.25,k)
-                print word
         if unidecode(word) not in word_vecs:
             if vocab[word] >= min_df:
                 word_vecs[word] = np.random.uniform(-0.25,0.25,k)
-                print word
-
 def clean_str(string, TREC=False):
     """
     Tokenization/string cleaning for all datasets except for SST.
