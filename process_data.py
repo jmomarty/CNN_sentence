@@ -157,7 +157,6 @@ def load_bin_vec(fname, vocab):
         if word in vocab:
             word_vecs[word] = w2v[word]
         if unidecode(word) in vocab:
-            print 'yes'
             word_vecs[unidecode(word)] = w2v[word]
     return word_vecs
 
@@ -167,7 +166,7 @@ def add_unknown_words(word_vecs, vocab, min_df=1, k=300):
     0.25 is chosen so the unknown vectors have (approximately) same variance as pre-trained ones
     """
     for word in vocab:
-        if word not in word_vecs:
+        if word not in word_vecs and unidecode(word) not in word_vecs:
             print word
             if vocab[word] >= min_df:
                 word_vecs[word] = np.random.uniform(-0.25,0.25,k)
