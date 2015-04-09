@@ -44,7 +44,7 @@ def build_data(train, test, clean=True):
     c = 0
 
     for x in train:
-        with open(x, "rb") as f:
+        with codecs.open(x, "rb", encoding="utf-8") as f:
             for line in f:
                 if clean:
                     line = clean_str(line)
@@ -63,7 +63,7 @@ def build_data(train, test, clean=True):
     c = 0
 
     for x in test:
-        with open(x, "rb") as f:
+        with codecs.open(x, "rb", encoding="utf-8") as f:
             for line in f:
                 if clean:
                     line = clean_str(line)
@@ -88,7 +88,7 @@ def build_data_tdt(train, dev, test, clean=True):
     c = 0
 
     for x in train:
-        with open(x, "rb") as f:
+        with codecs.open(x, "rb", encoding="utf-8") as f:
             for line in f:
                 words = line.split()
                 for word in set(words):
@@ -103,7 +103,7 @@ def build_data_tdt(train, dev, test, clean=True):
     c = 0
 
     for x in dev:
-        with open(x, "rb") as f:
+        with codecs.open(x, "rb", encoding="utf-8") as f:
             for line in f:
                 words = line.split()
                 for word in set(words):
@@ -117,7 +117,7 @@ def build_data_tdt(train, dev, test, clean=True):
     c = 0
 
     for x in test:
-        with open(x, "rb") as f:
+        with codecs.open(x, "rb", encoding="utf-8") as f:
             for line in f:
                 words = line.split()
                 for word in set(words):
