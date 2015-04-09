@@ -93,7 +93,7 @@ def build_data_tdt(train, dev, test, clean=True):
             for line in f:
                 words = line.split()
                 for word in set(words):
-                    vocab[unicode(word)] += 1
+                    vocab[word] += 1
                 datum  = {"y": c,
                           "text": unicode(line),
                           "num_words": len(words),
@@ -108,7 +108,7 @@ def build_data_tdt(train, dev, test, clean=True):
             for line in f:
                 words = line.split()
                 for word in set(words):
-                    vocab[unicode(word)] += 1
+                    vocab[word] += 1
                 datum  = {"y": c,
                           "text": unicode(line),
                           "num_words": len(words),
@@ -122,7 +122,7 @@ def build_data_tdt(train, dev, test, clean=True):
             for line in f:
                 words = line.split()
                 for word in set(words):
-                    vocab[unicode(word)] += 1
+                    vocab[word] += 1
                 datum  = {"y": c,
                           "text": unicode(line),
                           "num_words": len(words),
@@ -154,8 +154,6 @@ def load_bin_vec(fname, vocab):
     word_vecs = {}
     w2v = gensim.models.Word2Vec.load_word2vec_format(fname, binary=True)
     for word in w2v.vocab:
-        if word ==u"rudesse":
-            print "YEEEAH"
         if word in vocab:
             word_vecs[word] = w2v[word]
         if unidecode(word) in vocab:
