@@ -159,10 +159,6 @@ def load_bin_vec(fname, vocab):
         if unidecode(word) in vocab:
             word_vecs[unidecode(word)] = w2v[word]
 
-    if u"nutritifs" in word_vecs:
-        print "YEAH SALOPE"
-
-
     return word_vecs
 
 def add_unknown_words(word_vecs, vocab, min_df=1, k=300):
@@ -171,6 +167,8 @@ def add_unknown_words(word_vecs, vocab, min_df=1, k=300):
     0.25 is chosen so the unknown vectors have (approximately) same variance as pre-trained ones
     """
     for word in vocab:
+        if word == u"nutritifs":
+            print "YEAH SALOPE"
         if word not in word_vecs and unidecode(word) not in word_vecs:
             if vocab[word] >= min_df:
                 word_vecs[word] = np.random.uniform(-0.25,0.25,k)
