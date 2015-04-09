@@ -90,15 +90,11 @@ def build_data_tdt(train, dev, test, clean=True):
     for x in train:
         with open(x, "rb") as f:
             for line in f:
-                if clean:
-                    line = clean_str(line)
-                else:
-                    line = line.lower()
                 words = line.split()
                 for word in set(words):
-                    vocab[word] += 1
+                    vocab[unicode(word)] += 1
                 datum  = {"y": c,
-                          "text": line,
+                          "text": unicode(line),
                           "num_words": len(words),
                           "split": 0}
                 revs.append(datum)
@@ -109,15 +105,11 @@ def build_data_tdt(train, dev, test, clean=True):
     for x in dev:
         with open(x, "rb") as f:
             for line in f:
-                if clean:
-                    line = clean_str(line)
-                else:
-                    line = line.lower()
                 words = line.split()
                 for word in set(words):
-                    vocab[word] += 1
+                    vocab[unicode(word)] += 1
                 datum  = {"y": c,
-                          "text": line,
+                          "text": unicode(line),
                           "num_words": len(words),
                           "split": 1}
                 revs.append(datum)
@@ -127,15 +119,11 @@ def build_data_tdt(train, dev, test, clean=True):
     for x in test:
         with open(x, "rb") as f:
             for line in f:
-                if clean:
-                    line = clean_str(line)
-                else:
-                    line = line.lower()
                 words = line.split()
                 for word in set(words):
-                    vocab[word] += 1
+                    vocab[unicode(word)] += 1
                 datum  = {"y": c,
-                          "text": line,
+                          "text": unicode(line),
                           "num_words": len(words),
                           "split": 2}
                 revs.append(datum)
