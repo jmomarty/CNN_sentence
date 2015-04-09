@@ -153,7 +153,7 @@ def load_bin_vec(fname, vocab):
     """
     word_vecs = {}
     w2v = gensim.models.Word2Vec.load_word2vec_format(fname, binary=True)
-    for word in w2v:
+    for word in w2v.Vocab():
         if word or unidecode(word) in vocab:
             word_vecs[word] = w2v[word]
     return word_vecs
