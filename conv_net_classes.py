@@ -388,12 +388,9 @@ class LeNetConvPoolLayer(object):
             self.b = theano.shared(value=b_values, borrow=True, name=str(name_model) + "_b_conv")
         else:
             print '... restoring model weights/bias'
-            if self.non_linear=="none" or self.non_linear=="relu":
-                self.W = theano.shared(params_loaded[0].astype(theano.config.floatX), borrow = True, name=str(name_model)+"_W_conv")
-            else:
-                self.W = theano.shared(params_loaded[0].astype(theano.config.floatX),name=str(name_model) + "_W_conv")
-                self.b = theano.shared(params_loaded[1].astype(theano.config.floatX), borrow=True, name=str(name_model) + "_b_conv")
-                print '... done!!!!!!!'
+            self.W = theano.shared(params_loaded[0].astype(theano.config.floatX),name=str(name_model) + "_W_conv")
+            self.b = theano.shared(params_loaded[1].astype(theano.config.floatX), borrow=True, name=str(name_model) + "_b_conv")
+            print '... done!!!!!!!'
 
         # convolve input feature maps with filters
         conv_out = conv.conv2d(input=input, filters=self.W,filter_shape=self.filter_shape, image_shape=self.image_shape)
