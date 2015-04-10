@@ -380,7 +380,7 @@ if __name__=="__main__":
 
     num_classes = int(args.classes)
     results = []
-
+    print window_sizes
     perf = train_conv_net(datasets,
                           U,
                           img_w=w2v_size,
