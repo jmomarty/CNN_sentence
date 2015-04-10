@@ -166,6 +166,12 @@ def add_unknown_words(word_vecs, vocab, min_df=1, k=300):
     For words that occur in at least min_df documents, create a separate word vector.    
     0.25 is chosen so the unknown vectors have (approximately) same variance as pre-trained ones
     """
+
+    if u"poigne" in vocab:
+        print "YEAH SHIT"
+    if u"poigne" in word_vecs:
+        print "SHIIIT"
+
     for word in vocab:
         if word not in word_vecs:
             print word
