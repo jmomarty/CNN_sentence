@@ -187,8 +187,12 @@ def train_conv_net(datasets,
                 cost_epoch, error_epoch = train_model(minibatch_index)
                 if counter % 10 == 0:
                     print "epoch %i, counter %f,  cost : %g " % (int(epoch), counter, cost_epoch)
+                    dict_params = {}
+                    c = 0
                     for param in params:
-                        cPickle.dump(param.get_value(), file, protocol=cPickle.HIGHEST_PROTOCOL)
+                        dict_params[c] = param.get_value()
+                        c += 1
+                    cPickle.dump(dict_params, file)
                 set_zero(zero_vec)
                 train_losses.append(error_epoch)
 
