@@ -93,8 +93,11 @@ def train_conv_net(datasets,
         conv_layers.append(conv_layer)
         layer1_inputs.append(layer1_input)
     layer1_input = T.concatenate(layer1_inputs,1)
-    hidden_units[0] = feature_maps*len(filter_hs)    
-    classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
+    hidden_units[0] = feature_maps*len(filter_hs)
+    if params_loaded == None:
+        classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
+    else:
+        classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [params_loaded[0], params_loaded[1]])
     
     #define parameters of the model and update functions using adadelta
     params = classifier.params

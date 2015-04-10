@@ -77,7 +77,7 @@ class DropoutHiddenLayer(HiddenLayer):
 
 class MLPDropout(object):
     """A multilayer perceptron with dropout"""
-    def __init__(self,rng,input,layer_sizes,dropout_rates,activations, use_bias=True):
+    def __init__(self,rng,input,layer_sizes,dropout_rates,activations, params = None, use_bias=True):
 
         #rectified_linear_activation = lambda x: T.maximum(0.0, x)
 
@@ -117,9 +117,14 @@ class MLPDropout(object):
         
         # Set up the output layer
         n_in, n_out = self.weight_matrix_sizes[-1]
-        dropout_output_layer = LogisticRegression(
-                input=next_dropout_layer_input,
-                n_in=n_in, n_out=n_out)
+        if params == None:
+            dropout_output_layer = LogisticRegression(
+                    input=next_dropout_layer_input,
+                    n_in=n_in, n_out=n_out)
+        else:
+            dropout_output_layer = LogisticRegression(
+                    input=next_dropout_layer_input,
+                    n_in=n_in, n_out=n_out, W=params[0], b=params[1])
         self.dropout_layers.append(dropout_output_layer)
 
         # Again, reuse paramters in the dropout output.
