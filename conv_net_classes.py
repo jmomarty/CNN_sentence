@@ -261,6 +261,7 @@ class LogisticRegression(object):
                     value=numpy.zeros((n_in, n_out), dtype=theano.config.floatX),
                     name='W')
         else:
+            print W.shape, b.shape
             self.W = theano.shared(
                     value=W.astype(theano.config.floatX),
                     name='W')
