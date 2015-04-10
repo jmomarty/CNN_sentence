@@ -245,7 +245,7 @@ if __name__=="__main__":
     w2v = load_bin_vec(w2v_file, vocab)
     print "word2vec loaded!"
     print "num words already in word2vec: " + str(len(w2v))
-    add_unknown_words(w2v, vocab, k = w2v_size)
+    add_unknown_words(w2v, vocab, k = w2v_size, printsthg = False)
     W, word_idx_map = get_W(w2v, k = w2v_size)
     rand_vecs = {}
     add_unknown_words(rand_vecs, vocab, k = w2v_size, printsthg = False)
@@ -253,4 +253,3 @@ if __name__=="__main__":
 
     cPickle.dump([revs, W, W2, word_idx_map, vocab], open(args.output, "wb"))
     print "dataset created!"
-    
