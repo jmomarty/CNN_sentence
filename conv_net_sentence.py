@@ -19,6 +19,7 @@ import warnings
 import sys
 import argparse
 from conv_net_classes import *
+from time import ctime
 
 warnings.filterwarnings("ignore")   
 
@@ -48,8 +49,8 @@ def train_conv_net(datasets,
     sqr_norm_lim = s^2 in the paper
     lr_decay = adadelta decay parameter
     """
-
-
+    filename = str(ctime()) + ".pkl"
+    file = open(filename,"wb")
 
     rng = np.random.RandomState(3435)
     img_h = len(datasets[0][0])-1  
