@@ -68,6 +68,7 @@ def train_conv_net(datasets,
     layer1_inputs = []
     for i in xrange(len(filter_hs)):
         filter_shape = filter_shapes[i]
+        print filter_shape
         pool_size = pool_sizes[i]
         conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
                                 filter_shape=filter_shape, poolsize=pool_size, non_linear=conv_non_linear)
