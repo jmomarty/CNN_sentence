@@ -261,7 +261,9 @@ class LogisticRegression(object):
                     value=numpy.zeros((n_in, n_out), dtype=theano.config.floatX),
                     name='W')
         else:
-            self.W = W.astype(theano.config.floatX)
+            self.W = theano.shared(
+                    value=W.astype(theano.config.floatX),
+                    name='W')
 
         # initialize the baises b as a vector of n_out 0s
         if b is None:
@@ -269,7 +271,9 @@ class LogisticRegression(object):
                     value=numpy.zeros((n_out,), dtype=theano.config.floatX),
                     name='b')
         else:
-            self.b = b.astype(theano.config.floatX)
+            self.b = theano.shared(
+                    value=b.astype(theano.config.floatX),
+                    name='b')
 
         l = T.dot(input, self.W) + self.b
         # n, n_params = normalization_layer(l, (n_in, n_out))
