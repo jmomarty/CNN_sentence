@@ -49,8 +49,7 @@ def train_conv_net(datasets,
     lr_decay = adadelta decay parameter
     """
 
-    file = open("weights.pkl", "wb")
-    params_loaded=cPickle.load(file)
+
 
     rng = np.random.RandomState(3435)
     img_h = len(datasets[0][0])-1  
@@ -83,7 +82,7 @@ def train_conv_net(datasets,
         print filter_shape
         pool_size = pool_sizes[i]
         conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
-                                filter_shape=filter_shape, params_loaded= [params_loaded[len(filter_hs)-1-i-1],params_loaded[len(filter_hs)-1-i]], name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
+                                filter_shape=filter_shape, params_loaded= params_loaded, name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
         layer1_input = conv_layer.output.flatten(2)
         conv_layers.append(conv_layer)
         layer1_inputs.append(layer1_input)
@@ -381,7 +380,13 @@ if __name__=="__main__":
 
     num_classes = int(args.classes)
     results = []
-    print window_sizes
+
+    if args.params != None:
+        file = open(args.params)
+        params_loaded=cPickle.load(file)
+    else:
+        params_loaded = None
+
     perf = train_conv_net(datasets,
                           U,
                           img_w=w2v_size,
@@ -396,5 +401,5 @@ if __name__=="__main__":
                           non_static=non_static,
                           batch_size=30,
                           dropout_rate=[0.5],
-                          params_loaded=args.params)
+                          params_loaded=params_loaded)
     print "perf: " + str(perf)
