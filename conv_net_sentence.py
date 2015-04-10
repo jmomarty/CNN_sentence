@@ -392,7 +392,7 @@ if __name__=="__main__":
 
     perf = train_conv_net(datasets,
                           U,
-                          model_name=args.model,
+                          model_name=args.model_name,
                           img_w=w2v_size,
                           lr_decay=0.95,
                           filter_hs=window_sizes,
