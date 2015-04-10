@@ -161,20 +161,16 @@ def load_bin_vec(fname, vocab):
 
     return word_vecs
 
-def add_unknown_words(word_vecs, vocab, min_df=1, k=300):
+def add_unknown_words(word_vecs, vocab, min_df=1, k=300, printsthg = True):
     """
     For words that occur in at least min_df documents, create a separate word vector.    
     0.25 is chosen so the unknown vectors have (approximately) same variance as pre-trained ones
     """
 
-    if u"poigne" in vocab:
-        print "YEAH SHIT"
-    if u"poigne" in word_vecs:
-        print "SHIIIT"
-
     for word in vocab:
         if word not in word_vecs:
-            # print word
+            if printsthg:
+                print word
             if vocab[word] >= min_df:
                 word_vecs[word] = np.random.uniform(-0.25,0.25,k)
 
@@ -252,7 +248,7 @@ if __name__=="__main__":
     add_unknown_words(w2v, vocab, k = w2v_size)
     W, word_idx_map = get_W(w2v, k = w2v_size)
     rand_vecs = {}
-    add_unknown_words(rand_vecs, vocab, k = w2v_size)
+    add_unknown_words(rand_vecs, vocab, k = w2v_size, printsthg = False)
     W2, _ = get_W(rand_vecs, k = w2v_size)
 
     cPickle.dump([revs, W, W2, word_idx_map, vocab], open(args.output, "wb"))
