@@ -261,7 +261,7 @@ class LogisticRegression(object):
                     value=numpy.zeros((n_in, n_out), dtype=theano.config.floatX),
                     name='W')
         else:
-            self.W = W
+            self.W = W.astype(theano.config.floatX)
 
         # initialize the baises b as a vector of n_out 0s
         if b is None:
@@ -269,7 +269,7 @@ class LogisticRegression(object):
                     value=numpy.zeros((n_out,), dtype=theano.config.floatX),
                     name='b')
         else:
-            self.b = b
+            self.b = b.astype(theano.config.floatX)
 
         l = T.dot(input, self.W) + self.b
         # n, n_params = normalization_layer(l, (n_in, n_out))
@@ -389,11 +389,10 @@ class LeNetConvPoolLayer(object):
         else:
             print '... restoring model weights/bias'
             if self.non_linear=="none" or self.non_linear=="relu":
-                self.W = theano.shared(params_loaded[0], dtype=theano.config.floatX, borrow = True, name=str(name_model)+"_W_conv")
+                self.W = theano.shared(params_loaded[0].astype(theano.config.floatX), borrow = True, name=str(name_model)+"_W_conv")
             else:
-                self.W = theano.shared(params_loaded[0],
-                    dtype=theano.config.floatX,borrow=True,name=str(name_model) + "_W_conv")
-                self.b = theano.shared(params_loaded[1], borrow=True, name=str(name_model) + "_b_conv")
+                self.W = theano.shared(params_loaded[0].astype(theano.config.floatX),name=str(name_model) + "_W_conv")
+                self.b = theano.shared(params_loaded[1].astype(theano.config.floatX), borrow=True, name=str(name_model) + "_b_conv")
                 print '... done!!!!!!!'
 
         # convolve input feature maps with filters
