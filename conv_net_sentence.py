@@ -24,6 +24,7 @@ warnings.filterwarnings("ignore")
 
 def train_conv_net(datasets,
                    U,
+                   params_loaded = None,
                    img_w=300, 
                    filter_hs=[3,4,5],
                    hidden_units=[100,2], 
@@ -80,7 +81,7 @@ def train_conv_net(datasets,
         filter_shape = filter_shapes[i]
         pool_size = pool_sizes[i]
         conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
-                                filter_shape=filter_shape, poolsize=pool_size, non_linear=conv_non_linear)
+                                filter_shape=filter_shape, params_loaded, "cnet_"+i, poolsize=pool_size, non_linear=conv_non_linear)
         layer1_input = conv_layer.output.flatten(2)
         conv_layers.append(conv_layer)
         layer1_inputs.append(layer1_input)
@@ -184,12 +185,13 @@ def train_conv_net(datasets,
             for minibatch_index in np.random.permutation(range(n_train_batches)):
                 counter += 1
                 cost_epoch, error_epoch = train_model(minibatch_index)
-                if counter % 50 == 0:
+                if counter % 10 == 0:
                     print "epoch %i, counter %f,  cost : %g " % (int(epoch), counter, cost_epoch)
+                    for param in params:
+                        cPickle.dump(param.get_value(), file, protocol=cPickle.HIGHEST_PROTOCOL)
                 set_zero(zero_vec)
                 train_losses.append(error_epoch)
-                for param in params:
-                    cPickle.dump(param.get_value(), file, protocol=cPickle.HIGHEST_PROTOCOL)
+
         else:
             for minibatch_index in xrange(n_train_batches):
                 cost_epoch = train_model(minibatch_index)
@@ -350,6 +352,7 @@ if __name__=="__main__":
     parser.add_argument('--input', default='data.p')
     parser.add_argument('--classes', default=5)
     parser.add_argument('--w2v_size', default=300)
+    parser.add_argument('--params', default=None)
     args = parser.parse_args()
     non_static = getMode(args.mode)
     w2v_size = int(args.w2v_size)
@@ -386,5 +389,6 @@ if __name__=="__main__":
                           sqr_norm_lim=9,
                           non_static=non_static,
                           batch_size=30,
-                          dropout_rate=[0.5])
+                          dropout_rate=[0.5],
+                          params_loaded=args.params)
     print "perf: " + str(perf)
