@@ -122,6 +122,7 @@ class MLPDropout(object):
                     input=next_dropout_layer_input,
                     n_in=n_in, n_out=n_out)
         else:
+            print params[0].shape,params[1].shape
             dropout_output_layer = LogisticRegression(
                     input=next_dropout_layer_input,
                     n_in=n_in, n_out=n_out, W=params[0], b=params[1])
@@ -261,7 +262,6 @@ class LogisticRegression(object):
                     value=numpy.zeros((n_in, n_out), dtype=theano.config.floatX),
                     name='W')
         else:
-            print W.shape, b.shape
             self.W = theano.shared(
                     value=W.astype(theano.config.floatX),
                     name='W')
