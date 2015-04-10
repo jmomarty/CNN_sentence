@@ -87,7 +87,7 @@ def train_conv_net(datasets,
             conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
                                     filter_shape=filter_shape, params_loaded= params_loaded, name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
         else:
-            c = 2*(len(filter_hs)-i)
+            c = 2*(len(filter_hs)-i)+1
             print c, c-1
             print params_loaded[c-1].shape, params_loaded[c].shape
             conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
