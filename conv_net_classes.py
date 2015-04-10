@@ -129,7 +129,7 @@ class MLPDropout(object):
                     value=params[1].astype(theano.config.floatX),
                     name='b')
             dropout_output_layer = LogisticRegression(
-                    input=next_dropout_layer_input,n_in=n_in, n_out=n_out, W=params[0], b=params[1])
+                    input=next_dropout_layer_input,n_in=n_in, n_out=n_out, W=Wgt, b=Bs)
         self.dropout_layers.append(dropout_output_layer)
 
         # Again, reuse paramters in the dropout output.
