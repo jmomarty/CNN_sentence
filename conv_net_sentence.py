@@ -25,8 +25,9 @@ warnings.filterwarnings("ignore")
 
 def train_conv_net(datasets,
                    U,
+                   model_name,
                    params_loaded = None,
-                   img_w=300, 
+                   img_w=300,
                    filter_hs=[3,4,5],
                    hidden_units=[100,2], 
                    dropout_rate=[0.5],
@@ -49,7 +50,7 @@ def train_conv_net(datasets,
     sqr_norm_lim = s^2 in the paper
     lr_decay = adadelta decay parameter
     """
-    filename = str(ctime()) + ".pkl"
+    filename = str(model_name) + ".pkl"
     file = open(filename,"wb")
 
     rng = np.random.RandomState(3435)
@@ -359,6 +360,7 @@ if __name__=="__main__":
     parser.add_argument('--classes', default=5)
     parser.add_argument('--w2v_size', default=300)
     parser.add_argument('--params', default=None)
+    parser.add_argument('--model_name', default="model")
     args = parser.parse_args()
     non_static = getMode(args.mode)
     w2v_size = int(args.w2v_size)
@@ -390,6 +392,7 @@ if __name__=="__main__":
 
     perf = train_conv_net(datasets,
                           U,
+                          model_name=args.model,
                           img_w=w2v_size,
                           lr_decay=0.95,
                           filter_hs=window_sizes,
