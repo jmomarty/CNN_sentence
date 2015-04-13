@@ -68,8 +68,9 @@ class CNN(object):
         self.conv_layers = []
         layer1_inputs = []
         for i in xrange(len(filter_hs)):
-            filter_shape = filter_shapes[i]
-            pool_size = pool_sizes[i]
+            filter_shape = filter_shapes[len(filter_hs)-1-i]
+            print filter_shape
+            pool_size = pool_sizes[len(filter_hs)-1-i]
             c = 2*(len(filter_hs)-i)+1
             print c, c-1
             print params_loaded[c-1].shape, params_loaded[c].shape
