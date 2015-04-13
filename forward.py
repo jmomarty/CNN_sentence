@@ -80,8 +80,9 @@ class CNN(object):
             layer1_inputs.append(layer1_input)
         self.layer1_input = T.concatenate(layer1_inputs,1)
         hidden_units[0] = feature_maps*len(filter_hs)
-        self.classifier = MLPDropout(rng, input=self.layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
+        self.classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [params_loaded[0], params_loaded[1]])
         print self.classifier.params[0].get_value()
+
 
     def predict(self):
 
