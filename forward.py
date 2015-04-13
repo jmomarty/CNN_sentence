@@ -93,7 +93,7 @@ class CNN(object):
             test_pred_layers.append(test_layer0_output.flatten(2))
         test_layer1_input = T.concatenate(test_pred_layers, 1)
         test_y_pred = self.classifier.predict_p(test_layer1_input)
-        return test_y_pred.get_value()
+        return test_y_pred
 
 def get_idx_from_sent(sent, word_idx_map, max_l=51, k=300, filter_h=5):
     """
