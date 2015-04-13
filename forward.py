@@ -152,7 +152,7 @@ if __name__=="__main__":
         if request.method == 'POST':
             sen_test = escape(request.form['sentence'])
             sen_test = get_idx_from_sent(str(sen_test), word_idx_map, max_l=51, k=300, filter_h=5)
-            x = theano.shared(value = np.array(sen_test, dtype=theano.config.floatX))
+            x = np.array(sen_test, dtype=theano.config.floatX)
             prediction = str(model.predict()(x))
             result.append('<h1>%s</h1>' %(prediction))
         result.append('''
