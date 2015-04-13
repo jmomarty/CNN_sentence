@@ -157,7 +157,7 @@ if __name__=="__main__":
             sen_test = get_idx_from_sent(str(sen_test), word_idx_map, max_l=900, k=300, filter_h=5)
             x = np.array(sen_test, dtype=theano.config.floatX).reshape(1,len(sen_test))
             prediction = str(model.predict()[0](x))
-            print model.predict()[1][x]
+            print model.predict()[1](x)
             result.append('<h1>%s</h1>' %(prediction))
         result.append('''
             <form action="" method="post">
