@@ -93,6 +93,7 @@ class CNN(object):
             test_pred_layers.append(test_layer0_output.flatten(2))
         test_layer1_input = T.concatenate(test_pred_layers, 1)
         test_y_pred = self.classifier.predict_p(test_layer1_input)
+        print test_y_pred
         return test_y_pred
 
 def get_idx_from_sent(sent, word_idx_map, max_l=51, k=300, filter_h=5):
@@ -153,7 +154,7 @@ if __name__=="__main__":
             sen_test = escape(request.form['sentence'])
             sen_test = get_idx_from_sent(str(sen_test), word_idx_map, max_l=51, k=300, filter_h=5)
             prediction = str(model.predict(sen_test))
-            result.append('<h1>%s!</h1>' %(prediction))
+            result.append('<h1>%s</h1>' %(prediction))
         result.append('''
             <form action="" method="post">
                 <p>Sentence: <input type="text" name="sentence" size="20">
