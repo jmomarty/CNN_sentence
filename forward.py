@@ -138,7 +138,7 @@ if __name__=="__main__":
     parser.add_argument('--load_vocab', default='corpus.p')
     args = parser.parse_args()
     print "loading model...",
-    c = cPickle.load(open(args.input,"rb"))
+    c = cPickle.load(open(args.vocab,"rb"))
     revs, W, W2, word_idx_map, vocab = c[0], c[1], c[2], c[3], c[4]
     x = cPickle.load(open(args.load_weights,"rb"))
     # Create a CNN object with the params loaded
