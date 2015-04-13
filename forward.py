@@ -87,7 +87,10 @@ class CNN(object):
         x = T.matrix('x')
         test_pred_layers = []
         test_layer0_input = self.Words[T.cast(x.flatten(),dtype="int32")].reshape((1,1,self.img_h,self.Words.shape[1]))
+        c = 0
         for conv_layer in self.conv_layers:
+            print c
+            c += 1
             test_layer0_output = conv_layer.predict(test_layer0_input, 1)
             test_pred_layers.append(test_layer0_output.flatten(2))
         test_layer1_input = T.concatenate(test_pred_layers, 1)
@@ -151,7 +154,7 @@ if __name__=="__main__":
         if request.method == 'POST':
             sen_test = escape(request.form['sentence'])
             sen_test = get_idx_from_sent(str(sen_test), word_idx_map, max_l=900, k=300, filter_h=5)
-            x = np.array(sen_test, dtype=theano.config.floatX).reshape(len(sen_test))
+            x = np.array(sen_test, dtype=theano.config.floatX).reshape(1,len(sen_test))
             prediction = str(model.predict()(x))
             result.append('<h1>%s</h1>' %(prediction))
         result.append('''
