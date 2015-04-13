@@ -82,10 +82,9 @@ class CNN(object):
         hidden_units[0] = feature_maps*len(filter_hs)
         self.classifier = MLPDropout(rng, input=self.layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
 
-    def predict(self,
-                x):
+    def predict(self):
 
-        x = theano.shared(value = np.array(x, dtype=theano.config.floatX))
+        x = T.matrix('x')
         test_pred_layers = []
         test_layer0_input = self.Words[T.cast(x.flatten(),dtype="int32")].reshape((1,1,self.img_h,self.Words.shape[1]))
         for conv_layer in self.conv_layers:
@@ -93,7 +92,8 @@ class CNN(object):
             test_pred_layers.append(test_layer0_output.flatten(2))
         test_layer1_input = T.concatenate(test_pred_layers, 1)
         test_y_pred = self.classifier.predict_p(test_layer1_input)
-        return test_y_pred(x)
+        f = theano.function([x], test_y_pred)
+        return f
 
 def get_idx_from_sent(sent, word_idx_map, max_l=51, k=300, filter_h=5):
     """
@@ -152,7 +152,8 @@ if __name__=="__main__":
         if request.method == 'POST':
             sen_test = escape(request.form['sentence'])
             sen_test = get_idx_from_sent(str(sen_test), word_idx_map, max_l=51, k=300, filter_h=5)
-            prediction = str(model.predict(sen_test))
+            x = theano.shared(value = np.array(sen_test, dtype=theano.config.floatX))
+            prediction = str(model.predict()(x))
             result.append('<h1>%s</h1>' %(prediction))
         result.append('''
             <form action="" method="post">
