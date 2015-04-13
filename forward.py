@@ -20,6 +20,9 @@ import sys
 import argparse
 from conv_net_classes import *
 from time import ctime
+from werkzeug.utils import escape
+from werkzeug.wrappers import Request, Response
+from werkzeug.serving import run_simple
 
 warnings.filterwarnings("ignore")   
 
@@ -32,8 +35,7 @@ class CNN(object):
     def __init__(self,
                  U,
                  params_loaded,
-                 rng,
-                 img_h,
+                 img_h = 908,
                  img_w = 300,
                  feature_maps = 100,
                  filter_hs = [3,4,5],
@@ -44,6 +46,7 @@ class CNN(object):
                  conv_non_linear = "relu"
                  ):
 
+        rng = np.random.RandomState(3435)
         self.img_h = img_h
         self.img_w = img_w
         filter_w = img_w
@@ -133,14 +136,13 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(description='Convnet')
     parser.add_argument('--load_weights', default='weights.p')
     parser.add_argument('--load_vocab', default='corpus.p')
-    parser.add_argument('w2v')
     args = parser.parse_args()
     print "loading model...",
     c = cPickle.load(open(args.input,"rb"))
     revs, W, W2, word_idx_map, vocab = c[0], c[1], c[2], c[3], c[4]
     x = cPickle.load(open(args.load_weights,"rb"))
     # Create a CNN object with the params loaded
-    model = CNN(args.w2v, x)
+    model = CNN(W, x)
     print "model loaded!"
 
     @Request.application
@@ -148,7 +150,7 @@ if __name__=="__main__":
         result = ['<title>Write a sentence!</title>']
         if request.method == 'POST':
             sen_test = escape(request.form['sentence'])
-            sen_test = get_idx_from_sent(sen_test, word_idx_map, max_l=51, k=300, filter_h=5)
+            sen_test = get_idx_from_sent(str(sen_test), word_idx_map, max_l=51, k=300, filter_h=5)
             prediction = str(model.predict(sen_test))
             result.append('<h1>%s!</h1>' %(prediction))
         result.append('''
@@ -160,9 +162,6 @@ if __name__=="__main__":
         return Response(''.join(result), mimetype='text/html')
 
     # Load the werkzeug serving
-    from werkzeug.utils import escape
-    from werkzeug.wrappers import Request, Response
-    from werkzeug.serving import run_simple
     run_simple('localhost', 4000, CNN_demo)
 
     # Create a POST request that returns the inference made by the CNN of the sentence posted
