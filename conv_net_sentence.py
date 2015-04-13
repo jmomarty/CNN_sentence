@@ -50,8 +50,6 @@ def train_conv_net(datasets,
     sqr_norm_lim = s^2 in the paper
     lr_decay = adadelta decay parameter
     """
-    filename = str(model_name) + ".pkl"
-    file = open(filename,"wb")
 
     rng = np.random.RandomState(3435)
     img_h = len(datasets[0][0])-1  
@@ -205,7 +203,10 @@ def train_conv_net(datasets,
                     for param in params:
                         dict_params[c] = param.get_value()
                         c += 1
-                    cPickle.dump(dict_params, file)
+                    filename = str(model_name)
+                    f = open(filename)
+                    cPickle.dump(dict_params, f)
+                    f.close()
                 set_zero(zero_vec)
                 train_losses.append(error_epoch)
 
