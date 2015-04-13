@@ -90,8 +90,8 @@ class CNN(object):
         c = 0
         for conv_layer in self.conv_layers:
             print c
-            c += 1
             test_layer0_output = conv_layer.predict(test_layer0_input, 1)
+            c += 1
             test_pred_layers.append(test_layer0_output.flatten(2))
         test_layer1_input = T.concatenate(test_pred_layers, 1)
         test_y_pred = self.classifier.predict_p(test_layer1_input)
