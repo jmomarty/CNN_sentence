@@ -85,7 +85,7 @@ class CNN(object):
     def predict(self,
                 x):
 
-        x = theano.shared(value = np.array(x, dtype=theano.config.floatX), allow_input_downcast= True)
+        x = theano.shared(value = np.array(x, dtype=theano.config.floatX))
         test_pred_layers = []
         test_layer0_input = self.Words[T.cast(x.flatten(),dtype="int32")].reshape((1,1,self.img_h,self.Words.shape[1]))
         for conv_layer in self.conv_layers:
