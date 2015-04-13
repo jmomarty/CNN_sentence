@@ -92,7 +92,7 @@ class CNN(object):
             test_layer0_output = self.conv_layers[i].predict(test_layer0_input, 1)
             test_pred_layers.append(test_layer0_output.flatten(2))
         test_layer1_input = T.concatenate(test_pred_layers, 1)
-        test_y_pred = self.classifier.predict(test_layer1_input)
+        test_y_pred = self.classifier.predict_p(test_layer1_input)
         f = theano.function([x], test_y_pred)
         return f
 
