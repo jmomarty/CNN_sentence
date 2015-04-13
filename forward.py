@@ -81,8 +81,6 @@ class CNN(object):
         self.layer1_input = T.concatenate(layer1_inputs,1)
         hidden_units[0] = feature_maps*len(filter_hs)
         self.classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [params_loaded[0], params_loaded[1]])
-        print self.classifier.params[0].get_value()
-
 
     def predict(self):
 
@@ -95,9 +93,7 @@ class CNN(object):
         test_layer1_input = T.concatenate(test_pred_layers, 1)
         test_y_pred = self.classifier.predict_p(test_layer1_input)
         f = theano.function([x], test_y_pred)
-        g = theano.function([x], test_layer1_input)
-        h = theano.function([test_layer1_input], test_y_pred)
-        return f, g, h
+        return f
 
 def get_idx_from_sent(sent, word_idx_map, max_l=900, k=300, filter_h=5):
     """
@@ -113,7 +109,6 @@ def get_idx_from_sent(sent, word_idx_map, max_l=900, k=300, filter_h=5):
             x.append(word_idx_map[word])
     while len(x) < max_l+2*pad:
         x.append(0)
-    print x
     return x
 
 def make_idx_data_cv(revs, word_idx_map, cv, max_l=51, k=300, filter_h=5):
@@ -157,13 +152,7 @@ if __name__=="__main__":
             sen_test = escape(request.form['sentence'])
             sen_test = get_idx_from_sent(str(sen_test), word_idx_map, max_l=900, k=300, filter_h=5)
             x = np.array(sen_test, dtype=theano.config.floatX).reshape(1,len(sen_test))
-            f = model.predict()[0]
-            g = model.predict()[1]
-            h = model.predict()[2]
-            print f(x)
-            print g(x)
-            print h(g(x))
-            prediction = str(model.predict()[0](x))
+            prediction = str(model.predict()(x))
             result.append('<h1>%s</h1>' %(prediction))
         result.append('''
             <form action="" method="post">
