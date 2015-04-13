@@ -199,6 +199,9 @@ def train_conv_net(datasets,
                     print "epoch %i, counter %f,  cost : %g " % (int(epoch), counter, cost_epoch)
                     dict_params = {}
                     c = 0
+                    params = classifier.params
+                    for conv_layer in conv_layers:
+                        params += conv_layer.params
                     for param in params:
                         dict_params[c] = param.get_value()
                         c += 1
