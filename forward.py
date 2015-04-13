@@ -95,7 +95,7 @@ class CNN(object):
         f = theano.function([x], test_y_pred)
         return f
 
-def get_idx_from_sent(sent, word_idx_map, max_l=51, k=300, filter_h=5):
+def get_idx_from_sent(sent, word_idx_map, max_l=900, k=300, filter_h=5):
     """
     Transforms sentence into a list of indices. Pad with zeroes.
     """
