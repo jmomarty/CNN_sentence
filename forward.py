@@ -94,7 +94,8 @@ class CNN(object):
         test_y_pred = self.classifier.predict_p(test_layer1_input)
         f = theano.function([x], test_y_pred)
         g = theano.function([x], test_layer1_input)
-        return f, g
+        h = theano.function([test_layer1_input], test_y_pred)
+        return f, g, h
 
 def get_idx_from_sent(sent, word_idx_map, max_l=900, k=300, filter_h=5):
     """
@@ -154,8 +155,12 @@ if __name__=="__main__":
             sen_test = escape(request.form['sentence'])
             sen_test = get_idx_from_sent(str(sen_test), word_idx_map, max_l=900, k=300, filter_h=5)
             x = np.array(sen_test, dtype=theano.config.floatX).reshape(1,len(sen_test))
+            f = model.predict()[0]
+            g = model.predict()[1]
+            h = model.predict()[2]
+            print f(x)
+            print h(g(x))
             prediction = str(model.predict()[0](x))
-            print model.predict()[0](model.predict()[1](x))
             result.append('<h1>%s</h1>' %(prediction))
         result.append('''
             <form action="" method="post">
