@@ -68,13 +68,13 @@ class CNN(object):
         self.conv_layers = []
         layer1_inputs = []
         for i in xrange(len(filter_hs)):
-            filter_shape = filter_shapes[len(filter_hs)-1-i]
-            pool_size = pool_sizes[len(filter_hs)-1-i]
+            filter_shape = filter_shapes[i]
+            pool_size = pool_sizes[i]
             c = 2*(len(filter_hs)-i)+1
             print c, c-1
             print params_loaded[c-1].shape, params_loaded[c].shape
             conv_layer = LeNetConvPoolLayer(rng, input=self.layer0_input,image_shape=(batch_size, 1, img_h, img_w),
-                                    filter_shape=filter_shape, params_loaded= None, name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
+                                    filter_shape=filter_shape, params_loaded= [params_loaded[c-1],params_loaded[c]], name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
             layer1_input = conv_layer.output.flatten(2)
             self.conv_layers.append(conv_layer)
             layer1_inputs.append(layer1_input)
