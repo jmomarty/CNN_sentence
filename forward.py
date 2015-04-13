@@ -109,7 +109,6 @@ def get_idx_from_sent(sent, word_idx_map, max_l=900, k=300, filter_h=5):
             x.append(word_idx_map[word])
     while len(x) < max_l+2*pad:
         x.append(0)
-    print x
     return x
 
 def make_idx_data_cv(revs, word_idx_map, cv, max_l=51, k=300, filter_h=5):
@@ -151,7 +150,7 @@ if __name__=="__main__":
         result = ['<title>Write a sentence!</title>']
         if request.method == 'POST':
             sen_test = escape(request.form['sentence'])
-            sen_test = get_idx_from_sent(str(sen_test), word_idx_map, max_l=51, k=300, filter_h=5)
+            sen_test = get_idx_from_sent(str(sen_test), word_idx_map, max_l=900, k=300, filter_h=5)
             x = np.array(sen_test, dtype=theano.config.floatX).reshape(1,len(sen_test))
             prediction = str(model.predict()(x))
             result.append('<h1>%s</h1>' %(prediction))
