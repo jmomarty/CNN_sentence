@@ -81,6 +81,7 @@ class CNN(object):
         self.layer1_input = T.concatenate(layer1_inputs,1)
         hidden_units[0] = feature_maps*len(filter_hs)
         self.classifier = MLPDropout(rng, input=self.layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
+        print self.classifier.params[0].get_value()
 
     def predict(self):
 
@@ -159,6 +160,7 @@ if __name__=="__main__":
             g = model.predict()[1]
             h = model.predict()[2]
             print f(x)
+            print g(x)
             print h(g(x))
             prediction = str(model.predict()[0](x))
             result.append('<h1>%s</h1>' %(prediction))
