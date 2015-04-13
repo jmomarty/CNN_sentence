@@ -204,7 +204,7 @@ def train_conv_net(datasets,
                         dict_params[c] = param.get_value()
                         c += 1
                     filename = str(model_name)
-                    f = open(filename)
+                    f = open(filename, "rb")
                     cPickle.dump(dict_params, f)
                     f.close()
                 set_zero(zero_vec)

@@ -87,11 +87,8 @@ class CNN(object):
         x = T.matrix('x')
         test_pred_layers = []
         test_layer0_input = self.Words[T.cast(x.flatten(),dtype="int32")].reshape((1,1,self.img_h,self.Words.shape[1]))
-        c = 0
         for conv_layer in self.conv_layers:
-            print c
             test_layer0_output = conv_layer.predict(test_layer0_input, 1)
-            c += 1
             test_pred_layers.append(test_layer0_output.flatten(2))
         test_layer1_input = T.concatenate(test_pred_layers, 1)
         test_y_pred = self.classifier.predict_p(test_layer1_input)
