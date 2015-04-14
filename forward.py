@@ -148,6 +148,7 @@ if __name__=="__main__":
         ''')
         if request.method == 'POST':
             sen_test = escape(request.form['sentence'])
+            x = sen2mat(sen_test, w2v)
             prediction = model.predict()(x).get_value()
             result.append('<p>Positivity: %s</p>' %(prediction[0]))
             result.append('<p>Negativity: %s</p>' %(prediction[1]))
