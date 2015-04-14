@@ -125,6 +125,7 @@ if __name__=="__main__":
 
     print "loading w2v...",
     w2v = gensim.models.Word2Vec.load_word2vec_format("F:\\mikolov\\"+args.lang+".2gram.sem", binary=True)
+    print "w2v loaded!\n"
 
     @Request.application
     def CNN_demo(request):
