@@ -159,22 +159,25 @@ if __name__=="__main__":
     def CNN_demo(request):
         result = ['<title>Write a sentence!</title>']
         if request.method == 'POST':
+            lang = escape(request.form['lang'])
+            print str(lang)
             sen_test = escape(request.form['sentence'])
             sen_test = get_idx_from_sent(unidecode(sen_test).lower(), word_idx_map, max_l=900, k=300, filter_h=5)
             x = np.array(sen_test, dtype=theano.config.floatX).reshape(1,len(sen_test))
             prediction = str(model.predict()(x))
             result.append('<h1>%s</h1>' %(prediction))
         result.append('''
-            <P>Select the language:
-            <SELECT NAME=lang MULTIPLE>
-            <OPTION>French</OPTION>
-            <OPTION>English</OPTION>
-            <OPTION>German</OPTION>
-            <OPTION>Spanish</OPTION>
-            <OPTION>Italian</OPTION>
-            </SELECT>
-            </P>
+
             <form action="" method="post">
+                <P>Select the language:
+                    <SELECT NAME=lang MULTIPLE>
+                    <OPTION>French</OPTION>
+                    <OPTION>English</OPTION>
+                    <OPTION>German</OPTION>
+                    <OPTION>Spanish</OPTION>
+                    <OPTION>Italian</OPTION>
+                    </SELECT>
+                </P>
                 <p>Sentence: <input type="text" name="sentence" size="20">
                 <input type="submit" value="Let's compute that shit!">
             </form>
