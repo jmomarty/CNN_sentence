@@ -95,8 +95,7 @@ class CNN(object):
         if words_other == None:
             test_layer0_input = self.Words[T.cast(x.flatten(),dtype="int32")].reshape((1,1,self.img_h,self.Words.shape[1]))
         else:
-            wo = theano.shared(value = np.array(words_other, dtype = theano.config.floatX), name = "words_other")
-            test_layer0_input = wo[T.cast(x.flatten(),dtype="int32")].reshape((1,1,self.img_h,wo.shape[1]))
+            test_layer0_input = x
         for i in range(len(self.conv_layers)):
             test_layer0_output = self.conv_layers[i].predict(test_layer0_input, 1)
             test_pred_layers.append(test_layer0_output.flatten(2))
@@ -120,6 +119,21 @@ def get_idx_from_sent(sent, word_idx_map, max_l=900, k=300, filter_h=5):
     while len(x) < max_l+2*pad:
         x.append(0)
     print x
+    return x
+
+def sen2mat(sen, w2v, max_l=900, k=300, filter_h=5):
+
+    pad = filter_h - 1
+    mat = np.zeros((max_l+2*pad,k),dtype=theano.config.floatX)
+    i = 0
+    for word in sen.split(" "):
+        if word in w2v:
+            mat[i + pad] = w2v[word]
+        elif unidecode(word) in w2v:
+            mat[i + pad] = w2v[unidecode(word)]
+        else:
+            mat[i + pad] = np.zeros(k)
+    x.reshape((1,1,max_l+2*pad,k))
     return x
 
 def make_idx_data_cv(revs, word_idx_map, cv, max_l=51, k=300, filter_h=5):
@@ -147,7 +161,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(description='Convnet')
     parser.add_argument('--load_weights', default='weights.p')
     parser.add_argument('--load_vocab', default='corpus.p')
-    parser.add_argument('w2v')
+    parser.add_argument('--lang')
     args = parser.parse_args()
     print "loading model...",
     c = cPickle.load(open(args.load_vocab,"rb"))
@@ -158,35 +172,33 @@ if __name__=="__main__":
     print "model loaded!"
 
     print "loading languages...\n"
-    fr = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"fr.2gram.sem", binary=True)
-    en = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"en.2gram.sem", binary=True)
-    de = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"de.2gram.sem", binary=True)
-    it = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"it.2gram.sem", binary=True)
-    es = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"es.2gram.sem", binary=True)
+    if args.lang == "en":
+        w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"en.2gram.sem", binary=True)
+    elif args.lang == "de":
+        w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"de.2gram.sem", binary=True)
+    elif args.lang == "it":
+        w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"it.2gram.sem", binary=True)
+    elif args.lang == "es":
+        w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"es.2gram.sem", binary=True)
     print "languages loaded!"
+
     @Request.application
     def CNN_demo(request):
         result = ['<title>Write a sentence!</title>']
         if request.method == 'POST':
-            lang = escape(request.form['lang'])
-            print str(lang)
             sen_test = escape(request.form['sentence'])
-            sen_test = get_idx_from_sent(unidecode(sen_test).lower(), word_idx_map, max_l=900, k=300, filter_h=5)
-            x = np.array(sen_test, dtype=theano.config.floatX).reshape(1,len(sen_test))
-            prediction = str(model.predict()(x))
+            if args.lang == None:
+                sen_test = get_idx_from_sent(unidecode(sen_test).lower(), word_idx_map, max_l=900, k=300, filter_h=5)
+                x = np.array(sen_test, dtype=theano.config.floatX).reshape(1,len(sen_test))
+                prediction = str(model.predict()(x))
+            else:
+                x = sen2mat(sen_test, w2v)
+                prediction = str(model.predict(1)(x))
+
             result.append('<h1>%s</h1>' %(prediction))
         result.append('''
 
             <form action="" method="post">
-                <P>Select the language:
-                    <SELECT NAME=lang MULTIPLE>
-                    <OPTION>French</OPTION>
-                    <OPTION>English</OPTION>
-                    <OPTION>German</OPTION>
-                    <OPTION>Spanish</OPTION>
-                    <OPTION>Italian</OPTION>
-                    </SELECT>
-                </P>
                 <p>Sentence: <input type="text" name="sentence" size="20">
                 <input type="submit" value="Let's compute that shit!">
             </form>
