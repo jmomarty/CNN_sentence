@@ -160,11 +160,11 @@ if __name__=="__main__":
                     pgrams[gram] = model.predict()(gram_mat)[0,0]
             print pgrams
             import operator
-            sorted_p = sorted(pgrams.items(), key=operator.itemgetter(1))
+            sorted_p = sorted(pgrams.items(), key=operator.itemgetter(1), reverse=True)
             print sorted_p
             result.append('<p>Most important features:</p>')
             for x in sorted_p:
-                result.append('<p>%s</p>' %x)
+                result.append('<p>%s</p>' %str(x))
         return Response(''.join(result), mimetype='text/html')
 
     # Load the werkzeug serving
