@@ -161,6 +161,7 @@ if __name__=="__main__":
             print pgrams
             import operator
             sorted_p = sorted(pgrams.items(), key=operator.itemgetter(1)).reverse()
+            print sorted_p
             result.append('<p>Most important features:</p>')
             for x in sorted_p[:5]:
                 result.append('<p>%s</p>' %x)
