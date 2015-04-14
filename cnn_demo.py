@@ -137,7 +137,7 @@ if __name__=="__main__":
             </form>
         ''')
         if request.method == 'POST':
-            sen_test = escape(request.form['sentence'])
+            sen_test = escape(request.form['sentence']).lower()
             x = sen2mat(sen_test, w2v)
             prediction = model.predict()(x)
             result.append('<p>Polarity: %s</p>' %(prediction[0,0]))
