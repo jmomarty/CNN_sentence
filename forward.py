@@ -102,6 +102,7 @@ def sen2mat(sen, w2v, max_l=900, k=300, filter_h=5):
             mat[i + pad] = w2v[unidecode(word)]
         else:
             mat[i + pad] = np.zeros(k)
+        i+=1
     mat = mat.reshape((1,1,max_l+2*pad,k))
     return mat
 
