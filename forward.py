@@ -158,7 +158,7 @@ if __name__=="__main__":
             for i in range(1,5):
                 for gram in zip(*[words[k:] for k in range(i)]):
                     gram = sen2mat(" ".join(gram), w2v)
-                    predict_ngrams[gram] = [np.argmax(model.predict()(gram)),np.max(model.predict()(gram))]
+                    predict_ngrams[gram] = [np.argmax(model.predict()(gram)),np.amax(model.predict()(gram))]
             result.append('<p>Most important features: %s</p>' %str(predict_ngrams))
         return Response(''.join(result), mimetype='text/html')
 
