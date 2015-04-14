@@ -24,6 +24,7 @@ from werkzeug.utils import escape
 from werkzeug.wrappers import Request, Response
 from werkzeug.serving import run_simple
 from unidecode import unidecode
+import gensim
 
 warnings.filterwarnings("ignore")   
 
@@ -146,6 +147,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(description='Convnet')
     parser.add_argument('--load_weights', default='weights.p')
     parser.add_argument('--load_vocab', default='corpus.p')
+    parser.add_argument('w2v')
     args = parser.parse_args()
     print "loading model...",
     c = cPickle.load(open(args.load_vocab,"rb"))
@@ -155,6 +157,13 @@ if __name__=="__main__":
     model = CNN(W, x)
     print "model loaded!"
 
+    print "loading languages...\n"
+    fr = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"fr.2gram.sem", binary=True)
+    en = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"en.2gram.sem", binary=True)
+    de = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"de.2gram.sem", binary=True)
+    it = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"it.2gram.sem", binary=True)
+    es = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"es.2gram.sem", binary=True)
+    print "languages loaded!"
     @Request.application
     def CNN_demo(request):
         result = ['<title>Write a sentence!</title>']
