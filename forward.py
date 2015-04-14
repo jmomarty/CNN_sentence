@@ -113,9 +113,9 @@ if __name__=="__main__":
 
     # Arguments for the program:
     parser = argparse.ArgumentParser(description='Convnet')
-    parser.add_argument('--load_weights', default='weights.p')
-    parser.add_argument('--lang')
-    parser.add_argument('w2v')
+    parser.add_argument('lang')
+    parser.add_argument('--load_weights', default='ciao300')
+
     args = parser.parse_args()
     print "loading model...",
     x = cPickle.load(open(args.load_weights,"rb"))
@@ -124,19 +124,7 @@ if __name__=="__main__":
     print "model loaded!"
 
     print "loading w2v...",
-    if args.lang == "fr":
-        w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"fr.2gram.sem", binary=True)
-    if args.lang == "en":
-        w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"en.2gram.sem", binary=True)
-    elif args.lang == "de":
-        w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"de.2gram.sem", binary=True)
-    elif args.lang == "it":
-        w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"it.2gram.sem", binary=True)
-    elif args.lang == "es":
-        w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"es.2gram.sem", binary=True)
-    elif args.lang == "zh":
-        w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"zh.2gram.sem", binary=True)
-    print "w2v loaded!"
+    w2v = gensim.models.Word2Vec.load_word2vec_format("F:\\mikolov\\"+args.lang+".2gram.sem", binary=True)
 
     @Request.application
     def CNN_demo(request):
