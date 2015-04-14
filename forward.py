@@ -35,7 +35,6 @@ class CNN(object):
     """
 
     def __init__(self,
-                 U,
                  params_loaded,
                  img_h = 908,
                  img_w = 300,
@@ -60,13 +59,7 @@ class CNN(object):
 
         #define model architecture
         index = T.lscalar()
-        x = T.matrix('x')
-        y = T.ivector('y')
-        self.Words = theano.shared(value = np.asarray(U, dtype=theano.config.floatX), name = "Words")
-        zero_vec_tensor = T.vector()
-        zero_vec = np.zeros(img_w)
-        set_zero = theano.function([zero_vec_tensor], updates=[(self.Words, T.set_subtensor(self.Words[0,:], zero_vec_tensor))], allow_input_downcast = True)
-        self.layer0_input = self.Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0],1,x.shape[1],self.Words.shape[1]))
+        x = T.ftensor4('x')
         self.conv_layers = []
         layer1_inputs = []
         for i in xrange(len(filter_hs)):
@@ -89,7 +82,6 @@ class CNN(object):
         self.classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [params_loaded[0], params_loaded[1]])
 
     def predict(self, words_other = None):
-
 
         test_pred_layers = []
         if words_other == None:
@@ -162,19 +154,18 @@ if __name__=="__main__":
     # Arguments for the program:
     parser = argparse.ArgumentParser(description='Convnet')
     parser.add_argument('--load_weights', default='weights.p')
-    parser.add_argument('--load_vocab', default='corpus.p')
     parser.add_argument('--lang')
     parser.add_argument('w2v')
     args = parser.parse_args()
     print "loading model...",
-    c = cPickle.load(open(args.load_vocab,"rb"))
-    revs, W, W2, word_idx_map, vocab = c[0], c[1], c[2], c[3], c[4]
     x = cPickle.load(open(args.load_weights,"rb"))
     # Create a CNN object with the params loaded
-    model = CNN(W, x)
+    model = CNN(x)
     print "model loaded!"
 
     print "loading languages...\n"
+    if args.lang == "fr":
+        w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"fr.2gram.sem", binary=True)
     if args.lang == "en":
         w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"en.2gram.sem", binary=True)
     elif args.lang == "de":
@@ -183,6 +174,8 @@ if __name__=="__main__":
         w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"it.2gram.sem", binary=True)
     elif args.lang == "es":
         w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"es.2gram.sem", binary=True)
+    elif args.lang == "zh":
+        w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"zh.2gram.sem", binary=True)
     print "languages loaded!"
 
     @Request.application
@@ -190,13 +183,7 @@ if __name__=="__main__":
         result = ['<title>Write a sentence!</title>']
         if request.method == 'POST':
             sen_test = escape(request.form['sentence'])
-            if args.lang == None:
-                sen_test = get_idx_from_sent(unidecode(sen_test).lower(), word_idx_map, max_l=900, k=300, filter_h=5)
-                x = np.array(sen_test, dtype=theano.config.floatX).reshape(1,len(sen_test))
-                prediction = str(model.predict()(x))
-            else:
-                x = sen2mat(sen_test, w2v)
-                prediction = str(model.predict(1)(x))
+            prediction = str(model.predict(1)(x))
 
             result.append('<h1>%s</h1>' %(prediction))
         result.append('''
