@@ -162,6 +162,7 @@ if __name__=="__main__":
     parser.add_argument('--load_weights', default='weights.p')
     parser.add_argument('--load_vocab', default='corpus.p')
     parser.add_argument('--lang')
+    parser.add_argument('w2v')
     args = parser.parse_args()
     print "loading model...",
     c = cPickle.load(open(args.load_vocab,"rb"))
