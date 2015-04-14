@@ -155,7 +155,8 @@ if __name__=="__main__":
         return Response(''.join(result), mimetype='text/html')
 
     # Load the werkzeug serving
-    run_simple('localhost', 4000, CNN_demo)
+    port = np.random.randint(1, high=4000)
+    run_simple('localhost', port, CNN_demo)
 
     # Create a POST request that returns the inference made by the CNN of the sentence posted
     # Process the sentence
