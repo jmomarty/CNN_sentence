@@ -90,7 +90,7 @@ class CNN(object):
 
     def predict(self, words_other = None):
 
-        x = T.matrix('x')
+        x = theano.shared(np.zeros((1,1,self.img_h,self.img_w),dtype=theano.config.floatX))
         test_pred_layers = []
         if words_other == None:
             test_layer0_input = self.Words[T.cast(x.flatten(),dtype="int32")].reshape((1,1,self.img_h,self.Words.shape[1]))
@@ -133,7 +133,7 @@ def sen2mat(sen, w2v, max_l=900, k=300, filter_h=5):
             mat[i + pad] = w2v[unidecode(word)]
         else:
             mat[i + pad] = np.zeros(k)
-    mat = theano.shared(value = mat).reshape((1,1,max_l+2*pad,k))
+    # mat = theano.shared(value = mat).reshape((1,1,max_l+2*pad,k))
     return mat
 
 def make_idx_data_cv(revs, word_idx_map, cv, max_l=51, k=300, filter_h=5):
@@ -194,7 +194,6 @@ if __name__=="__main__":
                 prediction = str(model.predict()(x))
             else:
                 x = sen2mat(sen_test, w2v)
-
                 prediction = str(model.predict(1)(x))
 
             result.append('<h1>%s</h1>' %(prediction))
