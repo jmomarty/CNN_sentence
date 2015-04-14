@@ -158,8 +158,10 @@ if __name__=="__main__":
                 for gram in zip(*[words[k:] for k in range(i)]):
                     gram_mat = sen2mat(" ".join(gram), w2v)
                     pgrams[gram] = model.predict()(gram_mat)[0,0]
-            sorted_p = sorted(pgrams, key=pgrams.get, reverse = True)
-            print sorted_p
+            print pgrams
+            import operator
+            sorted_x = sorted(pgrams.items(), key=operator.itemgetter(1))
+            print sorted_x
             # result.append('<p>Most important features:</p>')
             # for x in sorted_p[:5]:
             #     result.append('<p>{0} : {1}</p>'.format(x, sorted_p[x]))
