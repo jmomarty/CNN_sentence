@@ -148,8 +148,8 @@ if __name__=="__main__":
                     pgrams[gram] = model.predict()(gram_mat)[0,0]
             import operator
             sorted_p = sorted(pgrams.items(), key=operator.itemgetter(1), reverse=True)
-            result.append('<p>Most important features:</p>')
-            for x in sorted_p[:5]:
+            result.append('<p>Polarity of N-grams:</p>')
+            for x in sorted_p:
                 result.append('<p>%s</p>' %str(x))
         return Response(''.join(result), mimetype='text/html')
 
@@ -157,5 +157,3 @@ if __name__=="__main__":
     port = np.random.randint(1, high=4000)
     run_simple('localhost', port, CNN_demo)
 
-    # Create a POST request that returns the inference made by the CNN of the sentence posted
-    # Process the sentence
