@@ -382,7 +382,7 @@ class LeNetConvPoolLayer(object):
         fan_out = (filter_shape[0] * numpy.prod(filter_shape[2:]) /numpy.prod(poolsize))
         # initialize weights with random weights
         if params_loaded == None:
-            print '... creating model weights/bias',
+
             if self.non_linear=="none" or self.non_linear=="relu":
                 self.W = theano.shared(numpy.asarray(rng.uniform(low=-0.01,high=0.01,size=filter_shape),
                                                     dtype=theano.config.floatX),borrow=True,name=str(name_model) + "_W_conv")
@@ -393,10 +393,10 @@ class LeNetConvPoolLayer(object):
             b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
             self.b = theano.shared(value=b_values, borrow=True, name=str(name_model) + "_b_conv")
         else:
-            print '... restoring model weights/bias',
+
             self.W = theano.shared(params_loaded[0].astype(theano.config.floatX),name=str(name_model) + "_W_conv")
             self.b = theano.shared(params_loaded[1].astype(theano.config.floatX), borrow=True, name=str(name_model) + "_b_conv")
-            print '... done!!!!!!!'
+
 
         # convolve input feature maps with filters
         conv_out = conv.conv2d(input=input, filters=self.W,filter_shape=self.filter_shape, image_shape=self.image_shape)

@@ -58,9 +58,8 @@ class CNN(object):
             pool_sizes.append((img_h-filter_h+1, img_w-filter_w+1))
 
         #define model architecture
-        index = T.lscalar()
         x = T.ftensor4('x')
-        self.layer0_input = x
+        layer0_input = x.reshape((x.shape[0],1,x.shape[2],x.shape[3]))
         self.conv_layers = []
         layer1_inputs = []
         for i in xrange(len(filter_hs)):
@@ -70,7 +69,7 @@ class CNN(object):
             filter_shape = filter_shapes[i]
             pool_size = pool_sizes[i]
             c = 2*(len(filter_hs)-i)+1
-            conv_layer = LeNetConvPoolLayer(rng, input=self.layer0_input,image_shape=(batch_size, 1, img_h, img_w),
+            conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
                                     filter_shape=filter_shape, params_loaded= [params_loaded[c-1],params_loaded[c]], name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
             layer1_input = conv_layer.output.flatten(2)
             self.conv_layers.append(conv_layer)
