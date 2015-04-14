@@ -60,6 +60,7 @@ class CNN(object):
         #define model architecture
         index = T.lscalar()
         x = T.ftensor4('x')
+        self.layer0_input = x
         self.conv_layers = []
         layer1_inputs = []
         for i in xrange(len(filter_hs)):
