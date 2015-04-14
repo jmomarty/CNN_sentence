@@ -140,7 +140,7 @@ if __name__=="__main__":
 
     @Request.application
     def CNN_demo(request):
-        result = ['<title>Write a sentence!</title>']
+        result = ['<title>%s</title>' %(str(args.lang))]
         result.append('''
             <form action="" method="post">
                 <p>Sentence: <input type="text" name="sentence" size="20">
