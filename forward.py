@@ -68,11 +68,8 @@ class CNN(object):
             # print filter_shape
             # pool_size = pool_sizes[len(filter_hs)-1-i]
             filter_shape = filter_shapes[i]
-            print filter_shape
             pool_size = pool_sizes[i]
             c = 2*(len(filter_hs)-i)+1
-            print c, c-1
-            print params_loaded[c-1].shape, params_loaded[c].shape
             conv_layer = LeNetConvPoolLayer(rng, input=self.layer0_input,image_shape=(batch_size, 1, img_h, img_w),
                                     filter_shape=filter_shape, params_loaded= [params_loaded[c-1],params_loaded[c]], name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
             layer1_input = conv_layer.output.flatten(2)
@@ -82,15 +79,10 @@ class CNN(object):
         hidden_units[0] = feature_maps*len(filter_hs)
         self.classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [params_loaded[0], params_loaded[1]])
 
-    def predict(self, words_other = None):
-
+    def predict(self):
         test_pred_layers = []
-        if words_other == None:
-            x = T.matrix('x')
-            test_layer0_input = self.Words[T.cast(x.flatten(),dtype="int32")].reshape((1,1,self.img_h,self.Words.shape[1]))
-        else:
-            x = T.ftensor4('x')
-            test_layer0_input = x
+        x = T.ftensor4('x')
+        test_layer0_input = x
         for i in range(len(self.conv_layers)):
             test_layer0_output = self.conv_layers[i].predict(test_layer0_input, 1)
             test_pred_layers.append(test_layer0_output.flatten(2))
@@ -98,23 +90,6 @@ class CNN(object):
         test_y_pred = self.classifier.predict_p(test_layer1_input)
         f = theano.function([x], test_y_pred)
         return f
-
-def get_idx_from_sent(sent, word_idx_map, max_l=900, k=300, filter_h=5):
-    """
-    Transforms sentence into a list of indices. Pad with zeroes.
-    """
-    x = []
-    pad = filter_h - 1
-    for i in xrange(pad):
-        x.append(0)
-    words = sent.split()
-    for word in words:
-        if word in word_idx_map:
-            x.append(word_idx_map[word])
-    while len(x) < max_l+2*pad:
-        x.append(0)
-    print x
-    return x
 
 def sen2mat(sen, w2v, max_l=900, k=300, filter_h=5):
 
@@ -130,22 +105,6 @@ def sen2mat(sen, w2v, max_l=900, k=300, filter_h=5):
             mat[i + pad] = np.zeros(k)
     mat = mat.reshape((1,1,max_l+2*pad,k))
     return mat
-
-def make_idx_data_cv(revs, word_idx_map, cv, max_l=51, k=300, filter_h=5):
-    """
-    Transforms sentences into a 2-d matrix.
-    """
-    train, test = [], []
-    for rev in revs:
-        sent = get_idx_from_sent(rev["text"], word_idx_map, max_l, k, filter_h)
-        sent.append(rev["y"])
-        if rev["split"]==cv:
-            test.append(sent)
-        else:
-            train.append(sent)
-    train = np.array(train)
-    test = np.array(test)
-    return [train, test]
 
 def parse_filter_hs(filter_hs):
     return map(int, filter_hs.split(','))
@@ -164,7 +123,7 @@ if __name__=="__main__":
     model = CNN(x)
     print "model loaded!"
 
-    print "loading languages...\n"
+    print "loading w2v...",
     if args.lang == "fr":
         w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"fr.2gram.sem", binary=True)
     if args.lang == "en":
@@ -177,23 +136,22 @@ if __name__=="__main__":
         w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"es.2gram.sem", binary=True)
     elif args.lang == "zh":
         w2v = gensim.models.Word2Vec.load_word2vec_format(args.w2v +"zh.2gram.sem", binary=True)
-    print "languages loaded!"
+    print "w2v loaded!"
 
     @Request.application
     def CNN_demo(request):
         result = ['<title>Write a sentence!</title>']
-        if request.method == 'POST':
-            sen_test = escape(request.form['sentence'])
-            prediction = str(model.predict(1)(x))
-
-            result.append('<h1>%s</h1>' %(prediction))
         result.append('''
-
             <form action="" method="post">
                 <p>Sentence: <input type="text" name="sentence" size="20">
                 <input type="submit" value="Let's compute that shit!">
             </form>
         ''')
+        if request.method == 'POST':
+            sen_test = escape(request.form['sentence'])
+            prediction = model.predict()(x).get_value()
+            result.append('<p>Positivity: %s</p>' %(prediction[0]))
+            result.append('<p>Negativity: %s</p>' %(prediction[1]))
         return Response(''.join(result), mimetype='text/html')
 
     # Load the werkzeug serving
