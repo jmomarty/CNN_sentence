@@ -71,6 +71,9 @@ class CNN(object):
             filter_shape = filter_shapes[len(filter_hs)-1-i]
             print filter_shape
             pool_size = pool_sizes[len(filter_hs)-1-i]
+            filter_shape = filter_shapes[i]
+            print filter_shape
+            pool_size = pool_sizes[i]
             c = 2*(len(filter_hs)-i)+1
             print c, c-1
             print params_loaded[c-1].shape, params_loaded[c].shape
