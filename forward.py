@@ -90,11 +90,13 @@ class CNN(object):
 
     def predict(self, words_other = None):
 
-        x = T.ftensor4('x')
+
         test_pred_layers = []
         if words_other == None:
+            x = T.matrix('x')
             test_layer0_input = self.Words[T.cast(x.flatten(),dtype="int32")].reshape((1,1,self.img_h,self.Words.shape[1]))
         else:
+            x = T.ftensor4('x')
             test_layer0_input = x
         for i in range(len(self.conv_layers)):
             test_layer0_output = self.conv_layers[i].predict(test_layer0_input, 1)
