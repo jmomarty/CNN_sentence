@@ -151,15 +151,16 @@ if __name__=="__main__":
             sen_test = escape(request.form['sentence'])
             x = sen2mat(sen_test, w2v)
             prediction = model.predict()(x)
-            result.append('<p>Positivity: %s</p>' %(prediction[0,0]))
-            result.append('<p>Negativity: %s</p>' %(prediction[0,1]))
+            result.append('<p>Polarity: %s</p>' %(prediction[0,0]))
             predict_ngrams = {}
             words = sen_test.split(" ")
             for i in range(1,5):
                 for gram in zip(*[words[k:] for k in range(i)]):
                     gram_mat = sen2mat(" ".join(gram), w2v)
-                    predict_ngrams[gram] = model.predict()(gram_mat)
-            result.append('<p>Most important features: %s</p>' %str(predict_ngrams))
+                    predict_ngrams[gram] = model.predict()(gram_mat)[0,0]
+            import operator
+            sorted_p = sorted(predict_ngrams.items(), key=operator.itemgetter(1)).reverse()
+            result.append('<p>Most important features: %s</p>' %str(sorted_p[:5]))
         return Response(''.join(result), mimetype='text/html')
 
     # Load the werkzeug serving
