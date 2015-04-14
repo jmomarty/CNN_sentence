@@ -159,9 +159,10 @@ if __name__=="__main__":
                     gram_mat = sen2mat(" ".join(gram), w2v)
                     pgrams[gram] = model.predict()(gram_mat)[0,0]
             sorted_p = sorted(pgrams, key=pgrams.get, reverse = True)
-            result.append('<p>Most important features:</p>')
-            for x in sorted_p[:5]:
-                result.append('<p>{0} : {1}</p>'.format(x, sorted_p[x]))
+            print sorted_p
+            # result.append('<p>Most important features:</p>')
+            # for x in sorted_p[:5]:
+            #     result.append('<p>{0} : {1}</p>'.format(x, sorted_p[x]))
         return Response(''.join(result), mimetype='text/html')
 
     # Load the werkzeug serving
