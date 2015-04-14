@@ -87,11 +87,15 @@ class CNN(object):
         hidden_units[0] = feature_maps*len(filter_hs)
         self.classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [params_loaded[0], params_loaded[1]])
 
-    def predict(self):
+    def predict(self, words_other = None):
 
         x = T.matrix('x')
         test_pred_layers = []
-        test_layer0_input = self.Words[T.cast(x.flatten(),dtype="int32")].reshape((1,1,self.img_h,self.Words.shape[1]))
+        if words_other == None:
+            test_layer0_input = self.Words[T.cast(x.flatten(),dtype="int32")].reshape((1,1,self.img_h,self.Words.shape[1]))
+        else:
+            wo = theano.shared(value = np.array(words_other, dtype = theano.config.floatX), name = "words_other")
+            test_layer0_input = wo[T.cast(x.flatten(),dtype="int32")].reshape((1,1,self.img_h,wo.shape[1]))
         for i in range(len(self.conv_layers)):
             test_layer0_output = self.conv_layers[i].predict(test_layer0_input, 1)
             test_pred_layers.append(test_layer0_output.flatten(2))
@@ -156,11 +160,20 @@ if __name__=="__main__":
         result = ['<title>Write a sentence!</title>']
         if request.method == 'POST':
             sen_test = escape(request.form['sentence'])
-            sen_test = get_idx_from_sent(unidecode(sen_test), word_idx_map, max_l=900, k=300, filter_h=5)
+            sen_test = get_idx_from_sent(unidecode(sen_test).lower(), word_idx_map, max_l=900, k=300, filter_h=5)
             x = np.array(sen_test, dtype=theano.config.floatX).reshape(1,len(sen_test))
             prediction = str(model.predict()(x))
             result.append('<h1>%s</h1>' %(prediction))
         result.append('''
+            <P>Select the language:
+            <SELECT NAME=lang MULTIPLE>
+            <OPTION>French</OPTION>
+            <OPTION>English</OPTION>
+            <OPTION>German</OPTION>
+            <OPTION>Spanish</OPTION>
+            <OPTION>Italian</OPTION>
+            </SELECT>
+            </P>
             <form action="" method="post">
                 <p>Sentence: <input type="text" name="sentence" size="20">
                 <input type="submit" value="Let's compute that shit!">
