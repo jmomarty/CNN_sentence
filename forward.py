@@ -133,8 +133,7 @@ def sen2mat(sen, w2v, max_l=900, k=300, filter_h=5):
             mat[i + pad] = w2v[unidecode(word)]
         else:
             mat[i + pad] = np.zeros(k)
-    mat.reshape((1,1,max_l+2*pad,k))
-    mat = theano.shared(value = mat)
+    mat = theano.shared(value = mat).reshape((1,1,max_l+2*pad,k))
     return mat
 
 def make_idx_data_cv(revs, word_idx_map, cv, max_l=51, k=300, filter_h=5):
