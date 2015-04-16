@@ -402,7 +402,7 @@ if __name__=="__main__":
     else:
         params_loaded = None
 
-    for i in xrange(args.folds):
+    for i in xrange(int(args.folds)):
         datasets = make_idx_data_cv(revs, W_fr, W_en, i, k=w2v_size, filter_h=5)
         perf = train_conv_net(datasets,
                               lr_decay=0.95,
