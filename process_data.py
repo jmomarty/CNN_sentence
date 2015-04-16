@@ -262,9 +262,9 @@ if __name__=="__main__":
     print "class distribution: " + str(class_dist)
 
     print "loading word2vec vectors...",
-    w2v = load_bin_vec(vocab_fr, vocab_en, w2v_fr, w2v_en)
+    w2v_fr, w2v_en = load_bin_vec(vocab_fr, vocab_en, w2v_fr, w2v_en)
     print "word2vec loaded!"
-    print "num words already in word2vec: " + str(len(w2v))
+    print "num words already in word2vec: " + str(len(w2v_fr)+len(w2v_en))
     add_unknown_words(vocab_fr, vocab_en, w2v_fr, w2v_en, k = w2v_size)
     W_fr, W_en, word_idx_map_fr, word_idx_map_en = get_W(w2v_fr, w2v_en, k = w2v_size)
 
