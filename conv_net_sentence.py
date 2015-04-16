@@ -374,6 +374,7 @@ if __name__=="__main__":
     # Arguments for the program:
     parser = argparse.ArgumentParser(description='Convnet')
     parser.add_argument('mode', help='static/nonstatic')
+    parser.add_argument('folds')
     parser.add_argument('--filter_hs', help='filter window size', default='3,4,5')
     parser.add_argument('--epochs', help='num epochs', type=int, default=25)
     parser.add_argument('--input', default='data.p')
