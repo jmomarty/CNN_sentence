@@ -153,7 +153,7 @@ def get_W(w2v_fr, w2v_en, k=300):
     for word in w2v_en:
         W_en[i] = w2v_en[word]
         i += 1
-    return W_fr, W_en, word_idx_map_fr, word_idx_map_en
+    return W_fr, W_en
 
 def load_bin_vec(vocab_fr, vocab_en, fr, en):
     """
@@ -266,7 +266,7 @@ if __name__=="__main__":
     print "word2vec loaded!"
     print "num words already in word2vec: " + str(len(w2v_fr)+len(w2v_en))
     add_unknown_words(vocab_fr, vocab_en, w2v_fr, w2v_en, k = w2v_size)
-    W_fr, W_en, word_idx_map_fr, word_idx_map_en = get_W(w2v_fr, w2v_en, k = w2v_size)
+    W_fr, W_en = get_W(w2v_fr, w2v_en, k = w2v_size)
 
     cPickle.dump([revs, W_fr, W_en, vocab_fr, vocab_en], open(args.output, "wb"))
     print "dataset created!"
