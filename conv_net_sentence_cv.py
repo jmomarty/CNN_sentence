@@ -374,22 +374,6 @@ if __name__=="__main__":
     num_classes = int(args.classes)
     results = []
 
-    perf = train_conv_net(datasets,
-                          U,
-                          img_w=w2v_size,
-                          lr_decay=0.95,
-                          filter_hs=window_sizes,
-                          conv_non_linear="relu",
-                          hidden_units=[100,num_classes],
-                          use_valid_set=True,
-                          shuffle_batch=True,
-                          n_epochs=args.epochs,
-                          sqr_norm_lim=9,
-                          non_static=non_static,
-                          batch_size=30,
-                          dropout_rate=[0.5])
-    print "perf: " + str(perf)
-
     for i in xrange(args.folds):
         datasets = make_idx_data_cv(revs, word_idx_map, i, max_l=56,k=300, filter_h=5)
         perf = train_conv_net(datasets,

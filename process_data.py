@@ -16,27 +16,29 @@ def build_data_cv(data, cv=10, clean=True):
     """
 
     revs = []
-    vocab = defaultdict(float)
+    vocab_en = defaultdict(float)
+    vocab_fr = defaultdict(float)
 
     for k in range(len(data)):
         with codecs.open(data[k], "rb", encoding="utf-8") as f:
             for line in f:
-                # rev = []
-                # rev.append(line.strip())
-                # if clean:
-                #     orig_rev = clean_str(" ".join(rev))
-                # else:
-                #     orig_rev = u" ".join(rev).lower()
-                words = set(line.split())
-                for word in words:
-                    vocab[unicode(word)] += 1
+                sen_array = line.split()
+                lang = sen_array[0]
+                words = set(sen_array)
+                if lang == "en":
+                    for word in words:
+                        vocab_en[unicode(word)] += 1
+                if lang == "fr":
+                    for word in words:
+                        vocab_fr[unicode(word)] += 1
                 datum  = {"y": k,
-                          "text": unicode(line),
-                          "num_words": len(line.split()),
+                          "language":lang,
+                          "text": unicode(" ".join(sen_array[1:])),
+                          "num_words": len(sen_array[1:]),
                           "split": np.random.randint(0,cv)}
                 revs.append(datum)
 
-    return revs, vocab
+    return revs, vocab_fr, vocab_en
 
 def build_data(train, test, clean=True):
 
@@ -132,47 +134,62 @@ def build_data_tdt(train, dev, test, clean=True):
 
     return revs, vocab
 
-def get_W(word_vecs, k=300):
+def get_W(w2v_fr, w2v_en, k=300):
 
     """
     Get word matrix. W[i] is the vector for word indexed by i
     """
 
-    vocab_size = len(word_vecs)
-    word_idx_map = dict()
-    W = np.zeros(shape=(vocab_size+1, k))            
-    W[0] = np.zeros(k)
+    vocab_fr_size = len(w2v_fr)
+    vocab_en_size = len(w2v_en)
+    W_fr = np.zeros(shape=(vocab_fr_size+1, k))
+    W_fr[0] = np.zeros(k)
+    W_en = np.zeros(shape=(vocab_en_size+1, k))
+    W_en[0] = np.zeros(k)
     i = 1
-    for word in word_vecs:
-        W[i] = word_vecs[word]
-        word_idx_map[word] = i
+    for word in w2v_fr:
+        W_fr[i] = w2v_fr[word]
         i += 1
-    return W, word_idx_map
+    for word in w2v_en:
+        W_en[i] = w2v_en[word]
+        i += 1
+    return W_fr, W_en, word_idx_map_fr, word_idx_map_en
 
-def load_bin_vec(fname, vocab):
+def load_bin_vec(vocab_fr, vocab_en, fr, en):
     """
     Loads 300x1 word vecs from Google (Mikolov) word2vec
     """
-    word_vecs = {}
-    w2v = gensim.models.Word2Vec.load_word2vec_format(fname, binary=True)
-    for word in w2v.vocab:
-        if word in vocab:
-            word_vecs[word] = w2v[word]
-        if unidecode(word) in vocab:
-            word_vecs[unidecode(word)] = w2v[word]
+    wv_fr = {}
+    wv_en = {}
+    fr = gensim.models.Word2Vec.load_word2vec_format(fr, binary=True)
+    en = gensim.models.Word2Vec.load_word2vec_format(en, binary=True)
+    for word in fr.vocab:
+        if word in vocab_fr:
+            wv_fr[word] = fr[word]
+        if unidecode(word) in vocab_fr:
+            wv_fr[unidecode(word)] = fr[word]
+    for word in en.vocab:
+        if word in vocab_en:
+            wv_en[word] = en[word]
+        if unidecode(word) in vocab_en:
+            wv_en[unidecode(word)] = en[word]
 
-    return word_vecs
+    return wv_fr, wv_en
 
-def add_unknown_words(word_vecs, vocab, min_df=1, k=300):
+def add_unknown_words(vocab_fr, vocab_en, wv_fr, wv_en, min_df=1, k=300):
     """
     For words that occur in at least min_df documents, create a separate word vector.    
     0.25 is chosen so the unknown vectors have (approximately) same variance as pre-trained ones
     """
 
-    for word in vocab:
-        if word not in word_vecs:
-            if vocab[word] >= min_df:
-                word_vecs[word] = np.random.uniform(-0.25,0.25,k)
+    for word in vocab_fr:
+        if word not in wv_fr:
+            if vocab_fr[word] >= min_df:
+                wv_fr[word] = np.random.uniform(-0.25,0.25,k)
+    for word in vocab_en:
+        if word not in wv_en:
+            if vocab_en[word] >= min_df:
+                wv_en[word] = np.random.uniform(-0.25,0.25,k)
 
 def clean_str(string, TREC=False):
     """
@@ -207,7 +224,8 @@ if __name__=="__main__":
     # Arguments for the program:
     parser = argparse.ArgumentParser(description='Data Processing')
     parser.add_argument('mode', help='cv/dev')
-    parser.add_argument('word_vectors', help='w2v_file')
+    parser.add_argument('w2v_fr')
+    parser.add_argument('w2v_en')
     parser.add_argument('--train_files', nargs = '*')
     parser.add_argument('--dev_files', nargs = '*')
     parser.add_argument('--test_files', nargs = '*')
@@ -216,16 +234,18 @@ if __name__=="__main__":
     parser.add_argument('--w2v_size', default=300)
     args = parser.parse_args()
 
-    w2v_file = args.word_vectors
+    w2v_fr = args.w2v_fr
+    w2v_en = args.w2v_en
     w2v_size = int(args.w2v_size)
 
     train_folder = args.train_files
     dev_folder = args.dev_files
     test_folder = args.test_files
-    print train_folder
+
     print "loading data...",
+
     if args.mode != "dev":
-        revs, vocab = build_data_cv(train_folder, int(args.mode), args.clean)
+        revs, vocab_fr, vocab_en = build_data_cv(train_folder, int(args.mode), args.clean)
     else:
         revs, vocab = build_data_tdt(train_folder, dev_folder, test_folder, args.clean)
 
@@ -236,20 +256,17 @@ if __name__=="__main__":
     class_dist, _ = np.histogram(class_dist, bins = len(train_folder))
     print "data loaded!"
     print "number of sentences: " + str(len(revs))
-    print "vocab size: " + str(len(vocab))
+    print "vocab size: " + str(len(vocab_fr)+len(vocab_en))
     print "max sentence length: " + str(max_l)
     print "average sentence length: " + str(mean_l)
     print "class distribution: " + str(class_dist)
 
     print "loading word2vec vectors...",
-    w2v = load_bin_vec(w2v_file, vocab)
+    w2v = load_bin_vec(vocab_fr, vocab_en, w2v_fr, w2v_en)
     print "word2vec loaded!"
     print "num words already in word2vec: " + str(len(w2v))
-    add_unknown_words(w2v, vocab, k = w2v_size, printsthg = False)
-    W, word_idx_map = get_W(w2v, k = w2v_size)
-    rand_vecs = {}
-    add_unknown_words(rand_vecs, vocab, k = w2v_size, printsthg = False)
-    W2, _ = get_W(rand_vecs, k = w2v_size)
+    add_unknown_words(vocab_fr, vocab_en, w2v_fr, w2v_en, k = w2v_size)
+    W_fr, W_en, word_idx_map_fr, word_idx_map_en = get_W(w2v_fr, w2v_en, k = w2v_size)
 
-    cPickle.dump([revs, W, W2, word_idx_map, vocab], open(args.output, "wb"))
+    cPickle.dump([revs, W_fr, W_en, vocab_fr, vocab_en], open(args.output, "wb"))
     print "dataset created!"

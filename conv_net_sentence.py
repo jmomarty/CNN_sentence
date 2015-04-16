@@ -20,11 +20,11 @@ import sys
 import argparse
 from conv_net_classes import *
 from time import ctime
+from unidecode import unidecode
 
 warnings.filterwarnings("ignore")   
 
 def train_conv_net(datasets,
-                   U,
                    model_name,
                    params_loaded = None,
                    img_w=300,
@@ -52,6 +52,7 @@ def train_conv_net(datasets,
     """
 
     rng = np.random.RandomState(3435)
+    corpus_train, target_train, corpus_test, target_test = datasets[0], datasets[1], datasets[2], datasets[3]
     img_h = len(datasets[0][0])-1  
     filter_w = img_w    
     feature_maps = hidden_units[0]
@@ -64,17 +65,13 @@ def train_conv_net(datasets,
                   ("dropout", dropout_rate), ("batch_size",batch_size),("non_static", non_static),
                     ("learn_decay",lr_decay), ("conv_non_linear", conv_non_linear), ("non_static", non_static)
                     ,("sqr_norm_lim",sqr_norm_lim),("shuffle_batch",shuffle_batch)]
-    print parameters    
+    print parameters
 
     #define model architecture
     index = T.lscalar()
-    x = T.matrix('x')   
     y = T.ivector('y')
-    Words = theano.shared(value = np.asarray(U, dtype=theano.config.floatX), name = "Words")
-    zero_vec_tensor = T.vector()
-    zero_vec = np.zeros(img_w)
-    set_zero = theano.function([zero_vec_tensor], updates=[(Words, T.set_subtensor(Words[0,:], zero_vec_tensor))], allow_input_downcast = True)
-    layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0],1,x.shape[1],Words.shape[1]))                                  
+    x = T.ftensor4('x')
+    layer0_input = x.reshape((x.shape[0],1,x.shape[2],x.shape[3]))
     conv_layers = []
     layer1_inputs = []
     for i in xrange(len(filter_hs)):
@@ -99,14 +96,11 @@ def train_conv_net(datasets,
         classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
     else:
         classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [params_loaded[0], params_loaded[1]])
-    
+
     #define parameters of the model and update functions using adadelta
     params = classifier.params
     for conv_layer in conv_layers:
         params += conv_layer.params
-    if non_static:
-        #if word vectors are allowed to change, add them as model parameters
-        params += [Words]
     cost = classifier.negative_log_likelihood(y) 
     dropout_cost = classifier.dropout_negative_log_likelihood(y)           
     grad_updates = sgd_updates_adadelta(params, dropout_cost, lr_decay, 1e-6, sqr_norm_lim)
@@ -114,13 +108,13 @@ def train_conv_net(datasets,
     #shuffle dataset and assign to mini batches. if dataset size is not a multiple of mini batches, replicate 
     #extra data (at random)
     np.random.seed(3435)
-    if datasets[0].shape[0] % batch_size > 0:
-        extra_data_num = batch_size - datasets[0].shape[0] % batch_size
-        train_set = np.random.permutation(datasets[0])   
+    if corpus_train.shape[0] % batch_size > 0:
+        extra_data_num = batch_size - corpus_train.shape[0] % batch_size
+        train_set = np.random.permutation(corpus_train)
         extra_data = train_set[:extra_data_num]
-        new_data=np.append(datasets[0],extra_data,axis=0)
+        new_data=np.append(corpus_train,extra_data,axis=0)
     else:
-        new_data = datasets[0]
+        new_data = corpus_train
     new_data = np.random.permutation(new_data)
     n_batches = new_data.shape[0]/batch_size
     n_train_batches = int(np.round(n_batches*0.9))
@@ -141,11 +135,11 @@ def train_conv_net(datasets,
                   x: val_set_x[index * batch_size: (index + 1) * batch_size],
                   y: val_set_y[index * batch_size: (index + 1) * batch_size]})
     else:
-        test_set_x = datasets[1][:,:img_h] 
-        test_set_y = np.asarray(datasets[1][:,-1],"int32")
+        test_set_x = corpus_test[:,:img_h]
+        test_set_y = target_test.astype("int32")
         if use_valid_set:
             train_set = new_data[:n_train_batches*batch_size,:]
-            val_set = new_data[n_train_batches*batch_size:,:]     
+            val_set = new_data[n_train_batches*batch_size:,:]
             train_set_x, train_set_y = shared_dataset((train_set[:,:img_h],train_set[:,-1]))
             val_set_x, val_set_y = shared_dataset((val_set[:,:img_h],val_set[:,-1]))
             n_val_batches = n_batches - n_train_batches
@@ -155,13 +149,8 @@ def train_conv_net(datasets,
                     y: val_set_y[index * batch_size: (index + 1) * batch_size]})
         else:
             train_set = new_data[:,:]    
-            train_set_x, train_set_y = shared_dataset((train_set[:,:img_h],train_set[:,-1]))  
-            
-    #make theano functions to get train/val/test errors
-    # test_model = theano.function([index], classifier.errors(y),
-    #          givens={
-    #             x: train_set_x[index * batch_size: (index + 1) * batch_size],
-    #             y: train_set_y[index * batch_size: (index + 1) * batch_size]})
+            train_set_x, train_set_y = shared_dataset((train_set[:,:img_h],target_train.astype("int32")))
+
     train_model = theano.function([index], [cost, classifier.errors(y)], updates=grad_updates,
           givens={
             x: train_set_x[index*batch_size:(index+1)*batch_size],
@@ -172,7 +161,7 @@ def train_conv_net(datasets,
         y: train_set_y[index*batch_size:(index+1)*batch_size]})
     test_pred_layers = []
     test_size = test_set_x.shape[0]
-    test_layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((test_size,1,img_h,Words.shape[1]))
+    test_layer0_input = x
     for conv_layer in conv_layers:
         test_layer0_output = conv_layer.predict(test_layer0_input, test_size)
         test_pred_layers.append(test_layer0_output.flatten(2))
@@ -210,19 +199,16 @@ def train_conv_net(datasets,
                     f = open(filename, "wb")
                     cPickle.dump(dict_params, f)
                     f.close()
-                set_zero(zero_vec)
                 train_losses.append(error_epoch)
-
         else:
             for minibatch_index in xrange(n_train_batches):
                 cost_epoch = train_model(minibatch_index)
-                set_zero(zero_vec)
         train_perf = 1 - np.mean(train_losses)
-        # test_loss = test_model_all(test_set_x,test_set_y)
-        # test_perf = 1 - test_loss
-        val_losses = [val_errors(i) for i in xrange(n_val_batches)]
-        val_perf = 1- np.mean(val_losses)
-        print('epoch %i, train perf %f %%, val perf %f' % (epoch, train_perf * 100., val_perf*100.))
+        test_loss = test_model_all(test_set_x,test_set_y)
+        test_perf = 1 - test_loss
+        # val_losses = [val_errors(i) for i in xrange(n_val_batches)]
+        # val_perf = 1- np.mean(val_losses)
+        print('epoch %i, train perf %f %%, val perf %f' % (epoch, train_perf * 100., test_perf*100.))
         # print('epoch %i, test perf %f' % (epoch, test_perf*100.))
 
     test_loss = test_model_all(test_set_x,test_set_y)        
@@ -299,7 +285,7 @@ def safe_update(dict_to, dict_from):
             raise KeyError(key)
         dict_to[key] = val
     return dict_to
-    
+
 def get_idx_from_sent(sent, word_idx_map, max_l=51, k=300, filter_h=5):
     """
     Transforms sentence into a list of indices. Pad with zeroes.
@@ -316,21 +302,42 @@ def get_idx_from_sent(sent, word_idx_map, max_l=51, k=300, filter_h=5):
         x.append(0)
     return x
 
-def make_idx_data_cv(revs, word_idx_map, cv, max_l=51, k=300, filter_h=5):
-    """
-    Transforms sentences into a 2-d matrix.
-    """
-    train, test = [], []
-    for rev in revs:
-        sent = get_idx_from_sent(rev["text"], word_idx_map, max_l, k, filter_h)   
-        sent.append(rev["y"])
-        if rev["split"]==cv:
-            test.append(sent)
+def sen2mat(sen, w2v, max_l=900, k=300, filter_h=5):
+
+    pad = filter_h - 1
+    mat = np.zeros((max_l+2*pad,k),dtype=theano.config.floatX)
+    i = 0
+    for word in sen.split(" "):
+        if word in w2v:
+            mat[i + pad] = w2v[word]
+        elif unidecode(word) in w2v:
+            mat[i + pad] = w2v[unidecode(word)]
         else:
-            train.append(sent)
-    train = np.array(train)
-    test = np.array(test)
-    return [train, test]     
+            mat[i + pad] = np.zeros(k)
+        i+=1
+    mat = mat.reshape((1,1,max_l+2*pad,k))
+    return mat
+
+def make_idx_data_cv(revs, w2v_fr, w2v_en, cv, max_l=51, k=300, filter_h=5):
+
+    corpus_train, target_train, corpus_test, target_test = [], [], [], []
+    for rev in revs:
+        if rev["language"] == "fr":
+            sent = sen2mat(rev["text"], w2v_fr, max_l = max_l)
+        if rev["language"] == "en":
+            sent = sen2mat(rev["text"], w2v_en, max_l = max_l)
+        target = rev["y"]
+        if rev["split"]==cv:
+            corpus_test.append(sent)
+            target_test.append(target)
+        else:
+            corpus_train.append(sent)
+            target_train.append(target)
+    corpus_train = np.array(corpus_train)
+    corpus_test = np.array(corpus_test)
+    target_train = np.array(target_train)
+    target_test = np.array(target_test)
+    return [corpus_train, target_train, corpus_test, target_test]
 
 def make_idx_data_tdt(revs, word_idx_map, max_l=51, k=300, filter_h=5):
     """
@@ -367,7 +374,6 @@ if __name__=="__main__":
     # Arguments for the program:
     parser = argparse.ArgumentParser(description='Convnet')
     parser.add_argument('mode', help='static/nonstatic')
-    parser.add_argument('word_vectors', help='rand/word2vec')
     parser.add_argument('--filter_hs', help='filter window size', default='3,4,5')
     parser.add_argument('--epochs', help='num epochs', type=int, default=25)
     parser.add_argument('--input', default='data.p')
@@ -380,20 +386,11 @@ if __name__=="__main__":
     w2v_size = int(args.w2v_size)
     print "loading data...",
     x = cPickle.load(open(args.input,"rb"))
-    revs, W, W2, word_idx_map, vocab = x[0], x[1], x[2], x[3], x[4]
+    revs, W_fr, W_en, word_idx_map_fr, word_idx_map_en, vocab_fr, vocab_en = x[0], x[1], x[2], x[3], x[4], x[5], x[6]
     print "data loaded!"
-
-    if args.word_vectors=="rand":
-        print "using: random vectors"
-        U = W2
-    elif args.word_vectors=="word2vec":
-        print "using: word2vec vectors"
-        U = W
 
     window_sizes= parse_filter_hs(args.filter_hs)
     print "window sizes", window_sizes
-
-    datasets = make_idx_data_cv(revs, word_idx_map, 1, max_l=900,k=w2v_size, filter_h=5)
 
     num_classes = int(args.classes)
     results = []
@@ -404,20 +401,20 @@ if __name__=="__main__":
     else:
         params_loaded = None
 
-    perf = train_conv_net(datasets,
-                          U,
-                          model_name=args.model_name,
-                          img_w=w2v_size,
-                          lr_decay=0.95,
-                          filter_hs=window_sizes,
-                          conv_non_linear="relu",
-                          hidden_units=[100,num_classes],
-                          use_valid_set=True,
-                          shuffle_batch=True,
-                          n_epochs=args.epochs,
-                          sqr_norm_lim=9,
-                          non_static=non_static,
-                          batch_size=30,
-                          dropout_rate=[0.5],
-                          params_loaded=params_loaded)
-    print "perf: " + str(perf)
+    for i in xrange(args.folds):
+        datasets = make_idx_data_cv(revs, W_fr, W_en, i, k=w2v_size, filter_h=5)
+        perf = train_conv_net(datasets,
+                              lr_decay=0.95,
+                              filter_hs=window_sizes,
+                              conv_non_linear="relu",
+                              hidden_units=[100,2],
+                              use_valid_set=False,
+                              shuffle_batch=True,
+                              n_epochs=args.epochs,
+                              sqr_norm_lim=9,
+                              non_static=non_static,
+                              batch_size=50,
+                              dropout_rate=[0.5])
+        print "cv: " + str(i) + ", perf: " + str(perf)
+        results.append(perf)
+    print str(np.mean(results))
