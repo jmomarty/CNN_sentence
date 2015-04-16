@@ -387,7 +387,7 @@ if __name__=="__main__":
     w2v_size = int(args.w2v_size)
     print "loading data...",
     x = cPickle.load(open(args.input,"rb"))
-    revs, W_fr, W_en, word_idx_map_fr, word_idx_map_en, vocab_fr, vocab_en = x[0], x[1], x[2], x[3], x[4], x[5], x[6]
+    revs, W_fr, W_en, vocab_fr, vocab_en = x[0], x[1], x[2], x[3], x[4]
     print "data loaded!"
 
     window_sizes= parse_filter_hs(args.filter_hs)
