@@ -315,6 +315,7 @@ def make_idx_data_cv(revs, mapping, cv, max_l=51, filter_h=5):
             train.append(sent)
     train = np.array(train)
     test = np.array(test)
+    print train.shape, test.shape
     return [train, test]
 
 def parse_filter_hs(filter_hs):
