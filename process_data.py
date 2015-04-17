@@ -72,7 +72,7 @@ def get_w(wv_dict, k=300):
     return w
 
 
-def load_bin_vec(vocab, *w2v):
+def load_bin_vec(vocab, w2v):
 
     """
     Loads 300x1 word vecs from Google (Mikolov) word2vec
@@ -80,7 +80,7 @@ def load_bin_vec(vocab, *w2v):
 
     wv = {}
     for lg in w2v:
-        lgm = load_word2vec_format(lg, binary=True)
+        lgm = load_word2vec_format("F:/mikolov/" + lg + ".2gram.sem", binary=True)
         wv[lg] = {}
         for word in lgm.vocab:
             if word in vocab[lg]:
