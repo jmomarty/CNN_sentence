@@ -58,7 +58,9 @@ def get_w(wv_dict, k=300):
     """
 
     mapping = {}
-    vocab_size = len(wv_dict)
+    vocab_size = 0
+    for x in wv_dict:
+        vocab_size += len(wv_dict[x])
     w = np.zeros(shape=(vocab_size+1, k))
     w[0] = np.zeros(k)
     i = 1
