@@ -49,7 +49,7 @@ def train_conv_net(dst,
     """
 
     rng = np.random.RandomState(3435)
-    img_h = len(dst[0][1])-1
+    img_h = dst[0].shape[1]
     filter_w = img_w    
     feature_maps = hidden_units[0]
     filter_shapes = []
