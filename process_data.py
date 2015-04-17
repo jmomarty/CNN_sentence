@@ -44,7 +44,7 @@ def create_dict(d, r, v, s, cv):
     return r, v
 
 
-def build_data(splits, s, cv=None):
+def build_data(splits, s=0, cv=None):
 
     revs = []
     vocab = {}
@@ -143,9 +143,9 @@ if __name__ == "__main__":
     print "loading data...",
 
     if args.mode == "dev":
-        rvs, vcb = build_data([train_folder, dev_folder, test_folder], opt=0)
+        rvs, vcb = build_data([train_folder, test_folder])
     else:
-        rvs, vcb = build_data([train_folder], opt=int(args.mode))
+        rvs, vcb = build_data([train_folder], s=int(args.mode), cv=True)
 
     pd_data_num_words = pd.DataFrame(rvs)["num_words"]
     max_l = np.max(pd_data_num_words)
