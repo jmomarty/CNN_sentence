@@ -1,241 +1,127 @@
 # -*- coding: utf-8 -*-
+
 import numpy as np
 import cPickle
-from collections import defaultdict
-import sys, re
 import pandas as pd
 import argparse
-import gensim
+from gensim.models.Word2Vec import load_word2vec_format
 import codecs
 from unidecode import unidecode
 
-def build_data_cv(data, cv=10, clean=True):
 
-    """
-    Loads data and split into cv folds.
-    """
+def create_dict(d, r, v, s):
 
-    revs = []
-    vocab_en = defaultdict(float)
-    vocab_fr = defaultdict(float)
-
-    for k in range(len(data)):
-        with codecs.open(data[k], "rb", encoding="utf-8") as f:
+    for k in range(len(d)):
+        with codecs.open(d[k], "rb", encoding="utf-8") as f:
             for line in f:
                 sen_array = line.split()
                 lang = sen_array[0]
                 words = set(sen_array)
-                if lang == "en":
+                if lang in v:
                     for word in words:
-                        vocab_en[unicode(word)] += 1
-                if lang == "fr":
+                        v[lang][unicode(word)] += 1
+                else:
+                    v[lang] = {}
                     for word in words:
-                        vocab_fr[unicode(word)] += 1
-                datum  = {"y": k,
-                          "language":lang,
-                          "text": unicode(" ".join(sen_array[1:])),
-                          "num_words": len(sen_array[1:]),
-                          "split": np.random.randint(0,cv)}
-                revs.append(datum)
+                        v[lang][unicode(word)] += 1
+                datum = {"y": k,
+                         "language": lang,
+                         "text": unicode(" ".join(sen_array[1:])),
+                         "num_words": len(sen_array[1:]),
+                         "split": s}
+                r.append(datum)
 
-    return revs, vocab_fr, vocab_en
+    return r, v
 
-def build_data(train, test, clean=True):
+
+def build_data(splits, opt=0):
 
     revs = []
-    vocab = defaultdict(float)
-    c = 0
+    vocab = {}
 
-    for x in train:
-        with codecs.open(x, "rb", encoding="utf-8") as f:
-            for line in f:
-                if clean:
-                    line = clean_str(line)
-                else:
-                    line = line.lower()
-                words = line.split()
-                for word in set(words):
-                    vocab[word] += 1
-                datum  = {"y": c,
-                          "text": line,
-                          "num_words": len(words),
-                          "split": 0}
-                revs.append(datum)
-        c += 1
+    if opt != 0:  # cross validation
+        revs, vocab = create_dict(splits[0], revs, vocab, np.random.randint(0, opt))
 
-    c = 0
-
-    for x in test:
-        with codecs.open(x, "rb", encoding="utf-8") as f:
-            for line in f:
-                if clean:
-                    line = clean_str(line)
-                else:
-                    line = line.lower()
-                words = line.split()
-                for word in set(words):
-                    vocab[word] += 1
-                datum  = {"y": c,
-                          "text": line,
-                          "num_words": len(words),
-                          "split": 1}
-                revs.append(datum)
-        c += 1
+    else:  # train/dev/test split
+        k = 0
+        for split in splits:
+            revs, vocab = create_dict(split, revs, vocab, k)
+            k += 1
 
     return revs, vocab
 
-def build_data_tdt(train, dev, test, clean=True):
 
-    revs = []
-    vocab = defaultdict(float)
-    c = 0
-
-    for x in train:
-        with codecs.open(x, "rb", encoding="utf-8") as f:
-            for line in f:
-                words = line.split()
-                for word in set(words):
-                    vocab[word] += 1
-                datum  = {"y": c,
-                          "text": unicode(line),
-                          "num_words": len(words),
-                          "split": 0}
-                revs.append(datum)
-        c += 1
-
-    c = 0
-
-    for x in dev:
-        with codecs.open(x, "rb", encoding="utf-8") as f:
-            for line in f:
-                words = line.split()
-                for word in set(words):
-                    vocab[word] += 1
-                datum  = {"y": c,
-                          "text": unicode(line),
-                          "num_words": len(words),
-                          "split": 1}
-                revs.append(datum)
-        c += 1
-    c = 0
-
-    for x in test:
-        with codecs.open(x, "rb", encoding="utf-8") as f:
-            for line in f:
-                words = line.split()
-                for word in set(words):
-                    vocab[word] += 1
-                datum  = {"y": c,
-                          "text": unicode(line),
-                          "num_words": len(words),
-                          "split": 2}
-                revs.append(datum)
-        c += 1
-
-    return revs, vocab
-
-def get_W(w2v_fr, w2v_en, k=300):
+def get_w(wv_dict, k=300):
 
     """
     Get word matrix. W[i] is the vector for word indexed by i
     """
 
-    vocab_fr_size = len(w2v_fr)
-    vocab_en_size = len(w2v_en)
-    W_fr = np.zeros(shape=(vocab_fr_size+1, k))
-    W_fr[0] = np.zeros(k)
-    W_en = np.zeros(shape=(vocab_en_size+1, k))
-    W_en[0] = np.zeros(k)
+    mapping = {}
+    vocab_size = len(wv_dict)
+    w = np.zeros(shape=(vocab_size+1, k))
+    w[0] = np.zeros(k)
     i = 1
-    for word in w2v_fr:
-        W_fr[i] = w2v_fr[word]
-        i += 1
-    for word in w2v_en:
-        W_en[i] = w2v_en[word]
-        i += 1
-    return W_fr, W_en
+    for lg in wv_dict:
+        mapping[lg] = {}
+        for word in wv_dict[lg]:
+            w[i] = wv_dict[lg][word]
+            mapping[lg][word] = i
+            i += 1
 
-def load_bin_vec(vocab_fr, vocab_en, fr, en):
+    return w
+
+
+def load_bin_vec(vocab, *w2v):
+
     """
     Loads 300x1 word vecs from Google (Mikolov) word2vec
     """
-    wv_fr = {}
-    wv_en = {}
-    fr = gensim.models.Word2Vec.load_word2vec_format(fr, binary=True)
-    en = gensim.models.Word2Vec.load_word2vec_format(en, binary=True)
-    for word in fr.vocab:
-        if word in vocab_fr:
-            wv_fr[word] = fr[word]
-        if unidecode(word) in vocab_fr:
-            wv_fr[unidecode(word)] = fr[word]
-    for word in en.vocab:
-        if word in vocab_en:
-            wv_en[word] = en[word]
-        if unidecode(word) in vocab_en:
-            wv_en[unidecode(word)] = en[word]
 
-    return wv_fr, wv_en
+    wv = {}
+    for lg in w2v:
+        lgm = load_word2vec_format(lg, binary=True)
+        wv[lg] = {}
+        for word in lgm.vocab:
+            if word in vocab[lg]:
+                wv[lg][word] = lgm[word]
+            elif unidecode(word) in vocab[lg]:
+                wv[lg][unidecode(word)] = lgm[word]
 
-def add_unknown_words(vocab_fr, vocab_en, wv_fr, wv_en, min_df=1, k=300):
+    return wv
+
+
+def add_unknown_words(vocab, wv, min_df=1, k=300):
+
     """
     For words that occur in at least min_df documents, create a separate word vector.    
     0.25 is chosen so the unknown vectors have (approximately) same variance as pre-trained ones
     """
 
-    for word in vocab_fr:
-        if word not in wv_fr:
-            if vocab_fr[word] >= min_df:
-                wv_fr[word] = np.random.uniform(-0.25,0.25,k)
-    for word in vocab_en:
-        if word not in wv_en:
-            if vocab_en[word] >= min_df:
-                wv_en[word] = np.random.uniform(-0.25,0.25,k)
+    for lg in vocab:
+        for word in vocab[lg]:
+            if word not in wv[lg]:
+                if vocab[lg][word] >= min_df:
+                    wv[lg][word] = np.random.uniform(-0.25, 0.25, k)
 
-def clean_str(string, TREC=False):
-    """
-    Tokenization/string cleaning for all datasets except for SST.
-    Every dataset is lower cased except for TREC
-    """
-    string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)     
-    string = re.sub(r"\'s", " \'s", string) 
-    string = re.sub(r"\'ve", " \'ve", string) 
-    string = re.sub(r"n\'t", " n\'t", string) 
-    string = re.sub(r"\'re", " \'re", string) 
-    string = re.sub(r"\'d", " \'d", string) 
-    string = re.sub(r"\'ll", " \'ll", string) 
-    string = re.sub(r",", " , ", string) 
-    string = re.sub(r"!", " ! ", string) 
-    string = re.sub(r"\(", " \( ", string) 
-    string = re.sub(r"\)", " \) ", string) 
-    string = re.sub(r"\?", " \? ", string) 
-    string = re.sub(r"\s{2,}", " ", string)    
-    return string.strip() if TREC else string.strip().lower()
+    return wv
 
-def clean_str_sst(string):
-    """
-    Tokenization/string cleaning for the SST dataset
-    """
-    string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)   
-    string = re.sub(r"\s{2,}", " ", string)    
-    return string.strip().lower()
 
-if __name__=="__main__":
+if __name__ == "__main__":
 
     # Arguments for the program:
     parser = argparse.ArgumentParser(description='Data Processing')
     parser.add_argument('mode', help='cv/dev')
-    parser.add_argument('w2v_fr')
-    parser.add_argument('w2v_en')
-    parser.add_argument('--train_files', nargs = '*')
-    parser.add_argument('--dev_files', nargs = '*')
-    parser.add_argument('--test_files', nargs = '*')
-    parser.add_argument('--clean', default=False)
-    parser.add_argument('--output', default='data.p')
+    parser.add_argument('w2v', nargs='*')
     parser.add_argument('--w2v_size', default=300)
+    parser.add_argument('--train_files', nargs='*')
+    parser.add_argument('--dev_files', nargs='*')
+    parser.add_argument('--test_files', nargs='*')
+    parser.add_argument('--output', default='data.p')
+
     args = parser.parse_args()
 
-    w2v_fr = args.w2v_fr
-    w2v_en = args.w2v_en
+    w2v = args.w2v
     w2v_size = int(args.w2v_size)
 
     train_folder = args.train_files
@@ -244,29 +130,34 @@ if __name__=="__main__":
 
     print "loading data...",
 
-    if args.mode != "dev":
-        revs, vocab_fr, vocab_en = build_data_cv(train_folder, int(args.mode), args.clean)
+    if args.mode == "dev":
+        rvs, vcb = build_data([train_folder, dev_folder, test_folder], opt=0)
     else:
-        revs, vocab = build_data_tdt(train_folder, dev_folder, test_folder, args.clean)
+        rvs, vcb = build_data([train_folder], opt=int(args.mode))
 
-    pd_data_num_words = pd.DataFrame(revs)["num_words"]
+    pd_data_num_words = pd.DataFrame(rvs)["num_words"]
     max_l = np.max(pd_data_num_words)
     mean_l = np.mean(pd_data_num_words)
-    class_dist = pd.DataFrame(revs)["y"].values
-    class_dist, _ = np.histogram(class_dist, bins = len(train_folder))
+    class_dist = pd.DataFrame(rvs)["y"].values
+    class_dist, _ = np.histogram(class_dist, bins=len(train_folder))
+
     print "data loaded!"
-    print "number of sentences: " + str(len(revs))
-    print "vocab size: " + str(len(vocab_fr)+len(vocab_en))
+    print "number of sentences: " + str(len(rvs))
+    l = 0
+    for lg in vcb:
+        l += len(vcb[lg])
+    print "vocab size: " + str(l)
     print "max sentence length: " + str(max_l)
     print "average sentence length: " + str(mean_l)
     print "class distribution: " + str(class_dist)
 
     print "loading word2vec vectors...",
-    w2v_fr, w2v_en = load_bin_vec(vocab_fr, vocab_en, w2v_fr, w2v_en)
+    wv = load_bin_vec(vcb, w2v)
     print "word2vec loaded!"
-    print "num words already in word2vec: " + str(len(w2v_fr)+len(w2v_en))
-    add_unknown_words(vocab_fr, vocab_en, w2v_fr, w2v_en, k = w2v_size)
-    W_fr, W_en = get_W(w2v_fr, w2v_en, k = w2v_size)
 
-    cPickle.dump([revs, W_fr, W_en, vocab_fr, vocab_en], open(args.output, "wb"))
+    print "num words already in word2vec: " + str(len(wv))
+    add_unknown_words(vcb, wv, k=w2v_size)
+    W = get_w(wv, k=w2v_size)
+
+    cPickle.dump([rvs, W, vcb], open(args.output, "wb"))
     print "dataset created!"

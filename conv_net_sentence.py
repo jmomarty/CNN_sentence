@@ -25,6 +25,8 @@ from unidecode import unidecode
 warnings.filterwarnings("ignore")   
 
 def train_conv_net(datasets,
+                   w2v_fr,
+                   w2v_en,
                    model_name,
                    params_loaded = None,
                    img_w=300,
@@ -68,6 +70,14 @@ def train_conv_net(datasets,
     print parameters
 
     #define model architecture
+
+    index = T.lscalar()
+    x = T.matrix('x')
+    y = T.ivector('y')
+    Words_fr = theano.shared(value = np.asarray(w2v_fr, dtype=theano.config.floatX), name = "Words_fr")
+    Words_en = theano.shared(value = np.asarray(w2v_en, dtype=theano.config.floatX), name = "Words_en")
+    layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0],1,x.shape[1],Words.shape[1]))
+
     index = T.lscalar()
     y = T.ivector('y')
     x = T.ftensor4('x')
