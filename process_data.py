@@ -4,7 +4,7 @@ import numpy as np
 import cPickle
 import pandas as pd
 import argparse
-from gensim.models import Word2Vec.load_word2vec_format
+import gensim
 import codecs
 from unidecode import unidecode
 
@@ -80,7 +80,7 @@ def load_bin_vec(vocab, w2v):
 
     wv = {}
     for lg in w2v:
-        lgm = Word2Vec.load_word2vec_format("F:/mikolov/" + lg + ".2gram.sem", binary=True)
+        lgm = gensim.models.Word2Vec.load_word2vec_format("F:/mikolov/" + lg + ".2gram.sem", binary=True)
         wv[lg] = {}
         for word in lgm.vocab:
             if word in vocab[lg]:
