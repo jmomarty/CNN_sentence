@@ -76,7 +76,6 @@ def train_conv_net(dst,
     layer1_inputs = []
     for i in xrange(len(filter_hs)):
         filter_shape = filter_shapes[len(filter_hs)-1-i]
-        print filter_shape
         pool_size = pool_sizes[len(filter_hs)-1-i]
         if params_loaded == None:
             conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
@@ -104,30 +103,30 @@ def train_conv_net(dst,
     cost = classifier.negative_log_likelihood(y) 
     dropout_cost = classifier.dropout_negative_log_likelihood(y)           
     grad_updates = sgd_updates_adadelta(params, dropout_cost, lr_decay, 1e-6, sqr_norm_lim)
-    
-    #shuffle dataset and assign to mini batches. if dataset size is not a multiple of mini batches, replicate 
+
+    #shuffle dataset and assign to mini batches. if dataset size is not a multiple of mini batches, replicate
     #extra data (at random)
     np.random.seed(3435)
-    if corpus_train.shape[0] % batch_size > 0:
-        extra_data_num = batch_size - corpus_train.shape[0] % batch_size
-        train_set = np.random.permutation(corpus_train)
+    if datasets[0].shape[0] % batch_size > 0:
+        extra_data_num = batch_size - datasets[0].shape[0] % batch_size
+        train_set = np.random.permutation(datasets[0])
         extra_data = train_set[:extra_data_num]
-        new_data=np.append(corpus_train,extra_data,axis=0)
+        new_data=np.append(datasets[0],extra_data,axis=0)
     else:
-        new_data = corpus_train
+        new_data = datasets[0]
     new_data = np.random.permutation(new_data)
     n_batches = new_data.shape[0]/batch_size
     n_train_batches = int(np.round(n_batches*0.9))
     print "n_train_batches : " + str(n_train_batches)
-    if len(dst)==3:
+    if len(datasets)==3:
         print "using train/dev/test.."
         use_valid_set=True
         train_set = new_data
-        val_set = dst[1]
+        val_set = datasets[1]
         train_set_x, train_set_y = shared_dataset((train_set[:,:img_h],train_set[:,-1]))
         val_set_x, val_set_y = shared_dataset((val_set[:,:img_h],val_set[:,-1]))
-        test_set_x = dst[2][:,:img_h]
-        test_set_y = np.asarray(dst[2][:,-1],"int32")
+        test_set_x = datasets[2][:,:img_h]
+        test_set_y = np.asarray(datasets[2][:,-1],"int32")
         n_val_batches = int(val_set.shape[0] / batch_size)
         print "n_val_batches : " + str(n_val_batches)
         val_errors = theano.function([index], classifier.errors(y),
@@ -135,8 +134,8 @@ def train_conv_net(dst,
                   x: val_set_x[index * batch_size: (index + 1) * batch_size],
                   y: val_set_y[index * batch_size: (index + 1) * batch_size]})
     else:
-        test_set_x = corpus_test[:,:img_h]
-        test_set_y = target_test.astype("int32")
+        test_set_x = datasets[1][:,:img_h]
+        test_set_y = np.asarray(datasets[1][:,-1],"int32")
         if use_valid_set:
             train_set = new_data[:n_train_batches*batch_size,:]
             val_set = new_data[n_train_batches*batch_size:,:]
@@ -148,8 +147,8 @@ def train_conv_net(dst,
                     x: val_set_x[index * batch_size: (index + 1) * batch_size],
                     y: val_set_y[index * batch_size: (index + 1) * batch_size]})
         else:
-            train_set = new_data[:,:]    
-            train_set_x, train_set_y = shared_dataset((train_set[:,:img_h],target_train.astype("int32")))
+            train_set = new_data[:,:]
+            train_set_x, train_set_y = shared_dataset((train_set[:,:img_h],train_set[:,-1]))
 
     train_model = theano.function([index], [cost, classifier.errors(y)], updates=grad_updates,
           givens={
