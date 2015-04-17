@@ -19,11 +19,11 @@ def create_dict(d, r, v, s):
                 words = set(sen_array)
                 if lang in v:
                     for word in words:
-                        v[lang][unicode(word)] += 1
+                        v[lang][unicode(word)] = 1
                 else:
                     v[lang] = {}
                     for word in words:
-                        v[lang][unicode(word)] += 1
+                        v[lang][unicode(word)] = 1
                 datum = {"y": k,
                          "language": lang,
                          "text": unicode(" ".join(sen_array[1:])),
