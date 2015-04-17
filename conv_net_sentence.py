@@ -338,7 +338,7 @@ if __name__=="__main__":
     w2v_size = int(args.w2v_size)
     print "loading data...",
     x = cPickle.load(open(args.input,"rb"))
-    revs, W, vocab = x[0], x[1], x[2]
+    revs, W, mapping = x[0], x[1], x[2]
     print "data loaded!"
 
     window_sizes= parse_filter_hs(args.filter_hs)
@@ -353,8 +353,9 @@ if __name__=="__main__":
     else:
         params_loaded = None
 
+
     for i in xrange(int(args.mode)):
-        datasets = make_idx_data_cv(revs, W, i, filter_h=5)
+        datasets = make_idx_data_cv(revs, mapping, i, filter_h=5)
         perf = train_conv_net(datasets,
                               W,
                               str(args.model_name),
