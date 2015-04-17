@@ -9,7 +9,18 @@ import codecs
 from unidecode import unidecode
 
 
-def create_dict(d, r, v, s):
+def cd(k, lg, txt, nw, s):
+
+    datum = {"y": k,
+             "language": lg,
+             "text": txt,
+             "num_words": nw,
+             "split": s}
+
+    return datum
+
+
+def create_dict(d, r, v, s, cv):
 
     for k in range(len(d)):
         with codecs.open(d[k], "rb", encoding="utf-8") as f:
@@ -24,28 +35,27 @@ def create_dict(d, r, v, s):
                     v[lang] = {}
                     for word in words:
                         v[lang][unicode(word)] = 1
-                datum = {"y": k,
-                         "language": lang,
-                         "text": unicode(" ".join(sen_array[1:])),
-                         "num_words": len(sen_array[1:]),
-                         "split": s}
+                if cv:
+                    datum = cd(k, lang, unicode(" ".join(sen_array[1:])), len(sen_array[1:]), np.random.randint(0,s))
+                else:
+                    datum = cd(k, lang, unicode(" ".join(sen_array[1:])), len(sen_array[1:]), s)
                 r.append(datum)
 
     return r, v
 
 
-def build_data(splits, opt=0):
+def build_data(splits, s, cv=None):
 
     revs = []
     vocab = {}
 
-    if opt != 0:  # cross validation
-        revs, vocab = create_dict(splits[0], revs, vocab, np.random.randint(0, opt))
+    if cv:  # cross validation
+        revs, vocab = create_dict(splits[0], revs, vocab, s, cv)
 
-    else:  # train/dev/test split
+    else:  # train/test split
         k = 0
         for split in splits:
-            revs, vocab = create_dict(split, revs, vocab, k)
+            revs, vocab = create_dict(split, revs, vocab, k, cv)
             k += 1
 
     return revs, vocab
@@ -71,7 +81,7 @@ def get_w(wv_dict, k=300):
             mapping[lg][word] = i
             i += 1
 
-    return w
+    return w, mapping
 
 
 def load_bin_vec(vocab, w2v):
@@ -159,7 +169,7 @@ if __name__ == "__main__":
 
     print "num words already in word2vec: " + str(len(wv))
     add_unknown_words(vcb, wv, k=w2v_size)
-    W = get_w(wv, k=w2v_size)
+    W, mapping = get_w(wv, k=w2v_size)
 
-    cPickle.dump([rvs, W, vcb], open(args.output, "wb"))
+    cPickle.dump([rvs, W, mapping], open(args.output, "wb"))
     print "dataset created!"

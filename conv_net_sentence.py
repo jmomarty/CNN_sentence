@@ -10,25 +10,20 @@ Much of the code is modified from
 """
 
 import cPickle
-import numpy as np
-from collections import defaultdict, OrderedDict
-import theano
+from collections import OrderedDict
 import theano.tensor as T
-import re
 import warnings
-import sys
 import argparse
 from conv_net_classes import *
-from time import ctime
-from unidecode import unidecode
+
 
 warnings.filterwarnings("ignore")   
 
-def train_conv_net(datasets,
-                   w2v_fr,
-                   w2v_en,
+
+def train_conv_net(dst,
+                   wv,
                    model_name,
-                   params_loaded = None,
+                   params_loaded=None,
                    img_w=300,
                    filter_hs=[3,4,5],
                    hidden_units=[100,2], 
@@ -54,8 +49,8 @@ def train_conv_net(datasets,
     """
 
     rng = np.random.RandomState(3435)
-    corpus_train, target_train, corpus_test, target_test = datasets[0], datasets[1], datasets[2], datasets[3]
-    img_h = len(datasets[0][0])-1  
+    corpus_train, target_train, corpus_test, target_test = dst[0], dst[1], dst[2], dst[3]
+    img_h = len(dst[0][0])-1
     filter_w = img_w    
     feature_maps = hidden_units[0]
     filter_shapes = []
@@ -74,14 +69,9 @@ def train_conv_net(datasets,
     index = T.lscalar()
     x = T.matrix('x')
     y = T.ivector('y')
-    Words_fr = theano.shared(value = np.asarray(w2v_fr, dtype=theano.config.floatX), name = "Words_fr")
-    Words_en = theano.shared(value = np.asarray(w2v_en, dtype=theano.config.floatX), name = "Words_en")
-    layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0],1,x.shape[1],Words.shape[1]))
+    Words = theano.shared(value=np.asarray(wv, dtype=theano.config.floatX), name="Words")
+    layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0], 1, x.shape[1], Words.shape[1]))
 
-    index = T.lscalar()
-    y = T.ivector('y')
-    x = T.ftensor4('x')
-    layer0_input = x.reshape((x.shape[0],1,x.shape[2],x.shape[3]))
     conv_layers = []
     layer1_inputs = []
     for i in xrange(len(filter_hs)):
@@ -129,15 +119,15 @@ def train_conv_net(datasets,
     n_batches = new_data.shape[0]/batch_size
     n_train_batches = int(np.round(n_batches*0.9))
     print "n_train_batches : " + str(n_train_batches)
-    if len(datasets)==3:
+    if len(dst)==3:
         print "using train/dev/test.."
         use_valid_set=True
         train_set = new_data
-        val_set = datasets[1]
+        val_set = dst[1]
         train_set_x, train_set_y = shared_dataset((train_set[:,:img_h],train_set[:,-1]))
         val_set_x, val_set_y = shared_dataset((val_set[:,:img_h],val_set[:,-1]))
-        test_set_x = datasets[2][:,:img_h] 
-        test_set_y = np.asarray(datasets[2][:,-1],"int32")
+        test_set_x = dst[2][:,:img_h]
+        test_set_y = np.asarray(dst[2][:,-1],"int32")
         n_val_batches = int(val_set.shape[0] / batch_size)
         print "n_val_batches : " + str(n_val_batches)
         val_errors = theano.function([index], classifier.errors(y),
@@ -171,7 +161,7 @@ def train_conv_net(datasets,
         y: train_set_y[index*batch_size:(index+1)*batch_size]})
     test_pred_layers = []
     test_size = test_set_x.shape[0]
-    test_layer0_input = x
+    test_layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((test_size,1,img_h,Words.shape[1]))
     for conv_layer in conv_layers:
         test_layer0_output = conv_layer.predict(test_layer0_input, test_size)
         test_pred_layers.append(test_layer0_output.flatten(2))
@@ -296,85 +286,37 @@ def safe_update(dict_to, dict_from):
         dict_to[key] = val
     return dict_to
 
-def get_idx_from_sent(sent, word_idx_map, max_l=51, k=300, filter_h=5):
+def get_idx_from_sent(sent, mapping, lang, max_l=51, filter_h=5):
+
     """
     Transforms sentence into a list of indices. Pad with zeroes.
     """
+
     x = []
     pad = filter_h - 1
     for i in xrange(pad):
         x.append(0)
     words = sent.split()
     for word in words:
-        if word in word_idx_map:
-            x.append(word_idx_map[word])
+        if word in mapping[lang]:
+            x.append(mapping[lang][word])
     while len(x) < max_l+2*pad:
         x.append(0)
     return x
 
-def sen2mat(sen, w2v, max_l=900, k=300, filter_h=5):
+def make_idx_data_cv(revs, mapping, cv, max_l=51, filter_h=5):
 
-    pad = filter_h - 1
-    mat = np.zeros((max_l+2*pad,k),dtype=theano.config.floatX)
-    i = 0
-    for word in sen.split(" "):
-        if word in w2v:
-            mat[i + pad] = w2v[word]
-        elif unidecode(word) in w2v:
-            mat[i + pad] = w2v[unidecode(word)]
-        else:
-            mat[i + pad] = np.zeros(k)
-        i+=1
-    mat = mat.reshape((1,1,max_l+2*pad,k))
-    return mat
-
-def make_idx_data_cv(revs, w2v_fr, w2v_en, cv, max_l=51, k=300, filter_h=5):
-
-    corpus_train, target_train, corpus_test, target_test = [], [], [], []
+    train, test = [], []
     for rev in revs:
-        if rev["language"] == "fr":
-            sent = sen2mat(rev["text"], w2v_fr, max_l = max_l)
-        if rev["language"] == "en":
-            sent = sen2mat(rev["text"], w2v_en, max_l = max_l)
-        target = rev["y"]
-        if rev["split"]==cv:
-            corpus_test.append(sent)
-            target_test.append(target)
-        else:
-            corpus_train.append(sent)
-            target_train.append(target)
-    corpus_train = np.array(corpus_train)
-    corpus_test = np.array(corpus_test)
-    target_train = np.array(target_train)
-    target_test = np.array(target_test)
-    return [corpus_train, target_train, corpus_test, target_test]
-
-def make_idx_data_tdt(revs, word_idx_map, max_l=51, k=300, filter_h=5):
-    """
-    Transforms sentences into a 2-d matrix.
-    """
-    train, dev, test = [], [], []
-    for rev in revs:
-        sent = get_idx_from_sent(rev["text"], word_idx_map, max_l, k, filter_h)
+        sent = get_idx_from_sent(rev, mapping, rev["language"], max_l, filter_h)
         sent.append(rev["y"])
-        if rev["split"]==1:
-            dev.append(sent)
-        if rev["split"]==2:
+        if rev["split"] == cv:
             test.append(sent)
         else:
             train.append(sent)
-    train = np.array(train, dtype="int")
-    dev = np.array(dev, dtype="int")
-    test = np.array(test,dtype="int")
-    return [train, dev, test]
-
-def getMode(mode):
-    if mode=='nonstatic':
-      print "model architecture: CNN-non-static"
-      return True
-    elif mode=="-static":
-      print "model architecture: CNN-static"
-      return False
+    train = np.array(train)
+    test = np.array(test)
+    return [train, test]
 
 def parse_filter_hs(filter_hs):
     return map(int, filter_hs.split(','))
@@ -383,8 +325,7 @@ if __name__=="__main__":
 
     # Arguments for the program:
     parser = argparse.ArgumentParser(description='Convnet')
-    parser.add_argument('mode', help='static/nonstatic')
-    parser.add_argument('folds')
+    parser.add_argument('mode')
     parser.add_argument('--filter_hs', help='filter window size', default='3,4,5')
     parser.add_argument('--epochs', help='num epochs', type=int, default=25)
     parser.add_argument('--input', default='data.p')
@@ -393,11 +334,10 @@ if __name__=="__main__":
     parser.add_argument('--params', default=None)
     parser.add_argument('--model_name', default="model")
     args = parser.parse_args()
-    non_static = getMode(args.mode)
     w2v_size = int(args.w2v_size)
     print "loading data...",
     x = cPickle.load(open(args.input,"rb"))
-    revs, W_fr, W_en, vocab_fr, vocab_en = x[0], x[1], x[2], x[3], x[4]
+    revs, W, vocab = x[0], x[1], x[2]
     print "data loaded!"
 
     window_sizes= parse_filter_hs(args.filter_hs)
@@ -412,18 +352,19 @@ if __name__=="__main__":
     else:
         params_loaded = None
 
-    for i in xrange(int(args.folds)):
-        datasets = make_idx_data_cv(revs, W_fr, W_en, i, k=w2v_size, filter_h=5)
+    for i in xrange(int(args.mode)):
+        datasets = make_idx_data_cv(revs, W, i, filter_h=5)
         perf = train_conv_net(datasets,
+                              W,
+                              str(args.model_name),
                               lr_decay=0.95,
                               filter_hs=window_sizes,
                               conv_non_linear="relu",
                               hidden_units=[100,2],
-                              use_valid_set=False,
+                              use_valid_set=True,
                               shuffle_batch=True,
                               n_epochs=args.epochs,
                               sqr_norm_lim=9,
-                              non_static=non_static,
                               batch_size=50,
                               dropout_rate=[0.5])
         print "cv: " + str(i) + ", perf: " + str(perf)
