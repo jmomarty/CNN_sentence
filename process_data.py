@@ -167,6 +167,8 @@ if __name__ == "__main__":
     wv = load_bin_vec(vcb, w2v)
     print "word2vec loaded!"
 
+    for lg in wv:
+        l += len(wv[lg])
     print "num words already in word2vec: " + str(len(wv))
     add_unknown_words(vcb, wv, k=w2v_size)
     W, mapping = get_w(wv, k=w2v_size)
