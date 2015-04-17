@@ -203,11 +203,11 @@ def train_conv_net(dst,
             for minibatch_index in xrange(n_train_batches):
                 cost_epoch = train_model(minibatch_index)
         train_perf = 1 - np.mean(train_losses)
-        test_loss = test_model_all(test_set_x,test_set_y)
-        test_perf = 1 - test_loss
-        # val_losses = [val_errors(i) for i in xrange(n_val_batches)]
-        # val_perf = 1- np.mean(val_losses)
-        print('epoch %i, train perf %f %%, val perf %f' % (epoch, train_perf * 100., test_perf*100.))
+        # test_loss = test_model_all(test_set_x,test_set_y)
+        # test_perf = 1 - test_loss
+        val_losses = [val_errors(i) for i in xrange(n_val_batches)]
+        val_perf = 1- np.mean(val_losses)
+        print('epoch %i, train perf %f %%, val perf %f' % (epoch, train_perf * 100., val_perf*100.))
         # print('epoch %i, test perf %f' % (epoch, test_perf*100.))
 
     test_loss = test_model_all(test_set_x,test_set_y)        
