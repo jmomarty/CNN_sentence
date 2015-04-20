@@ -100,7 +100,7 @@ def train_conv_net(dst,
     params = classifier.params
     for conv_layer in conv_layers:
         params += conv_layer.params
-    params += layer1.input
+    params += layer1.params
     cost = classifier.negative_log_likelihood(y) 
     dropout_cost = classifier.dropout_negative_log_likelihood(y)           
     grad_updates = sgd_updates_adadelta(params, dropout_cost, lr_decay, 1e-6, sqr_norm_lim)
