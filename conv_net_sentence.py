@@ -76,8 +76,6 @@ def train_conv_net(dst,
     for i in xrange(len(filter_hs)):
         filter_shape = filter_shapes[len(filter_hs)-1-i]
         pool_size = pool_sizes[len(filter_hs)-1-i]
-        print filter_shape
-        print pool_size
         if params_loaded == None:
             conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
                                     filter_shape=filter_shape, params_loaded= params_loaded, name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
@@ -310,10 +308,12 @@ def make_idx_data_cv(revs, mapping, cv, max_l=51, filter_h=5):
     for rev in revs:
         sent = get_idx_from_sent(rev["text"], mapping, rev["language"], max_l, filter_h)
         sent.append(rev["y"])
+        print sent
         if rev["split"] == cv:
             test.append(sent)
         else:
             train.append(sent)
+
     train = np.array(train)
     test = np.array(train)
     print train.shape, test.shape
