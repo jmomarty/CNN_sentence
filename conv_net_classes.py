@@ -280,7 +280,7 @@ class LogisticRegression(object):
         l = T.dot(input, self.W) + self.b
         # n, n_params = normalization_layer(l, (n_in, n_out))
         # compute vector of class-membership probabilities in symbolic form
-        print l.get_value().shape
+        print l.shape
         print l
         self.p_y_given_x = T.nnet.softmax(l)
 
