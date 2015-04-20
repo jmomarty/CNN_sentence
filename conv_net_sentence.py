@@ -87,7 +87,7 @@ def train_conv_net(dst,
                                     filter_shape=filter_shape, params_loaded= [params_loaded[c-1],params_loaded[c]], name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
         layer2_input = conv_layer.output.flatten(2)
         conv_layers.append(conv_layer)
-        layer2_inputs.append(layer1_input)
+        layer2_inputs.append(layer2_input)
     layer2_input = T.concatenate(layer2_inputs,1)
     hidden_units[0] = feature_maps*len(filter_hs)
     print hidden_units
