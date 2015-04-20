@@ -71,21 +71,19 @@ def train_conv_net(dst,
     Words = theano.shared(value=np.asarray(wv, dtype=theano.config.floatX), name="Words")
     layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0], 1, x.shape[1], Words.shape[1]))
 
+    layer1 = HiddenLayer(rng,layer0_input, 300, 30, "ReLU", use_bias = True)
+    layer1_input = layer1.output
     conv_layers = []
     layer1_inputs = []
     for i in xrange(len(filter_hs)):
         filter_shape = filter_shapes[len(filter_hs)-1-i]
-        print filter_shape
         pool_size = pool_sizes[len(filter_hs)-1-i]
-        print pool_size
         if params_loaded == None:
-            conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
+            conv_layer = LeNetConvPoolLayer(rng, input=layer1_input,image_shape=(batch_size, 1, img_h, img_w),
                                     filter_shape=filter_shape, params_loaded= params_loaded, name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
         else:
             c = 2*(len(filter_hs)-i)+1
-            print c, c-1
-            print params_loaded[c-1].shape, params_loaded[c].shape
-            conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
+            conv_layer = LeNetConvPoolLayer(rng, input=layer1_input,image_shape=(batch_size, 1, img_h, img_w),
                                     filter_shape=filter_shape, params_loaded= [params_loaded[c-1],params_loaded[c]], name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
         layer1_input = conv_layer.output.flatten(2)
         conv_layers.append(conv_layer)
@@ -102,6 +100,7 @@ def train_conv_net(dst,
     params = classifier.params
     for conv_layer in conv_layers:
         params += conv_layer.params
+    params += layer1.input
     cost = classifier.negative_log_likelihood(y) 
     dropout_cost = classifier.dropout_negative_log_likelihood(y)           
     grad_updates = sgd_updates_adadelta(params, dropout_cost, lr_decay, 1e-6, sqr_norm_lim)
