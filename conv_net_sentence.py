@@ -75,7 +75,9 @@ def train_conv_net(dst,
     layer1_inputs = []
     for i in xrange(len(filter_hs)):
         filter_shape = filter_shapes[len(filter_hs)-1-i]
+        print filter_shape
         pool_size = pool_sizes[len(filter_hs)-1-i]
+        print pool_size
         if params_loaded == None:
             conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
                                     filter_shape=filter_shape, params_loaded= params_loaded, name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
@@ -90,6 +92,7 @@ def train_conv_net(dst,
         layer1_inputs.append(layer1_input)
     layer1_input = T.concatenate(layer1_inputs,1)
     hidden_units[0] = feature_maps*len(filter_hs)
+    print hidden_units
     if params_loaded == None:
         classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
     else:
