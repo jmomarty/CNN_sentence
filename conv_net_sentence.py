@@ -55,7 +55,7 @@ def train_conv_net(dst,
     filter_shapes = []
     pool_sizes = []
     for filter_h in filter_hs:
-        filter_shapes.append((feature_maps, 1, filter_h, filter_w))
+        filter_shapes.append((feature_maps, 1, filter_h, 30))
         pool_sizes.append((int(img_h-filter_h+1), int(img_w-filter_w+1)))
     parameters = [("image shape",img_h,img_w),("filter shape",filter_shapes), ("hidden_units",hidden_units),
                   ("dropout", dropout_rate), ("batch_size",batch_size),("non_static", non_static),
