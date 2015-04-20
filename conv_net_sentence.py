@@ -322,6 +322,25 @@ def make_idx_data_cv(revs, mapping, cv, max_l=51, filter_h=5):
     print train.shape, test.shape
     return [train, test]
 
+def make_idx_data_tdt(revs, mapping, max_l=51, filter_h=5):
+    """
+    Transforms sentences into a 2-d matrix.
+    """
+    train, dev, test = [], [], []
+    for rev in revs:
+        sent = get_idx_from_sent(rev["text"], mapping, rev["language"], max_l, filter_h)
+        sent.append(rev["y"])
+        if rev["split"]==1:
+            dev.append(sent)
+        if rev["split"]==2:
+            test.append(sent)
+        else:
+            train.append(sent)
+    train = np.array(train, dtype="int")
+    dev = np.array(dev, dtype="int")
+    test = np.array(test,dtype="int")
+    return [train, dev, test]
+
 def parse_filter_hs(filter_hs):
     return map(int, filter_hs.split(','))
    
@@ -357,21 +376,19 @@ if __name__=="__main__":
         params_loaded = None
 
 
-    for i in xrange(int(args.mode)):
-        datasets = make_idx_data_cv(revs, mapping, i, filter_h=5)
-        perf = train_conv_net(datasets,
-                              W,
-                              str(args.model_name),
-                              lr_decay=0.95,
-                              filter_hs=window_sizes,
-                              conv_non_linear="relu",
-                              hidden_units=[100,3],
-                              use_valid_set=True,
-                              shuffle_batch=True,
-                              n_epochs=args.epochs,
-                              sqr_norm_lim=9,
-                              batch_size=50,
-                              dropout_rate=[0.5])
-        print "cv: " + str(i) + ", perf: " + str(perf)
-        results.append(perf)
-    print str(np.mean(results))
+    datasets = make_idx_data_tdt(revs, mapping)
+
+    perf = train_conv_net(datasets,
+                          W,
+                          str(args.model_name),
+                          lr_decay=0.95,
+                          filter_hs=window_sizes,
+                          conv_non_linear="relu",
+                          hidden_units=[100,3],
+                          use_valid_set=True,
+                          shuffle_batch=True,
+                          n_epochs=args.epochs,
+                          sqr_norm_lim=9,
+                          batch_size=50,
+                          dropout_rate=[0.5])
+    print str(perf)
