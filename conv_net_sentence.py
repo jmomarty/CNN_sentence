@@ -143,6 +143,7 @@ def train_conv_net(dst,
             train_set_x, train_set_y = shared_dataset((train_set[:,:img_h],train_set[:,-1]))
             val_set_x, val_set_y = shared_dataset((val_set[:,:img_h],val_set[:,-1]))
             n_val_batches = n_batches - n_train_batches
+            print n_val_batches
             val_errors = theano.function([index], classifier.errors(y),
                  givens={
                     x: val_set_x[index * batch_size: (index + 1) * batch_size],
