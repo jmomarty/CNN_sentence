@@ -72,8 +72,8 @@ def train_conv_net(dst,
     layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0], 1, x.shape[1], Words.shape[1]))
 
     layer1 = HiddenLayer(rng,layer0_input, 300, 30, activation = None, use_bias = True)
-    layer1_input = layer1.output
-    print layer1_input.shape
+    layer1_input = layer1.output.reshape((x.shape[0], 1, x.shape[1], 30))
+
 
     conv_layers = []
     layer1_inputs = []
