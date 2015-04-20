@@ -73,6 +73,7 @@ def train_conv_net(dst,
 
     layer1 = HiddenLayer(rng,layer0_input, 300, 30, activation = None, use_bias = True)
     layer1_input = layer1.output
+    print layer1_input.shape
 
     conv_layers = []
     layer1_inputs = []
