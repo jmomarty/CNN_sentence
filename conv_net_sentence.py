@@ -69,10 +69,9 @@ def train_conv_net(dst,
     x = T.matrix('x')
     y = T.ivector('y')
     Words = theano.shared(value=np.asarray(wv, dtype=theano.config.floatX), name="Words")
-    layer0_input = Words[T.cast(x.flatten(),dtype="int32")]
+    layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0], 1, x.shape[1], 30))
     layer1 = HiddenLayer(rng,layer0_input, 300, 30, activation = None, use_bias = True)
     layer1_input = layer1.output.reshape((x.shape[0], 1, x.shape[1], 30))
-
 
     conv_layers = []
     layer2_inputs = []
