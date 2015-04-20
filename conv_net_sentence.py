@@ -337,9 +337,9 @@ def make_idx_data_tdt(revs, mapping, max_l=51, filter_h=5):
             test.append(sent)
         else:
             train.append(sent)
-    train = np.array(train, dtype="int")
-    dev = np.array(dev, dtype="int")
-    test = np.array(test,dtype="int")
+    train = np.array(train)
+    dev = np.array(dev)
+    test = np.array(test)
     return [train, dev, test]
 
 def parse_filter_hs(filter_hs):
