@@ -38,7 +38,6 @@ def create_dict(d, r, v, s, cv):
                 if cv:
                     datum = cd(k, lang, unicode(" ".join(sen_array[1:])), len(sen_array[1:]), np.random.randint(0,s))
                 else:
-                    print k
                     datum = cd(k, lang, unicode(" ".join(sen_array[1:])), len(sen_array[1:]), s)
                 r.append(datum)
 
