@@ -22,6 +22,7 @@ warnings.filterwarnings("ignore")
 
 def train_conv_net(dst,
                    wv,
+                   revs,
                    model_name,
                    params_loaded=None,
                    img_w=300,
@@ -171,6 +172,7 @@ def train_conv_net(dst,
     test_y_pred = classifier.predict(test_layer1_input)
     test_error = T.mean(T.neq(test_y_pred, y))
     test_model_all = theano.function([x,y], test_error, allow_input_downcast = True)
+    test_one_sentence = theano.function([x], test_y_pred, allow_input_downcast = True)
     
     #start training over mini-batches
     print '... training'
@@ -189,6 +191,7 @@ def train_conv_net(dst,
                 cost_epoch, error_epoch = train_model(minibatch_index)
                 if counter % 50 == 0:
                     print "epoch %i, counter %f,  cost : %g " % (int(epoch), counter, cost_epoch)
+
                     dict_params = {}
                     c = 0
                     params = classifier.params
@@ -312,7 +315,7 @@ def make_idx_data_cv(revs, mapping, cv, max_l=51, filter_h=5):
     for rev in revs:
         sent = get_idx_from_sent(rev["text"], mapping, rev["language"], max_l, filter_h)
         sent.append(rev["y"])
-
+        print rev["y"]
         if rev["split"] == cv:
             test.append(sent)
         else:
@@ -385,6 +388,7 @@ if __name__=="__main__":
 
     perf = train_conv_net(datasets,
                           W,
+                          revs,
                           str(args.model_name),
                           lr_decay=0.95,
                           filter_hs=window_sizes,
