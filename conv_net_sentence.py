@@ -333,6 +333,7 @@ def make_idx_data_tdt(revs, mapping, max_l=51, filter_h=5):
         if len(sent) != 60:
             print "yo"
             print rev["text"]
+            print len(sent)
             print sent
 
         if rev["split"]==1:
