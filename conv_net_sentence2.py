@@ -74,29 +74,35 @@ def train_conv_net(dst,
     layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0], 1, x.shape[1], 300))
     layer1 = HiddenLayer(rng,layer0_input, 300, 30, activation = ReLU, use_bias = True)
     layer1_input = layer1.output
+    layer2 = HiddenLayer(rng,layer1_input, 30, 30, activation = ReLU, use_bias = True)
+    layer2_input = layer2.output
+    layer3 = HiddenLayer(rng,layer2_input, 30, 30, activation = ReLU, use_bias = True)
+    layer3_input = layer3.output
+    layer4 = HiddenLayer(rng,layer3_input, 30, 30, activation = ReLU, use_bias = True)
+    layer4_input = layer4.output
 
     conv_layers = []
-    layer2_inputs = []
+    layer5_inputs = []
     for i in xrange(len(filter_hs)):
         filter_shape = filter_shapes[len(filter_hs)-1-i]
         pool_size = pool_sizes[len(filter_hs)-1-i]
         if params_loaded == None:
-            conv_layer = LeNetConvPoolLayer(rng, input=layer1_input,image_shape=(batch_size, 1, img_h, 30),
+            conv_layer = LeNetConvPoolLayer(rng, input=layer4_input,image_shape=(batch_size, 1, img_h, 30),
                                     filter_shape=filter_shape, params_loaded= params_loaded, name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
         else:
             c = 2*(len(filter_hs)-i)+1
-            conv_layer = LeNetConvPoolLayer(rng, input=layer1_input,image_shape=(batch_size, 1, img_h, 30),
+            conv_layer = LeNetConvPoolLayer(rng, input=layer4_input,image_shape=(batch_size, 1, img_h, 30),
                                     filter_shape=filter_shape, params_loaded= [params_loaded[c-1],params_loaded[c]], name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
-        layer2_input = conv_layer.output.flatten(2)
+        layer5_input = conv_layer.output.flatten(2)
         conv_layers.append(conv_layer)
-        layer2_inputs.append(layer2_input)
-    layer2_input = T.concatenate(layer2_inputs,1)
+        layer5_inputs.append(layer5_input)
+    layer5_input = T.concatenate(layer5_inputs,1)
     hidden_units[0] = feature_maps*len(filter_hs)
     print hidden_units
     if params_loaded == None:
-        classifier = MLPDropout(rng, input=layer2_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
+        classifier = MLPDropout(rng, input=layer5_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
     else:
-        classifier = MLPDropout(rng, input=layer2_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [params_loaded[0], params_loaded[1]])
+        classifier = MLPDropout(rng, input=layer5_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [params_loaded[0], params_loaded[1]])
 
     #define parameters of the model and update functions using adadelta
     params = classifier.params
