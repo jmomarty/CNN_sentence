@@ -332,7 +332,9 @@ def make_idx_data_tdt(revs, mapping, max_l=51, filter_h=5):
         sent.append(rev["y"])
         if len(sent) != 60:
             print "yo"
+            print rev["text"]
             print sent
+
         if rev["split"]==1:
             dev.append(sent)
         if rev["split"]==2:
