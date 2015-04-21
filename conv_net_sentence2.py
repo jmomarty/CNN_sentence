@@ -74,11 +74,7 @@ def train_conv_net(dst,
     layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0], 1, x.shape[1], 300))
     layer1 = HiddenLayer(rng,layer0_input, 300, 30, activation = ReLU, use_bias = True)
     layer1_input = layer1.output
-    layer2 = HiddenLayer(rng,layer1_input, 30, 30, activation = ReLU, use_bias = True)
-    layer2_input = layer2.output
-    layer3 = HiddenLayer(rng,layer2_input, 30, 30, activation = ReLU, use_bias = True)
-    layer3_input = layer3.output
-    layer4 = HiddenLayer(rng,layer3_input, 30, 30, activation = ReLU, use_bias = True)
+    layer4 = HiddenLayer(rng,layer1_input, 30, 30, activation = ReLU, use_bias = True)
     layer4_input = layer4.output
 
     conv_layers = []
@@ -109,8 +105,6 @@ def train_conv_net(dst,
     for conv_layer in conv_layers:
         params += conv_layer.params
     params += layer1.params
-    params += layer2.params
-    params += layer3.params
     params += layer4.params
     cost = classifier.negative_log_likelihood(y) 
     dropout_cost = classifier.dropout_negative_log_likelihood(y)           
