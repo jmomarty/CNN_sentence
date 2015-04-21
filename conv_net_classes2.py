@@ -391,7 +391,7 @@ class LeNetConvPoolLayer(object):
         if params_loaded == None:
 
             if self.non_linear=="none" or self.non_linear=="relu":
-                self.W = theano.shared(numpy.asarray([1/filter_shape[2] for i in range(filter_shape[2])],
+                self.W = theano.shared(numpy.asarray((1.0/filter_shape[2])*np.ones(filter_shape),
                                                     dtype=theano.config.floatX),borrow=True,name=str(name_model) + "_W_conv")
             else:
                 W_bound = numpy.sqrt(6. / (fan_in + fan_out))
