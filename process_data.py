@@ -124,7 +124,7 @@ if __name__ == "__main__":
     # Arguments for the program:
     parser = argparse.ArgumentParser(description='Data Processing')
     parser.add_argument('mode', help='cv/dev')
-    parser.add_argument('w2v', nargs='*')
+    parser.add_argument('--w2v', nargs='*')
     parser.add_argument('--w2v_size', default=300)
     parser.add_argument('--train_files', nargs='*')
     parser.add_argument('--dev_files', nargs='*')
