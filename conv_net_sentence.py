@@ -51,7 +51,7 @@ def train_conv_net(dst,
     """
 
     rng = np.random.RandomState(3435)
-    img_h = dst[0].shape[1]
+    img_h = dst[0].shape[1]-1
     filter_w = img_w    
     feature_maps = hidden_units[0]
     filter_shapes = []
@@ -337,8 +337,6 @@ def make_idx_data_tdt(revs, mapping, max_l=51, filter_h=5):
         sent.append(rev["y"])
         if len(sent) != 60:
             continue
-        if random.random()>0.99:
-            print rev["y"]
         if rev["split"]==1:
             dev.append(sent)
         if rev["split"]==2:
@@ -384,7 +382,6 @@ if __name__=="__main__":
         params_loaded=cPickle.load(file)
     else:
         params_loaded = None
-
 
     datasets = make_idx_data_tdt(revs, mapping)
 
