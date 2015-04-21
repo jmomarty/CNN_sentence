@@ -14,6 +14,7 @@ from collections import OrderedDict
 import theano.tensor as T
 import warnings
 import argparse
+import random
 from conv_net_classes import *
 
 
@@ -336,7 +337,8 @@ def make_idx_data_tdt(revs, mapping, max_l=51, filter_h=5):
         sent.append(rev["y"])
         if len(sent) != 60:
             continue
-        print rev["y"]
+        if random.random()>0.99:
+            print rev["y"]
         if rev["split"]==1:
             dev.append(sent)
         if rev["split"]==2:
