@@ -192,7 +192,6 @@ def train_conv_net(dst,
                 cost_epoch, error_epoch = train_model(minibatch_index)
                 if counter % 50 == 0:
                     print "epoch %i, counter %f,  cost : %g " % (int(epoch), counter, cost_epoch)
-
                     dict_params = {}
                     c = 0
                     params = classifier.params
@@ -389,6 +388,7 @@ if __name__=="__main__":
                           W,
                           revs,
                           str(args.model_name),
+                          params_loaded = params_loaded,
                           lr_decay=0.95,
                           filter_hs=window_sizes,
                           conv_non_linear="relu",
