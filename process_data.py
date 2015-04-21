@@ -144,7 +144,7 @@ if __name__ == "__main__":
     print "loading data...",
 
     if args.mode == "dev":
-        rvs, vcb = build_data([train_folder, test_folder])
+        rvs, vcb = build_data([train_folder, dev_folder, test_folder])
     else:
         rvs, vcb = build_data([train_folder], s=int(args.mode), cv=True)
 
