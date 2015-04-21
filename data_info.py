@@ -15,7 +15,7 @@ classes = int(args.classes)
 
 print "loading data...",
 x = cPickle.load(open(args.input,"rb"))
-revs, W, W2, word_idx_map, vocab = x[0], x[1], x[2], x[3], x[4]
+revs, W, mapping = x[0], x[1], x[2]
 
 pd_data_num_words = pd.DataFrame(revs)["num_words"]
 max_l = np.max(pd_data_num_words)
@@ -26,7 +26,6 @@ tdt_dist = pd.DataFrame(revs)["split"].values
 tdt_dist, _ = np.histogram(tdt_dist, bins = 3)
 print "data loaded!"
 print "number of sentences: " + str(len(revs))
-print "vocab size: " + str(len(vocab))
 print "max sentence length: " + str(max_l)
 print "average sentence length: " + str(mean_l)
 print "class distribution: " + str(class_dist)
