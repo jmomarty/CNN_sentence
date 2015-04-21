@@ -186,7 +186,7 @@ def train_conv_net(dst,
             for minibatch_index in np.random.permutation(range(n_train_batches)):
                 counter += 1
                 cost_epoch, error_epoch = train_model(minibatch_index)
-                if counter % 10 == 0:
+                if counter % 50 == 0:
                     print "epoch %i, counter %f,  cost : %g " % (int(epoch), counter, cost_epoch)
                     dict_params = {}
                     c = 0
