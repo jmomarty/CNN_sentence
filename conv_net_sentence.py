@@ -315,7 +315,7 @@ def make_idx_data_cv(revs, mapping, cv, max_l=51, filter_h=5):
     for rev in revs:
         sent = get_idx_from_sent(rev["text"], mapping, rev["language"], max_l, filter_h)
         sent.append(rev["y"])
-        print rev["y"]
+
         if rev["split"] == cv:
             test.append(sent)
         else:
@@ -336,7 +336,7 @@ def make_idx_data_tdt(revs, mapping, max_l=51, filter_h=5):
         sent.append(rev["y"])
         if len(sent) != 60:
             continue
-
+        print rev["y"]
         if rev["split"]==1:
             dev.append(sent)
         if rev["split"]==2:
