@@ -162,7 +162,8 @@ def train_conv_net(dst,
         y: train_set_y[index*batch_size:(index+1)*batch_size]})
     test_pred_layers = []
     test_size = test_set_x.shape[0]
-    test_layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((test_size,1,img_h,30))
+    test_layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((test_size,1,img_h,300))
+    test_layer0_input = layer1.predict(test_layer0_input)
     for conv_layer in conv_layers:
         test_layer0_output = conv_layer.predict(test_layer0_input, test_size)
         test_pred_layers.append(test_layer0_output.flatten(2))

@@ -55,6 +55,11 @@ class HiddenLayer(object):
         else:
             self.params = [self.W]
 
+    def predict(self, new_data):
+        y_pred = T.dot(new_data, self.W) + self.b
+        y_pred = self.activation(y_pred)
+        return y_pred
+
 def _dropout_from_layer(rng, layer, p):
     """p is the probablity of dropping a unit
 """
