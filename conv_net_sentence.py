@@ -200,6 +200,7 @@ def train_conv_net(dst,
                     params = classifier.params
                     for conv_layer in conv_layers:
                         params += conv_layer.params
+                    params += layer1.params
                     for param in params:
                         dict_params[c] = param.get_value()
                         c += 1
