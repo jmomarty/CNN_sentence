@@ -81,8 +81,8 @@ def train_conv_net(dst,
     conv_layers = []
     layer2_inputs = []
     for i in xrange(len(filter_hs)):
-        filter_shape = filter_shapes[len(filter_hs)-1-i]
-        pool_size = pool_sizes[len(filter_hs)-1-i]
+        filter_shape = filter_shapes[i]
+        pool_size = pool_sizes[i]
         if params_loaded == None:
             conv_layer = LeNetConvPoolLayer(rng, input=layer1_input,image_shape=(batch_size, 1, img_h, 30),
                                     filter_shape=filter_shape, params_loaded= params_loaded, name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
@@ -103,8 +103,8 @@ def train_conv_net(dst,
 
     #define parameters of the model and update functions using adadelta
     params = classifier.params
-    for conv_layer in conv_layers:
-        params += conv_layer.params
+    for i in range(len(conv_layers)):
+        params += conv_layers[len(conv_layers)-1-i].params
     params += layer1.params
     cost = classifier.negative_log_likelihood(y) 
     dropout_cost = classifier.dropout_negative_log_likelihood(y)           
