@@ -75,7 +75,7 @@ def train_conv_net(dst,
     if params_loaded == None:
         layer1 = HiddenLayer(rng, layer0_input, n_in=300, n_out=30, activation=ReLU, use_bias=True)
     else:
-        layer1 = HiddenLayer(rng, layer0_input, n_in=300, n_out=30, activation=ReLU, W=params_loaded[-2], b=params_loaded[-1], use_bias=True)
+        layer1 = HiddenLayer(rng, layer0_input, n_in=300, n_out=30, activation=ReLU, W=params_loaded[8], b=params_loaded[9], use_bias=True)
     layer1_input = layer1.output
 
     conv_layers = []
