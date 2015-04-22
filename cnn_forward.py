@@ -72,7 +72,7 @@ def train_conv_net(dst,
     y = T.ivector('y')
     Words = theano.shared(value=np.asarray(wv, dtype=theano.config.floatX), name="Words")
     layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0], 1, x.shape[1], 300))
-    layer1 = HiddenLayer(rng, layer0_input, n_in=300, n_out=30, activation=ReLU, W=params_loaded[-2], b=params_loaded[-1], use_bias=True)
+    layer1 = HiddenLayer(rng, layer0_input, n_in=300, n_out=30, activation=ReLU, W=params_loaded[-2].get_value(), b=params_loaded[-1].get_value(), use_bias=True)
     layer1_input = layer1.output
 
     conv_layers = []
@@ -197,6 +197,7 @@ def train_conv_net(dst,
                     params = classifier.params
                     for conv_layer in conv_layers:
                         params += conv_layer.params
+                    params += layer1.params
                     for param in params:
                         dict_params[c] = param.get_value()
                         c += 1
