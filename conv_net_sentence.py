@@ -367,11 +367,17 @@ if __name__=="__main__":
     parser.add_argument('--w2v_size', default=300)
     parser.add_argument('--params', default=None)
     parser.add_argument('--model_name', default="model")
+    parser.add_argument('--words', default=None)
     args = parser.parse_args()
     w2v_size = int(args.w2v_size)
     print "loading data...",
     x = cPickle.load(open(args.input,"rb"))
-    revs, W, mapping = x[0], x[1], x[2]
+    if args.words == None:
+        revs, W, mapping = x[0], x[1], x[2]
+    else:
+        revs, _, _ = x[0], x[1], x[2]
+        y = cPickle.load(open(args.words,"rb"))
+        _, W, mapping = y[0], y[1], y[2]
     print "data loaded!"
 
     window_sizes= parse_filter_hs(args.filter_hs)
