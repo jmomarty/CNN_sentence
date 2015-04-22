@@ -34,10 +34,14 @@ class HiddenLayer(object):
             else:                
                 W_values = numpy.asarray(rng.uniform(low=-numpy.sqrt(6. / (n_in + n_out)), high=numpy.sqrt(6. / (n_in + n_out)),
                                                      size=(n_in, n_out)), dtype=theano.config.floatX)
-            W = theano.shared(value=W_values, name='W')        
+            W = theano.shared(value=W_values, name='W')
+        else:
+            W = theano.shared(value=W, name='W')
         if b is None:
             b_values = numpy.zeros((n_out,), dtype=theano.config.floatX)
             b = theano.shared(value=b_values, name='b')
+        else:
+            b = theano.shared(value=b, name='b')
 
         self.W = W
         self.b = b
