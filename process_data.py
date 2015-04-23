@@ -130,6 +130,7 @@ if __name__ == "__main__":
     parser.add_argument('--dev_files', nargs='*')
     parser.add_argument('--test_files', nargs='*')
     parser.add_argument('--output', default='data.p')
+    parser.add_argument('--addrandomvec', default=0)
 
     args = parser.parse_args()
 
@@ -171,8 +172,11 @@ if __name__ == "__main__":
     for lg in wv:
         l += len(wv[lg])
     print "num words already in word2vec: " + str(l)
-    add_unknown_words(vcb, wv, k=w2v_size)
-    W, mapping = get_w(wv, k=w2v_size)
+
+    if args.addrandomvec == 1:
+        wv = add_unknown_words(vcb, wv, k=w2v_size)
+    else:
+        W, mapping = get_w(wv, k=w2v_size)
 
     cPickle.dump([rvs, W, mapping], open(args.output, "wb"))
     print "dataset created!"
