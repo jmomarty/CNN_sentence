@@ -391,21 +391,44 @@ if __name__=="__main__":
     else:
         params_loaded = None
 
-    datasets = make_idx_data_tdt(revs, mapping)
+    if int(args.mode) == 1:
+        datasets = make_idx_data_tdt(revs, mapping)
 
-    perf = train_conv_net(datasets,
-                          W,
-                          revs,
-                          str(args.model_name),
-                          params_loaded = params_loaded,
-                          lr_decay=0.95,
-                          filter_hs=window_sizes,
-                          conv_non_linear="relu",
-                          hidden_units=[100,2],
-                          use_valid_set=True,
-                          shuffle_batch=True,
-                          n_epochs=args.epochs,
-                          sqr_norm_lim=9,
-                          batch_size=50,
-                          dropout_rate=[0.5])
-    print str(perf)
+        perf = train_conv_net(datasets,
+                              W,
+                              revs,
+                              str(args.model_name),
+                              params_loaded = params_loaded,
+                              lr_decay=0.95,
+                              filter_hs=window_sizes,
+                              conv_non_linear="relu",
+                              hidden_units=[100,2],
+                              use_valid_set=True,
+                              shuffle_batch=True,
+                              n_epochs=args.epochs,
+                              sqr_norm_lim=9,
+                              batch_size=50,
+                              dropout_rate=[0.5])
+        print str(perf)
+    else:
+        for i in xrange(args.folds):
+            datasets = make_idx_data_cv(revs, mapping, i)
+
+            perf = train_conv_net(datasets,
+                                  W,
+                                  revs,
+                                  str(args.model_name),
+                                  params_loaded = params_loaded,
+                                  lr_decay=0.95,
+                                  filter_hs=window_sizes,
+                                  conv_non_linear="relu",
+                                  hidden_units=[100,2],
+                                  use_valid_set=True,
+                                  shuffle_batch=True,
+                                  n_epochs=args.epochs,
+                                  sqr_norm_lim=9,
+                                  batch_size=50,
+                                  dropout_rate=[0.5])
+            print "cv: " + str(i) + ", perf: " + str(perf)
+            results.append(perf)
+        print str(np.mean(results))
