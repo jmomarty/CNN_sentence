@@ -177,47 +177,47 @@ def train_conv_net(dst,
     test_error = T.mean(T.neq(test_y_pred, y))
     test_model_all = theano.function([x,y], test_error, allow_input_downcast = True)
     
-    # #start training over mini-batches
-    # print '... training'
-    # epoch = 0
-    # val_perf = 0
-    # test_perf = 0
-    # cost_epoch = 0
-    # while (epoch < n_epochs):
-    #     epoch = epoch + 1
-    #     train_losses = []
-    #     print str(epoch) + "\n"
-    #     if shuffle_batch:
-    #         counter = 0
-    #         for minibatch_index in np.random.permutation(range(n_train_batches)):
-    #             counter += 1
-    #             cost_epoch, error_epoch = train_model(minibatch_index)
-    #             if counter % 50 == 0:
-    #                 print "epoch %i, counter %f,  cost : %g " % (int(epoch), counter, cost_epoch)
-    #                 dict_params = {}
-    #                 c = 0
-    #                 params = classifier.params
-    #                 for conv_layer in conv_layers:
-    #                     params += conv_layer.params
-    #                 params += layer1.params
-    #                 for param in params:
-    #                     dict_params[c] = param.get_value()
-    #                     c += 1
-    #                 filename = str(model_name)
-    #                 f = open(filename, "wb")
-    #                 cPickle.dump(dict_params, f)
-    #                 f.close()
-    #             train_losses.append(error_epoch)
-    #     else:
-    #         for minibatch_index in xrange(n_train_batches):
-    #             cost_epoch = train_model(minibatch_index)
-    #     train_perf = 1 - np.mean(train_losses)
-    #     # test_loss = test_model_all(test_set_x,test_set_y)
-    #     # test_perf = 1 - test_loss
-    #     val_losses = [val_errors(i) for i in xrange(n_val_batches)]
-    #     val_perf = 1- np.mean(val_losses)
-    #     print('epoch %i, train perf %f %%, val perf %f' % (epoch, train_perf * 100., val_perf*100.))
-    #     # print('epoch %i, test perf %f' % (epoch, test_perf*100.))
+    #start training over mini-batches
+    print '... training'
+    epoch = 0
+    val_perf = 0
+    test_perf = 0
+    cost_epoch = 0
+    while (epoch < n_epochs):
+        epoch = epoch + 1
+        train_losses = []
+        print str(epoch) + "\n"
+        if shuffle_batch:
+            counter = 0
+            for minibatch_index in np.random.permutation(range(n_train_batches)):
+                counter += 1
+                cost_epoch, error_epoch = train_model(minibatch_index)
+                if counter % 50 == 0:
+                    print "epoch %i, counter %f,  cost : %g " % (int(epoch), counter, cost_epoch)
+                    dict_params = {}
+                    c = 0
+                    params = classifier.params
+                    for conv_layer in conv_layers:
+                        params += conv_layer.params
+                    params += layer1.params
+                    for param in params:
+                        dict_params[c] = param.get_value()
+                        c += 1
+                    filename = str(model_name)
+                    f = open(filename, "wb")
+                    cPickle.dump(dict_params, f)
+                    f.close()
+                train_losses.append(error_epoch)
+        else:
+            for minibatch_index in xrange(n_train_batches):
+                cost_epoch = train_model(minibatch_index)
+        train_perf = 1 - np.mean(train_losses)
+        # test_loss = test_model_all(test_set_x,test_set_y)
+        # test_perf = 1 - test_loss
+        val_losses = [val_errors(i) for i in xrange(n_val_batches)]
+        val_perf = 1- np.mean(val_losses)
+        print('epoch %i, train perf %f %%, val perf %f' % (epoch, train_perf * 100., val_perf*100.))
+        # print('epoch %i, test perf %f' % (epoch, test_perf*100.))
 
     test_loss = test_model_all(test_set_x,test_set_y)        
     test_perf = 1 - test_loss
