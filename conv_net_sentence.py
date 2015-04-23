@@ -411,7 +411,7 @@ if __name__=="__main__":
                               dropout_rate=[0.5])
         print str(perf)
     else:
-        for i in xrange(args.mode):
+        for i in xrange(int(args.mode)):
             datasets = make_idx_data_cv(revs, mapping, i)
 
             perf = train_conv_net(datasets,
