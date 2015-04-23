@@ -367,6 +367,7 @@ if __name__=="__main__":
     parser.add_argument('--params', default=None)
     parser.add_argument('--model_name', default="model")
     parser.add_argument('--words', default=None)
+    parser.add_argument('--dropout', default=0.5)
     args = parser.parse_args()
     w2v_size = int(args.w2v_size)
     print "loading data...",
@@ -408,7 +409,7 @@ if __name__=="__main__":
                               n_epochs=args.epochs,
                               sqr_norm_lim=9,
                               batch_size=50,
-                              dropout_rate=[0.5])
+                              dropout_rate=[float(args.dropout)])
         print str(perf)
     else:
         for i in xrange(int(args.mode)):
@@ -428,7 +429,7 @@ if __name__=="__main__":
                                   n_epochs=args.epochs,
                                   sqr_norm_lim=9,
                                   batch_size=50,
-                                  dropout_rate=[0.5])
+                                  dropout_rate=[float(args.dropout)])
             print "cv: " + str(i) + ", perf: " + str(perf)
             results.append(perf)
         print str(np.mean(results))
