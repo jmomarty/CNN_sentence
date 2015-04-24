@@ -38,7 +38,8 @@ def train_conv_net(dst,
                    use_valid_set=True,
                    activations=["ReLU"],
                    sqr_norm_lim=9,
-                   non_static=True):
+                   non_static=True,
+                   rg = 0):
 
     """
     Train a simple conv net
@@ -106,8 +107,8 @@ def train_conv_net(dst,
     for i in range(len(conv_layers)):
         params += conv_layers[len(conv_layers)-1-i].params
     params += layer1.params
-    cost = classifier.negative_log_likelihood(y) 
-    dropout_cost = classifier.dropout_negative_log_likelihood(y)           
+    cost = classifier.negative_log_likelihood(y, rg)
+    dropout_cost = classifier.dropout_negative_log_likelihood(y, rg)
     grad_updates = sgd_updates_adadelta(params, dropout_cost, lr_decay, 1e-6, sqr_norm_lim)
 
     #shuffle dataset and assign to mini batches. if dataset size is not a multiple of mini batches, replicate
@@ -368,6 +369,7 @@ if __name__=="__main__":
     parser.add_argument('--model_name', default="model")
     parser.add_argument('--words', default=None)
     parser.add_argument('--dropout', default=0.5)
+    parser.add_argument('--regularization', default=0)
     args = parser.parse_args()
     w2v_size = int(args.w2v_size)
     print "loading data...",
@@ -409,7 +411,8 @@ if __name__=="__main__":
                               n_epochs=args.epochs,
                               sqr_norm_lim=9,
                               batch_size=50,
-                              dropout_rate=[float(args.dropout)])
+                              dropout_rate=[float(args.dropout)],
+                              regularization = args.regularizartion)
         print str(perf)
     else:
         for i in xrange(int(args.mode)):
@@ -429,7 +432,8 @@ if __name__=="__main__":
                                   n_epochs=args.epochs,
                                   sqr_norm_lim=9,
                                   batch_size=50,
-                                  dropout_rate=[float(args.dropout)])
+                                  dropout_rate=[float(args.dropout)],
+                                  regularization = args.regularizartion)
             print "cv: " + str(i) + ", perf: " + str(perf)
             results.append(perf)
         print str(np.mean(results))
