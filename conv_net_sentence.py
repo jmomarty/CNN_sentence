@@ -370,6 +370,7 @@ if __name__=="__main__":
     parser.add_argument('--words', default=None)
     parser.add_argument('--dropout', default=0.5)
     parser.add_argument('--regularization', default=0.0)
+    parser.add_argument('--max_l', default=51)
     args = parser.parse_args()
     w2v_size = int(args.w2v_size)
     print "loading data...",
@@ -395,7 +396,7 @@ if __name__=="__main__":
         params_loaded = None
 
     if int(args.mode) == 1:
-        datasets = make_idx_data_tdt(revs, mapping)
+        datasets = make_idx_data_tdt(revs, mapping, max_l=int(args.max_l))
 
         perf = train_conv_net(datasets,
                               W,
@@ -416,7 +417,7 @@ if __name__=="__main__":
         print str(perf)
     else:
         for i in xrange(int(args.mode)):
-            datasets = make_idx_data_cv(revs, mapping, i)
+            datasets = make_idx_data_cv(revs, mapping, i, max_l=int(args.max_l))
 
             perf = train_conv_net(datasets,
                                   W,
