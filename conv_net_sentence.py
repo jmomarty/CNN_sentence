@@ -412,7 +412,7 @@ if __name__=="__main__":
                               sqr_norm_lim=9,
                               batch_size=50,
                               dropout_rate=[float(args.dropout)],
-                              regularization = float(args.regularization))
+                              rg = float(args.regularization))
         print str(perf)
     else:
         for i in xrange(int(args.mode)):
@@ -433,7 +433,7 @@ if __name__=="__main__":
                                   sqr_norm_lim=9,
                                   batch_size=50,
                                   dropout_rate=[float(args.dropout)],
-                                  regularization = float(args.regularization))
+                                  rg = float(args.regularization))
             print "cv: " + str(i) + ", perf: " + str(perf)
             results.append(perf)
         print str(np.mean(results))
