@@ -195,6 +195,7 @@ def train_conv_net(dst,
                 cost_epoch, error_epoch = train_model(minibatch_index)
                 if counter % 50 == 0:
                     print "epoch %i, counter %f,  cost : %g " % (int(epoch), counter, cost_epoch)
+                if counter % 200 == 0:
                     dict_params = {}
                     c = 0
                     params = classifier.params
@@ -319,7 +320,6 @@ def make_idx_data_cv(revs, mapping, cv, max_l=51, filter_h=5):
     for rev in revs:
         sent = get_idx_from_sent(rev["text"], mapping, rev["language"], max_l, filter_h)
         sent.append(rev["y"])
-
         if rev["split"] == cv:
             test.append(sent)
         else:
