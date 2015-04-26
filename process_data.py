@@ -147,7 +147,7 @@ if __name__ == "__main__":
     if args.mode == "dev":
         rvs, vcb = build_data([train_folder, dev_folder, test_folder])
     else:
-        rvs, vcb = build_data([train_folder], s=int(args.mode), cv=True)
+        rvs, vcb = build_data(train_folder, s=int(args.mode), cv=True)
 
     pd_data_num_words = pd.DataFrame(rvs)["num_words"]
     max_l = np.max(pd_data_num_words)
