@@ -320,6 +320,7 @@ def make_idx_data_cv(revs, mapping, cv, max_l=51, filter_h=5):
     for rev in revs:
         sent = get_idx_from_sent(rev["text"], mapping, rev["language"], max_l, filter_h)
         sent.append(rev["y"])
+        print rev["split"]
         if rev["split"] == cv:
             test.append(sent)
         else:
@@ -417,6 +418,7 @@ if __name__=="__main__":
         print str(perf)
     else:
         for i in xrange(int(args.mode)):
+            print i
             datasets = make_idx_data_cv(revs, mapping, i, max_l=int(args.max_l))
 
             perf = train_conv_net(datasets,
