@@ -322,8 +322,10 @@ def make_idx_data_cv(revs, mapping, cv, max_l=51, filter_h=5):
         if len(sent) != 60:
             continue
         if rev["split"] == cv:
+            print "OK"
             test.append(sent)
         else:
+            print "NO"
             train.append(sent)
 
     train = np.array(train)
