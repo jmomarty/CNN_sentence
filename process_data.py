@@ -22,6 +22,7 @@ def cd(k, lg, txt, nw, s):
 
 def create_dict(d, r, v, s, cv):
 
+    print d
     with codecs.open(d, "rb", encoding="utf-8") as f:
         for line in f:
             sen_array = line.split()
