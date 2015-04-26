@@ -26,7 +26,7 @@ def create_dict(d, r, v, s, cv):
         for line in f:
             sen_array = line.split()
             lang = sen_array[0]
-            target = hash(sen_array[1])
+            target = int(hash(sen_array[1]))
             words = set(sen_array)
             if lang in v:
                 for word in words:
