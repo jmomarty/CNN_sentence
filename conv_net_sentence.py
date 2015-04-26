@@ -310,8 +310,7 @@ def get_idx_from_sent(sent, mapping, lang, max_l=51, filter_h=5):
         if word in mapping[lang]:
             x.append(mapping[lang][word])
         if len(x) > max_l:
-            print "ok"
-            continue
+            break
     while len(x) < max_l+2*pad:
         x.append(0)
     return x
