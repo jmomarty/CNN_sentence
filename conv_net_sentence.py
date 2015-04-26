@@ -320,7 +320,6 @@ def make_idx_data_cv(revs, mapping, cv, max_l=51, filter_h=5):
     for rev in revs:
         sent = get_idx_from_sent(rev["text"], mapping, rev["language"], max_l, filter_h)
         sent.append(rev["y"])
-        print rev["split"]
         if len(sent) != 60:
             continue
         if rev["split"] == cv:
