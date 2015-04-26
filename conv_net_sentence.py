@@ -307,8 +307,10 @@ def get_idx_from_sent(sent, mapping, lang, max_l=51, filter_h=5):
         x.append(0)
     words = sent.split()
     for word in words:
-        if word in mapping[lang] and len(x) < max_l:
+        if word in mapping[lang]:
             x.append(mapping[lang][word])
+        if len(x) > max_l:
+            continue
     while len(x) < max_l+2*pad:
         x.append(0)
     return x
