@@ -380,6 +380,7 @@ if __name__=="__main__":
     x = cPickle.load(open(args.input,"rb"))
     if args.words == None:
         revs, W, mapping = x[0], x[1], x[2]
+        print len(revs)
     else:
         revs, _, _ = x[0], x[1], x[2]
         y = cPickle.load(open(args.words,"rb"))
