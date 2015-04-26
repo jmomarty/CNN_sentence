@@ -310,6 +310,7 @@ def get_idx_from_sent(sent, mapping, lang, max_l=51, filter_h=5):
         if word in mapping[lang]:
             x.append(mapping[lang][word])
         if len(x) > max_l:
+            print "ok"
             continue
     while len(x) < max_l+2*pad:
         x.append(0)
@@ -323,10 +324,8 @@ def make_idx_data_cv(revs, mapping, cv, max_l=51, filter_h=5):
         sent.append(rev["y"])
         print len(sent)
         if rev["split"] == cv:
-            print "OK"
             test.append(sent)
         else:
-            print "NO"
             train.append(sent)
 
     train = np.array(train)
