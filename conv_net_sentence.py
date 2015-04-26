@@ -23,7 +23,6 @@ warnings.filterwarnings("ignore")
 
 def train_conv_net(dst,
                    wv,
-                   revs,
                    model_name,
                    params_loaded=None,
                    img_w=300,
@@ -402,7 +401,6 @@ if __name__=="__main__":
 
         perf = train_conv_net(datasets,
                               W,
-                              revs,
                               str(args.model_name),
                               params_loaded = params_loaded,
                               lr_decay=0.95,
@@ -424,7 +422,6 @@ if __name__=="__main__":
 
             perf = train_conv_net(datasets,
                                   W,
-                                  revs,
                                   str(args.model_name),
                                   params_loaded = params_loaded,
                                   lr_decay=0.95,
