@@ -22,24 +22,24 @@ def cd(k, lg, txt, nw, s):
 
 def create_dict(d, r, v, s, cv):
 
-    for k in range(len(d)):
-        with codecs.open(d[k], "rb", encoding="utf-8") as f:
-            for line in f:
-                sen_array = line.split()
-                lang = sen_array[0]
-                words = set(sen_array)
-                if lang in v:
-                    for word in words:
-                        v[lang][unicode(word)] = 1
-                else:
-                    v[lang] = {}
-                    for word in words:
-                        v[lang][unicode(word)] = 1
-                if cv:
-                    datum = cd(k, lang, unicode(" ".join(sen_array[1:])), len(sen_array[1:]), np.random.randint(0,s))
-                else:
-                    datum = cd(k, lang, unicode(" ".join(sen_array[1:])), len(sen_array[1:]), s)
-                r.append(datum)
+    with codecs.open(d, "rb", encoding="utf-8") as f:
+        for line in f:
+            sen_array = line.split()
+            lang = sen_array[0]
+            target = hash(sen_array[1])
+            words = set(sen_array)
+            if lang in v:
+                for word in words:
+                    v[lang][unicode(word)] = 1
+            else:
+                v[lang] = {}
+                for word in words:
+                    v[lang][unicode(word)] = 1
+            if cv:
+                datum = cd(target, lang, unicode(" ".join(sen_array[2:])), len(sen_array[2:]), np.random.randint(0,s))
+            else:
+                datum = cd(target, lang, unicode(" ".join(sen_array[2:])), len(sen_array[2:]), s)
+            r.append(datum)
 
     return r, v
 
