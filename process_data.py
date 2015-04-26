@@ -22,11 +22,16 @@ def cd(k, lg, txt, nw, s):
 
 def create_dict(d, r, v, s, cv):
 
+    tg = {}
+    c = 0
     with codecs.open(d, "rb", encoding="utf-8") as f:
         for line in f:
             sen_array = line.split()
             lang = sen_array[0]
-            target = int(hash(sen_array[1]))
+            target = sen_array[1]
+            if target not in tg:
+                tg[target] = c
+                c += 1
             words = set(sen_array)
             if lang in v:
                 for word in words:
@@ -36,9 +41,9 @@ def create_dict(d, r, v, s, cv):
                 for word in words:
                     v[lang][unicode(word)] = 1
             if cv:
-                datum = cd(target, lang, unicode(" ".join(sen_array[2:])), len(sen_array[2:]), np.random.randint(0,s))
+                datum = cd(tg[target], lang, unicode(" ".join(sen_array[2:])), len(sen_array[2:]), np.random.randint(0,s))
             else:
-                datum = cd(target, lang, unicode(" ".join(sen_array[2:])), len(sen_array[2:]), s)
+                datum = cd(tg[target], lang, unicode(" ".join(sen_array[2:])), len(sen_array[2:]), s)
             r.append(datum)
 
     return r, v
@@ -152,7 +157,6 @@ if __name__ == "__main__":
     max_l = np.max(pd_data_num_words)
     mean_l = np.mean(pd_data_num_words)
     class_dist = pd.DataFrame(rvs)["y"].values
-    print len(set(class_dist))
     class_dist, _ = np.histogram(class_dist, bins=80)
 
     print "data loaded!"
