@@ -11,6 +11,7 @@ from unidecode import unidecode
 
 def cd(k, lg, txt, nw, s):
 
+    print k
     datum = {"y": k,
              "language": lg,
              "text": txt,
