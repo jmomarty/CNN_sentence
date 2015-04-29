@@ -106,6 +106,8 @@ def load_bin_vec(vocab, w2v):
                 wv[lg][word] = lgm[word]
             elif unidecode(word) in vocab["fr"]:
                 wv[lg][unidecode(word)] = lgm[word]
+            else:
+                print word
 
     return wv
 
