@@ -80,10 +80,10 @@ def get_w(wv_dict, k=300):
     w[0] = np.zeros(k)
     i = 1
     for lg in wv_dict:
-        mapping[lg] = {}
+        mapping["fr"] = {}
         for word in wv_dict[lg]:
             w[i] = wv_dict[lg][word]
-            mapping[lg][word] = i
+            mapping["fr"][word] = i
             i += 1
 
     return w, mapping
