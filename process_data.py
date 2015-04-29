@@ -115,11 +115,11 @@ def add_unknown_words(vocab, wv, min_df=1, k=300):
     0.25 is chosen so the unknown vectors have (approximately) same variance as pre-trained ones
     """
 
-    # for lg in vocab:
-    for word in vocab["fr"]:
-        if word not in wv[lg]:
-            if vocab["fr"][word] >= min_df:
-                wv[lg][word] = np.random.uniform(-0.25, 0.25, k)
+    for lg in vocab:
+        for word in vocab[lg]:
+            if word not in wv[lg]:
+                if vocab[lg][word] >= min_df:
+                    wv[lg][word] = np.random.uniform(-0.25, 0.25, k)
 
     return wv
 
@@ -175,6 +175,7 @@ if __name__ == "__main__":
 
     l = 0
     for lg in wv:
+        print len(wv[lg])
         l += len(wv[lg])
     print "num words already in word2vec: " + str(l)
 
