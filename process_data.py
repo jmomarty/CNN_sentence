@@ -35,15 +35,15 @@ def create_dict(d, r, v, s, cv):
             words = set(sen_array)
             if lang in v:
                 for word in words:
-                    v[lang][unicode(word)] = 1
+                    v[lang][word] = 1
             else:
                 v[lang] = {}
                 for word in words:
-                    v[lang][unicode(word)] = 1
+                    v[lang][word] = 1
             if cv:
-                datum = cd(tg[target], lang, unicode(" ".join(sen_array[2:])), len(sen_array[2:]), np.random.randint(0,s))
+                datum = cd(tg[target], lang, u" ".join(sen_array[2:]), len(sen_array[2:]), np.random.randint(0,s))
             else:
-                datum = cd(tg[target], lang, unicode(" ".join(sen_array[2:])), len(sen_array[2:]), s)
+                datum = cd(tg[target], lang, u" ".join(sen_array[2:]), len(sen_array[2:]), s)
             r.append(datum)
 
     return r, v
@@ -115,11 +115,11 @@ def add_unknown_words(vocab, wv, min_df=1, k=300):
     0.25 is chosen so the unknown vectors have (approximately) same variance as pre-trained ones
     """
 
-    for lg in vocab:
-        for word in vocab[lg]:
-            if word not in wv[lg]:
-                if vocab[lg][word] >= min_df:
-                    wv[lg][word] = np.random.uniform(-0.25, 0.25, k)
+    # for lg in vocab:
+    for word in vocab["fr"]:
+        if word not in wv[lg]:
+            if vocab["fr"][word] >= min_df:
+                wv[lg][word] = np.random.uniform(-0.25, 0.25, k)
 
     return wv
 
