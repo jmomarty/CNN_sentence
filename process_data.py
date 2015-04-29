@@ -97,12 +97,13 @@ def load_bin_vec(vocab, w2v):
 
     wv = {}
     for lg in w2v:
+        print lg
         lgm = gensim.models.Word2Vec.load_word2vec_format(lg, binary=True)
         wv[lg] = {}
         for word in lgm.vocab:
-            if word in vocab[lg]:
+            if word in vocab["fr"]:
                 wv[lg][word] = lgm[word]
-            elif unidecode(word) in vocab[lg]:
+            elif unidecode(word) in vocab["fr"]:
                 wv[lg][unidecode(word)] = lgm[word]
 
     return wv
