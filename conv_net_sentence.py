@@ -102,7 +102,7 @@ def train_conv_net(dst, wv, model_name, weights=None, s_h=60, s_w=300, reshape=3
         pool_size = pool_sizes[i]
         conv_layer = LeNetConvPoolLayer(rng, ipt=layer1_input, image_shape=(batch_size, 1, s_h, reshape),
                                         filter_shape=filter_shape, params_loaded=[weights[c-1], weights[c]],
-                                        name_model="cn_"+i, poolsize=pool_size, non_linear=conv_non_linear)
+                                        name_model="cn_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
         layer2_input = conv_layer.output.flatten(2)
         conv_layers.append(conv_layer)
         layer2_inputs.append(layer2_input)
