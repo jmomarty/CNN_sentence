@@ -69,22 +69,9 @@ def train_conv_net(dst, wv, model_name, weights=None, s_h=60, s_w=300, reshape=3
     print "Batch Shuffle: {0}".format(shuffle_batch)
     print "Batch Normalization: {0}".format(normalization)
 
-    # wg = {}
-    # if not weights:
-    #     wg["n0_w"] = None
-    #     wg["n0_b"] = None
-    #     wg["l1_w"] = None
-    #     wg["l1_b"] = None
-    #     wg["n1_w"] = None
-    #     wg["n1_b"] = None
-    #     for i in xrange(len(filter_hs)):
-    #         wg["cn_"+i+"_w"] = None
-    #         wg["cn_"+i+"_b"] = None
-    #     wg["softmax_w"] = None
-    #     wg["softmax_b"] = None
-    # else:
-    #     wg = weights
-
+    if not weights:
+        for i in range(10):
+            weights[i] = None
     # define model architecture
     index = t.lscalar()
     sent = t.matrix('x')

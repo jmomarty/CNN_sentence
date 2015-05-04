@@ -2,7 +2,6 @@
 Sample code for
 Convolutional Neural Networks for Sentence Classification
 http://arxiv.org/pdf/1408.5882v2.pdf
-
 Much of the code is modified from
 - deeplearning.net (for ConvNet classes)
 - https://github.com/mdenil/dropout (for dropout)
@@ -28,6 +27,7 @@ import gensim
 
 warnings.filterwarnings("ignore")   
 
+
 class CNN(object):
 
     """
@@ -35,58 +35,71 @@ class CNN(object):
     """
 
     def __init__(self,
-                 params_loaded,
-                 img_h = 908,
-                 img_w = 300,
-                 feature_maps = 100,
-                 filter_hs = [3,4,5],
-                 dropout_rate = [0.5],
-                 batch_size = 1,
-                 hidden_units = [100,2],
-                 activations = ["ReLU"],
-                 conv_non_linear = "relu"
+                 weights,
+                 s_h=908,
+                 s_w=300,
+                 reshape=30,
+                 feature_maps=100,
+                 filter_hs=None,
+                 dropout_rate=None,
+                 batch_size=1,
+                 hidden_units=None,
+                 activations=None,
+                 conv_non_linear="relu",
                  ):
 
+
+
+        if not filter_hs:
+            filter_hs = [3, 4, 5]
+        if not hidden_units:
+            hidden_units = [100, 3]
+        if not dropout_rate:
+            dropout_rate = [0.5]
+        if not activations:
+            activations = ["ReLU"]
+
         rng = np.random.RandomState(3435)
-        self.img_h = img_h
-        self.img_w = img_w
-        filter_w = img_w
+        self.img_h = s_h
+        self.img_w = s_w
+        filter_w = s_w
         filter_shapes = []
         pool_sizes = []
         for filter_h in filter_hs:
             filter_shapes.append((feature_maps, 1, filter_h, filter_w))
-            pool_sizes.append((img_h-filter_h+1, img_w-filter_w+1))
+            pool_sizes.append((s_h-filter_h+1, s_w-filter_w+1))
 
-        #define model architecture
+        # define model architecture
         x = T.ftensor4('x')
-        layer0_input = x.reshape((x.shape[0],1,x.shape[2],x.shape[3]))
+        layer0_input = x.reshape((x.shape[0], 1, x.shape[2], x.shape[3]))
+        self.layer1 = HiddenLayer(rng, layer0_input, n_in=s_w, n_out=reshape, activation=ReLU,
+                                  w=weights[8], b=weights[9], use_bias=True)
+        layer1_input = self.layer1.output
         self.conv_layers = []
-        layer1_inputs = []
+        layer2_inputs = []
         for i in xrange(len(filter_hs)):
-            # filter_shape = filter_shapes[len(filter_hs)-1-i]
-            # print filter_shape
-            # pool_size = pool_sizes[len(filter_hs)-1-i]
             filter_shape = filter_shapes[i]
             pool_size = pool_sizes[i]
             c = 2*(len(filter_hs)-i)+1
-            conv_layer = LeNetConvPoolLayer(rng, ipt=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
-                                    filter_shape=filter_shape, params_loaded= [params_loaded[c-1],params_loaded[c]], name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
-            layer1_input = conv_layer.output.flatten(2)
+            conv_layer = LeNetConvPoolLayer(rng, ipt=layer1_input,image_shape=(batch_size, 1, s_h, s_w),
+                                            filter_shape=filter_shape, params_loaded= [weights[c-1],weights[c]], name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
+            layer2_input = conv_layer.output.flatten(2)
             self.conv_layers.append(conv_layer)
-            layer1_inputs.append(layer1_input)
-        self.layer1_input = T.concatenate(layer1_inputs,1)
+            layer2_inputs.append(layer2_input)
+        layer2_input = T.concatenate(layer2_inputs,1)
         hidden_units[0] = feature_maps*len(filter_hs)
-        self.classifier = MLPDropout(rng, ipt=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [params_loaded[0], params_loaded[1]])
+        self.classifier = MLPDropout(rng, ipt=layer2_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [weights[0], weights[1]])
 
     def predict(self):
         test_pred_layers = []
         x = T.ftensor4('x')
         test_layer0_input = x
+        test_layer1_input = self.layer1.predict(test_layer0_input)
         for i in range(len(self.conv_layers)):
-            test_layer0_output = self.conv_layers[i].predict(test_layer0_input, 1)
-            test_pred_layers.append(test_layer0_output.flatten(2))
-        test_layer1_input = T.concatenate(test_pred_layers, 1)
-        test_y_pred = self.classifier.predict_p(test_layer1_input)
+            test_layer2_input = self.conv_layers[i].predict(test_layer1_input, 1)
+            test_pred_layers.append(test_layer2_input.flatten(2))
+        test_layer3_input = T.concatenate(test_pred_layers, 1)
+        test_y_pred = self.classifier.predict_p(test_layer3_input)
         f = theano.function([x], test_y_pred)
         return f
 
