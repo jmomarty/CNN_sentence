@@ -73,8 +73,6 @@ def train_conv_net(dst, wv, model_name, weights=None, s_h=60, s_w=300, reshape=3
     print "Batch Shuffle: {0}".format(shuffle_batch)
     print "Batch Normalization: {0}".format(normalization)
 
-
-
     # define model architecture
     index = t.lscalar()
     sent = t.matrix('x')
@@ -146,7 +144,7 @@ def train_conv_net(dst, wv, model_name, weights=None, s_h=60, s_w=300, reshape=3
             train_set_x, train_set_y = shared_dataset((train_set[:, :s_h], train_set[:, -1]))
             val_set_x, val_set_y = shared_dataset((val_set[:, :s_h], val_set[:, -1]))
             n_val_batches = n_batches - n_train_batches
-            print n_val_batches
+            print "Number of Validation Batches : " + str(n_val_batches)
             val_errors = theano.function([index], classifier.errors(label),
                                          givens={sent: val_set_x[index * batch_size: (index + 1) * batch_size],
                                                  label: val_set_y[index * batch_size: (index + 1) * batch_size]})
@@ -445,6 +443,7 @@ if __name__ == "__main__":
             perf = train_conv_net(datasets,
                                   W,
                                   str(args.model_name),
+                                  use_valid_set=False,
                                   s_h=max_sent_length,
                                   weights=params_loaded,
                                   filter_hs=window_sizes,
