@@ -423,7 +423,9 @@ if __name__ == "__main__":
     else:
         params_loaded = None
 
-    max_sent_length = int(args.max_l) + 2*(max(args.filter_hs) - 1) - 1
+    max_l = int(args.max_l)
+    pad_l = int(args.filter_hs)
+    max_sent_length = max_l + 2*(pad_l - 1) - 1
 
     if int(args.mode) == 1:  # Train/Dev/Test Split
         datasets = make_idx_data_tdt(revs, mapping, max_l=int(args.max_l))
