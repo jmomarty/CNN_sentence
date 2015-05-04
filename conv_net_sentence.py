@@ -389,6 +389,7 @@ if __name__ == "__main__":
     parser.add_argument('--dropout', default=0.5)
     parser.add_argument('--reg', default=0.0)
     parser.add_argument('--max_l', default=51)
+    parser.add_argument('--batch_size', default=50)
     args = parser.parse_args()
     w2v_size = int(args.w2v_size)
 
@@ -416,6 +417,7 @@ if __name__ == "__main__":
     max_l = int(args.max_l)
     pad_l = int(max(args.filter_hs))
     max_sent_length = max_l + 2*(pad_l - 1) - 1
+    b_s = int(args.batch_size)
 
     if int(args.mode) == 1:  # Train/Dev/Test Split
         datasets = make_idx_data_tdt(revs, mapping, max_l=int(args.max_l))
@@ -428,7 +430,8 @@ if __name__ == "__main__":
                               hidden_units=[100, num_classes],
                               n_epochs=args.epochs,
                               dropout_rate=[float(args.dropout)],
-                              rg=float(args.reg))
+                              rg=float(args.reg),
+                              batch_size=b_s)
         print "Test Set Accuracy = {0}% \n".format(str(perf))
         print "End of Training."
     else:  # Cross-Validation
@@ -444,7 +447,8 @@ if __name__ == "__main__":
                                   hidden_units=[100, num_classes],
                                   n_epochs=args.epochs,
                                   dropout_rate=[float(args.dropout)],
-                                  rg=float(args.reg))
+                                  rg=float(args.reg),
+                                  batch_size=b_s)
             print "Cross-Validation: Step {0} out of {1}... Test Accuracy = {2}% \n".format(i, args.mode, str(perf))
             results.append(perf)
         print "Cross-Validation: Average Accuracy = {0}% \n".format(str(np.mean(results)))
