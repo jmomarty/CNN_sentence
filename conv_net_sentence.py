@@ -69,21 +69,21 @@ def train_conv_net(dst, wv, model_name, weights=None, s_h=60, s_w=300, reshape=3
     print "Batch Shuffle: {0}".format(shuffle_batch)
     print "Batch Normalization: {0}".format(normalization)
 
-    wg = {}
-    if not weights:
-        wg["n0_w"] = None
-        wg["n0_b"] = None
-        wg["l1_w"] = None
-        wg["l1_b"] = None
-        wg["n1_w"] = None
-        wg["n1_b"] = None
-        for i in xrange(len(filter_hs)):
-            wg["cn_"+i+"_w"] = None
-            wg["cn_"+i+"_b"] = None
-        wg["softmax_w"] = None
-        wg["softmax_b"] = None
-    else:
-        wg = weights
+    # wg = {}
+    # if not weights:
+    #     wg["n0_w"] = None
+    #     wg["n0_b"] = None
+    #     wg["l1_w"] = None
+    #     wg["l1_b"] = None
+    #     wg["n1_w"] = None
+    #     wg["n1_b"] = None
+    #     for i in xrange(len(filter_hs)):
+    #         wg["cn_"+i+"_w"] = None
+    #         wg["cn_"+i+"_b"] = None
+    #     wg["softmax_w"] = None
+    #     wg["softmax_b"] = None
+    # else:
+    #     wg = weights
 
     # define model architecture
     index = t.lscalar()
@@ -92,15 +92,16 @@ def train_conv_net(dst, wv, model_name, weights=None, s_h=60, s_w=300, reshape=3
     words = theano.shared(value=np.asarray(wv, dtype=theano.config.floatX), name="Words")
     layer0_input = words[t.cast(sent.flatten(), dtype="int32")].reshape((sent.shape[0], 1, sent.shape[1], s_w))
     layer1 = HiddenLayer(rng, layer0_input, n_in=s_w, n_out=reshape, activation=ReLU,
-                         w=wg["l0_w"], b=wg["l0_b"], use_bias=True)
+                         w=weights[8], b=weights[9], use_bias=True)
     layer1_input = layer1.output
     conv_layers = []
     layer2_inputs = []
     for i in xrange(len(filter_hs)):
+        c = 2*(len(filter_hs)-i)+1
         filter_shape = filter_shapes[i]
         pool_size = pool_sizes[i]
         conv_layer = LeNetConvPoolLayer(rng, ipt=layer1_input, image_shape=(batch_size, 1, s_h, reshape),
-                                        filter_shape=filter_shape, params_loaded=[wg["cn_"+i+"_w"], wg["cn_"+i+"_b"]],
+                                        filter_shape=filter_shape, params_loaded=[weights[c-1], weights[c]],
                                         name_model="cn_"+i, poolsize=pool_size, non_linear=conv_non_linear)
         layer2_input = conv_layer.output.flatten(2)
         conv_layers.append(conv_layer)
@@ -108,7 +109,7 @@ def train_conv_net(dst, wv, model_name, weights=None, s_h=60, s_w=300, reshape=3
     layer2_input = t.concatenate(layer2_inputs, 1)
     hidden_units[0] = feature_maps*len(filter_hs)
     classifier = MLPDropout(rng, ipt=layer2_input, layer_sizes=hidden_units, activations=activations,
-                            dropout_rates=dropout_rate, params=[wg["softmax_w"], wg["softmax_b"]])
+                            dropout_rates=dropout_rate, params=[[weights[0], weights[1]]])
 
     # define parameters of the model and update functions using adadelta
     params = classifier.params
