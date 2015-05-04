@@ -131,7 +131,7 @@ class MLPDropout(object):
         
         # Set up the output layer
         n_in, n_out = self.weight_matrix_sizes[-1]
-        if not params:
+        if None in params:
             dropout_output_layer = LogisticRegression(ipt=next_dropout_layer_input, n_in=n_in, n_out=n_out)
         else:
             wgt = theano.shared(value=params[0].astype(theano.config.floatX), name='W')
