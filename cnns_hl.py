@@ -76,7 +76,7 @@ def train_conv_net(datasets,
     layer0_input = Words[T.cast(x.flatten(),dtype="int32")].reshape((x.shape[0],1,x.shape[1],Words.shape[1]))                                  
     conv_layers = []
     layer1 = DropoutHiddenLayer(rng,
-                                input=layer0_input,
+                                ipt=layer0_input,
                                 n_in = img_w,
                                 n_out = 30,
                                 activation = activations[0],
@@ -87,14 +87,14 @@ def train_conv_net(datasets,
     for i in xrange(len(filter_hs)):
         filter_shape = filter_shapes[i]
         pool_size = pool_sizes[i]
-        conv_layer = LeNetConvPoolLayer(rng, input=layer1_input,image_shape=(batch_size, 1, img_h, 30),
+        conv_layer = LeNetConvPoolLayer(rng, ipt=layer1_input,image_shape=(batch_size, 1, img_h, 30),
                                 filter_shape=filter_shape, poolsize=pool_size, non_linear=conv_non_linear)
         layer1_input = conv_layer.output.flatten(2)
         conv_layers.append(conv_layer)
         layer2_inputs.append(layer1_input)
     layer2_input = T.concatenate(layer2_inputs,1)
     hidden_units[0] = feature_maps*len(filter_hs)    
-    classifier = MLPDropout(rng, input=layer2_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
+    classifier = MLPDropout(rng, ipt=layer2_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
     
     #define parameters of the model and update functions using adadelta
     params = layer1.params

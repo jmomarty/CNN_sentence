@@ -77,14 +77,14 @@ def train_conv_net(datasets,
     for i in xrange(len(filter_hs)):
         filter_shape = filter_shapes[i]
         pool_size = pool_sizes[i]
-        conv_layer = LeNetConvPoolLayer(rng, input=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
+        conv_layer = LeNetConvPoolLayer(rng, ipt=layer0_input,image_shape=(batch_size, 1, img_h, img_w),
                                 filter_shape=filter_shape, poolsize=pool_size, non_linear=conv_non_linear)
         layer1_input = conv_layer.output.flatten(2)
         conv_layers.append(conv_layer)
         layer1_inputs.append(layer1_input)
     layer1_input = T.concatenate(layer1_inputs,1)
     hidden_units[0] = feature_maps*len(filter_hs)
-    classifier = MLPDropout(rng, input=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
+    classifier = MLPDropout(rng, ipt=layer1_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate)
 
     #define parameters of the model and update functions using adadelta
     params = classifier.params

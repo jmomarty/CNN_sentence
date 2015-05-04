@@ -60,7 +60,7 @@ class CNN(object):
         #define model architecture
         x = T.ftensor4('x')
         layer0_input = x.reshape((x.shape[0],1,x.shape[2],x.shape[3]))
-        layer1 = HiddenLayer(rng, layer0_input, n_in=300, n_out=30, activation=ReLU, W=params_loaded[-2], b=params_loaded[-1], use_bias=True)
+        layer1 = HiddenLayer(rng, layer0_input, n_in=300, n_out=30, activation=ReLU, w=params_loaded[-2], b=params_loaded[-1], use_bias=True)
         layer1_input = layer1.output
         self.conv_layers = []
         layer2_inputs = []
@@ -68,14 +68,14 @@ class CNN(object):
             filter_shape = filter_shapes[i]
             pool_size = pool_sizes[i]
             c = 2*(len(filter_hs)-i)+1
-            conv_layer = LeNetConvPoolLayer(rng, input=layer1_input,image_shape=(batch_size, 1, img_h, img_w),
+            conv_layer = LeNetConvPoolLayer(rng, ipt=layer1_input,image_shape=(batch_size, 1, img_h, img_w),
                                     filter_shape=filter_shape, params_loaded= [params_loaded[c-1],params_loaded[c]], name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
             layer2_input = conv_layer.output.flatten(2)
             self.conv_layers.append(conv_layer)
             layer2_inputs.append(layer2_input)
         self.layer2_input = T.concatenate(layer2_inputs,1)
         hidden_units[0] = feature_maps*len(filter_hs)
-        self.classifier = MLPDropout(rng, input=self.layer2_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [params_loaded[0], params_loaded[1]])
+        self.classifier = MLPDropout(rng, ipt=self.layer2_input, layer_sizes=hidden_units, activations=activations, dropout_rates=dropout_rate, params = [params_loaded[0], params_loaded[1]])
 
     def predict(self):
         test_pred_layers = []
