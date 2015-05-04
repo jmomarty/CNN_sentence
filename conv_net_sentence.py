@@ -340,7 +340,7 @@ def make_idx_data_cv(rvs, mpg, cv, max_l=51, filter_h=5):
         else:
             train.append(sent)
     train = np.array(train)
-    test = np.array(train)
+    test = np.array(test)
     print train.shape, test.shape
     return [train, test]
 
