@@ -392,7 +392,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     w2v_size = int(args.w2v_size)
 
-    print "Loading Data...",
+    print "Loading Data...\r"
     x = cPickle.load(open(args.input, "rb"))
     if args.words is None:
         revs, W, mapping = x[0], x[1], x[2]
@@ -400,7 +400,7 @@ if __name__ == "__main__":
         revs, _, _ = x[0], x[1], x[2]
         y = cPickle.load(open(args.words, "rb"))
         _, W, mapping = y[0], y[1], y[2]
-    print "Data Loaded!"
+    print "Data Loaded!\n"
 
     window_sizes = parse_filter_hs(args.filter_hs)
 
