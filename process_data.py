@@ -80,10 +80,10 @@ def get_w(wv_dict, k=300):
     w[0] = np.zeros(k)
     i = 1
     for lg in wv_dict:
-        mapping["fr"] = {}
+        mapping["de"] = {}
         for word in wv_dict[lg]:
             w[i] = wv_dict[lg][word]
-            mapping["fr"][word] = i
+            mapping["de"][word] = i
             i += 1
 
     return w, mapping
@@ -100,9 +100,9 @@ def load_bin_vec(vocab, w2v):
         lgm = gensim.models.Word2Vec.load_word2vec_format(lg, binary=True)
         wv[lg] = {}
         for word in lgm.vocab:
-            if word in vocab["fr"]:
+            if word in vocab["de"]:
                 wv[lg][word] = lgm[word]
-            elif unidecode(word) in vocab["fr"]:
+            elif unidecode(word) in vocab["de"]:
                 wv[lg][unidecode(word)] = lgm[word]
 
     return wv
