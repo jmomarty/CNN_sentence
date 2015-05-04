@@ -183,7 +183,7 @@ def train_conv_net(dst, wv, model_name, weights=None, s_h=60, s_w=300, reshape=3
     print 'Training over mini-batches...'
     epoch = 0
     while epoch < n_epochs:
-        epoch += epoch
+        epoch += 1
         train_losses = []
         print str(epoch) + "\n"
         counter = 0
