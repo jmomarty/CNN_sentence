@@ -45,6 +45,10 @@ def train_conv_net(dst, wv, model_name, weights=None, s_h=60, s_w=300, reshape=3
         dropout_rate = [0.5]
     if not activations:
         activations = ["ReLU"]
+    if not weights:
+        weights = range(10)
+        for i in range(10):
+            weights[i] = None
 
     rng = np.random.RandomState(3435)
     filter_w = s_w
@@ -69,9 +73,8 @@ def train_conv_net(dst, wv, model_name, weights=None, s_h=60, s_w=300, reshape=3
     print "Batch Shuffle: {0}".format(shuffle_batch)
     print "Batch Normalization: {0}".format(normalization)
 
-    if not weights:
-        for i in range(10):
-            weights[i] = None
+
+
     # define model architecture
     index = t.lscalar()
     sent = t.matrix('x')
