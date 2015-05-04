@@ -423,7 +423,7 @@ if __name__ == "__main__":
         params_loaded = None
 
     max_l = int(args.max_l)
-    pad_l = int(args.filter_hs)
+    pad_l = int(max(args.filter_hs))
     max_sent_length = max_l + 2*(pad_l - 1) - 1
 
     if int(args.mode) == 1:  # Train/Dev/Test Split
