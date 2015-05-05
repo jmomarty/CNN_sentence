@@ -29,7 +29,6 @@ def create_dict(d, r, v, s, cv, tg=True):
         for line in f:
             sen_array = line.split()
             lang = sen_array[0]
-            print lang
             if tg:
                 target = sen_array[1]
                 sent = sen_array[2:]
@@ -51,7 +50,7 @@ def create_dict(d, r, v, s, cv, tg=True):
             if cv:
                 datum = cd(t, lang, u" ".join(sent), len(sent), np.random.randint(0,s))
             else:
-                datum = cd(t, lang, u" ".join(sent), len(sent), s)
+                datum = cd(t, "fr", u" ".join(sent), len(sent), s)
             r.append(datum)
 
     return r, v
