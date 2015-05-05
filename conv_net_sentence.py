@@ -230,7 +230,9 @@ class conv_net():
         test_layer1_input = t.concatenate(test_pred_layers, 1)
         test_y_pred = self.classifier.predict(test_layer1_input)
         test_predict_all = theano.function([self.sent], test_y_pred, allow_input_downcast=True)
-        print test_predict_all(test_set_x)
+        output = open("prediction.txt", "wb")
+        for x in test_predict_all(test_set_x):
+            output.write(str(x)+"\r")
 
 def save_params(classifier, conv_layers, layer1, model_name):
 
