@@ -106,8 +106,9 @@ def load_bin_vec(vocab, w2v):
     wv = {}
     for lg in w2v:
         lgm = gensim.models.Word2Vec.load_word2vec_format(lg, binary=True)
-        m = re.search('mikolov\\([a-z]+)', lg)
+        m = re.search('mikolov/([a-z]+)', lg)
         lg = m.group(1)
+        print lg
         wv[lg] = {}
         for word in lgm.vocab:
             if word in vocab[lg]:
