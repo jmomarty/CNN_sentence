@@ -88,6 +88,7 @@ def get_w(wv_dict, k=300):
     w[0] = np.zeros(k)
     i = 1
     for lg in wv_dict:
+        print lg
         mapping[lg] = {}
         for word in wv_dict[lg]:
             w[i] = wv_dict[lg][word]
@@ -188,7 +189,6 @@ if __name__ == "__main__":
 
     l = 0
     for lg in wv:
-        print lg
         l += len(wv[lg])
     print "num words already in word2vec: " + str(l)
 
