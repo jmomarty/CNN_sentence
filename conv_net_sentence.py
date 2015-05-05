@@ -40,6 +40,7 @@ class conv_net():
 
         self.b_s = batch_size
         self.s_h = s_h
+        self.s_w = s_w
 
         if not filter_hs:
             filter_hs = [3, 4, 5]
@@ -55,7 +56,7 @@ class conv_net():
                 weights[i] = None
 
         rng = np.random.RandomState(3435)
-        filter_w = s_w
+        filter_w = self.s_w
         feature_maps = hidden_units[0]
         filter_shapes = []
         pool_sizes = []
