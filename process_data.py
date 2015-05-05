@@ -20,7 +20,7 @@ def cd(k, lg, txt, nw, s):
     return datum
 
 
-def create_dict(d, r, v, s, cv):
+def create_dict(d, r, v, s, cv, tg=True):
 
     tg = {}
     c = 0
@@ -28,10 +28,16 @@ def create_dict(d, r, v, s, cv):
         for line in f:
             sen_array = line.split()
             lang = sen_array[0]
-            target = sen_array[1]
-            if target not in tg:
-                tg[target] = c
-                c += 1
+            if tg:
+                target = sen_array[1]
+                sent = sen_array[2:]
+                if target not in tg:
+                    tg[target] = c
+                    c += 1
+                t = tg[target]
+            else:
+                sent = sen_array[1:]
+                t = 0
             words = set(sen_array)
             if lang in v:
                 for word in words:
@@ -41,22 +47,23 @@ def create_dict(d, r, v, s, cv):
                 for word in words:
                     v[lang][word] = 1
             if cv:
-                datum = cd(tg[target], lang, u" ".join(sen_array[2:]), len(sen_array[2:]), np.random.randint(0,s))
+                datum = cd(t, lang, u" ".join(sent), len(sent), np.random.randint(0,s))
             else:
-                datum = cd(tg[target], lang, u" ".join(sen_array[2:]), len(sen_array[2:]), s)
+                datum = cd(t, lang, u" ".join(sent), len(sent), s)
             r.append(datum)
 
     return r, v
 
 
-def build_data(splits, s=0, cv=None):
+def build_data(splits, s=0, cv=None, tg=False):
 
     revs = []
     vocab = {}
 
     if cv:  # cross validation
         revs, vocab = create_dict(splits[0], revs, vocab, s, cv)
-
+    elif tg:  # inference
+        revs, vocab = create_dict(splits[0], revs, vocab, s, cv, tg)
     else:  # train/test split
         k = 0
         for split in splits:
@@ -128,7 +135,7 @@ if __name__ == "__main__":
 
     # Arguments for the program:
     parser = argparse.ArgumentParser(description='Data Processing')
-    parser.add_argument('mode', help='cv/dev')
+    parser.add_argument('mode', help='cv/dev/inf')
     parser.add_argument('--w2v', nargs='*')
     parser.add_argument('--w2v_size', default=300)
     parser.add_argument('--train_files', nargs='*')
@@ -150,8 +157,10 @@ if __name__ == "__main__":
 
     if args.mode == "dev":
         rvs, vcb = build_data([train_folder, dev_folder, test_folder])
-    else:
+    elif args.mode == "cv":
         rvs, vcb = build_data(train_folder, s=int(args.mode), cv=True)
+    else:
+        rvs, vcb = build_data(test_folder, s=int(args.mode), cv=True)
 
     pd_data_num_words = pd.DataFrame(rvs)["num_words"]
     max_l = np.max(pd_data_num_words)

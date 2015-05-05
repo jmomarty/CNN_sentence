@@ -389,6 +389,7 @@ if __name__ == "__main__":
     parser.add_argument('--max_l', default=51)
     parser.add_argument('--batch_size', default=50)
     parser.add_argument('--info_display', default=50)
+    parser.add_argument('--inference', default=False)
     args = parser.parse_args()
     w2v_size = int(args.w2v_size)
 
