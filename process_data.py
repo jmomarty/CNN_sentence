@@ -108,7 +108,6 @@ def load_bin_vec(vocab, w2v):
         lgm = gensim.models.Word2Vec.load_word2vec_format(lg, binary=True)
         m = re.search('mikolov/([a-z]+)', lg)
         lg = m.group(1)
-        print lg
         wv[lg] = {}
         for word in lgm.vocab:
             if word in vocab[lg]:
@@ -189,7 +188,6 @@ if __name__ == "__main__":
 
     l = 0
     for lg in wv:
-        print len(wv[lg])
         l += len(wv[lg])
     print "num words already in word2vec: " + str(l)
 
