@@ -63,7 +63,7 @@ def build_data(splits, s=0, cv=None, tg=False):
 
     if cv:  # cross validation
         revs, vocab = create_dict(splits[0], revs, vocab, s, cv)
-    elif tg:  # inference
+    elif not tg:  # inference
         revs, vocab = create_dict(splits[0], revs, vocab, s, cv, tg)
     else:  # train/test split
         k = 0
@@ -139,6 +139,7 @@ if __name__ == "__main__":
     # Arguments for the program:
     parser = argparse.ArgumentParser(description='Data Processing')
     parser.add_argument('mode', help='cv/dev/inf')
+    parser.add_argument('--folds', default=10)
     parser.add_argument('--w2v', nargs='*')
     parser.add_argument('--w2v_size', default=300)
     parser.add_argument('--train_files', nargs='*')
@@ -159,11 +160,11 @@ if __name__ == "__main__":
     print "loading data...",
 
     if args.mode == "dev":
-        rvs, vcb = build_data([train_folder, dev_folder, test_folder])
+        rvs, vcb = build_data([train_folder, dev_folder, test_folder], tg=True)
     elif args.mode == "cv":
-        rvs, vcb = build_data(train_folder, s=int(args.mode), cv=True)
+        rvs, vcb = build_data(train_folder, s=int(args.folds), cv=True, tg=True)
     else:
-        rvs, vcb = build_data(test_folder, s=int(args.mode), cv=True)
+        rvs, vcb = build_data(test_folder)
 
     pd_data_num_words = pd.DataFrame(rvs)["num_words"]
     max_l = np.max(pd_data_num_words)
