@@ -7,6 +7,7 @@ import argparse
 import gensim
 import codecs
 from unidecode import unidecode
+import re
 
 
 def cd(k, lg, txt, nw, s):
@@ -87,10 +88,10 @@ def get_w(wv_dict, k=300):
     w[0] = np.zeros(k)
     i = 1
     for lg in wv_dict:
-        mapping["de"] = {}
+        mapping[lg] = {}
         for word in wv_dict[lg]:
             w[i] = wv_dict[lg][word]
-            mapping["de"][word] = i
+            mapping[lg][word] = i
             i += 1
 
     return w, mapping
@@ -105,11 +106,13 @@ def load_bin_vec(vocab, w2v):
     wv = {}
     for lg in w2v:
         lgm = gensim.models.Word2Vec.load_word2vec_format(lg, binary=True)
+        m = re.search('mikolov\\([a-z]+)', lg)
+        lg = m.group(1)
         wv[lg] = {}
         for word in lgm.vocab:
-            if word in vocab["de"]:
+            if word in vocab[lg]:
                 wv[lg][word] = lgm[word]
-            elif unidecode(word) in vocab["de"]:
+            elif unidecode(word) in vocab[lg]:
                 wv[lg][unidecode(word)] = lgm[word]
 
     return wv
