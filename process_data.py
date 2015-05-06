@@ -50,7 +50,7 @@ def create_dict(d, r, v, s, cv, tg=True):
             if cv:
                 datum = cd(t, lang, u" ".join(sent), len(sent), np.random.randint(0,s))
             else:
-                datum = cd(t, "fr", u" ".join(sent), len(sent), s)
+                datum = cd(t, lang, u" ".join(sent), len(sent), s)
             r.append(datum)
 
     return r, v
