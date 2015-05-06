@@ -23,7 +23,7 @@ def cd(k, lg, txt, nw, s):
 
 def create_dict(d, r, v, s, cv, tg=True):
 
-    tg = {}
+    tg_dict = {}
     c = 0
     with codecs.open(d, "rb", encoding="utf-8") as f:
         for line in f:
@@ -33,9 +33,9 @@ def create_dict(d, r, v, s, cv, tg=True):
                 target = sen_array[0]
                 sent = sen_array[2:]
                 if target not in tg:
-                    tg[target] = c
+                    tg_dict[target] = c
                     c += 1
-                t = tg[target]
+                t = tg_dict[target]
             else:
                 sent = sen_array[1:]
                 t = 0
@@ -62,7 +62,7 @@ def build_data(splits, s=0, cv=None, tg=False):
     vocab = {}
 
     if cv:  # cross validation
-        revs, vocab = create_dict(splits[0], revs, vocab, s, cv)
+        revs, vocab = create_dict(splits[0], revs, vocab, s, cv, tg)
     elif not tg:  # inference
         revs, vocab = create_dict(splits[0], revs, vocab, s, cv, tg)
     else:  # train/test split
