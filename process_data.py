@@ -28,9 +28,9 @@ def create_dict(d, r, v, s, cv, tg=True):
     with codecs.open(d, "rb", encoding="utf-8") as f:
         for line in f:
             sen_array = line.split()
-            lang = sen_array[0]
+            lang = sen_array[1]
             if tg:
-                target = sen_array[1]
+                target = sen_array[0]
                 sent = sen_array[2:]
                 if target not in tg:
                     tg[target] = c
