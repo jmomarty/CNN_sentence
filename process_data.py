@@ -35,7 +35,7 @@ def create_dict(d, r, v, s, cv, tg=True):
                 target = sen_array[0]
                 sent = sen_array[2:]
                 if target not in tg_dict:
-                    print "\n" + target
+                    print u"\n" + target
                     tg_dict[target] = c
                     c += 1
                 t = tg_dict[target]
