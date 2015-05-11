@@ -116,7 +116,6 @@ class conv_net():
         # shuffle dataset and assign to mini batches. if dataset size is not a multiple of mini batches, replicate
         # extra data (at random)
 
-
         index = t.lscalar()
 
         np.random.seed(3435)
@@ -233,6 +232,24 @@ class conv_net():
         output = open("prediction.txt", "wb")
         for x in test_predict_all(test_set_x):
             output.write(str(x)+"\r")
+
+    def accuracy(self, dst):
+
+        test_set_x = dst[1][:, :self.s_h]
+        test_set_y = np.asarray(dst[1][:, -1], "int32")
+
+        test_pred_layers = []
+        test_size = test_set_x.shape[0]
+        test_layer0_input = self.words[t.cast(self.sent.flatten(), dtype="int32")].reshape((test_size, 1, self.s_h, self.s_w))
+        test_layer0_input = self.layer1.predict(test_layer0_input)
+        for conv_layer in self.conv_layers:
+            test_layer0_output = conv_layer.predict(test_layer0_input, test_size)
+            test_pred_layers.append(test_layer0_output.flatten(2))
+        test_layer1_input = t.concatenate(test_pred_layers, 1)
+        test_y_pred = self.classifier.predict(test_layer1_input)
+        test_error = t.mean(t.neq(test_y_pred, self.label))
+        test_model_all = theano.function([self.sent, self.label], test_error, allow_input_downcast=True)
+        return 1 - test_model_all(test_set_x, test_set_y)
 
 def save_params(classifier, conv_layers, layer1, model_name):
 
@@ -487,7 +504,7 @@ if __name__ == "__main__":
             results.append(perf)
         print "Cross-Validation: Average Accuracy = {0}% \n".format(str(np.mean(results)))
         print "End of Training."
-    else:
+    elif args.mode == 'inf':
         print "Inference\n"
         datasets = make_idx_data_cv(revs, mapping, 0, max_l=int(args.max_l))
         cnn = conv_net(W,
@@ -500,3 +517,16 @@ if __name__ == "__main__":
                        batch_size=b_s
                        )
         cnn.predict(datasets)
+    elif args.mode == 'acc':
+        print "Compute Accuracy\n"
+        datasets = make_idx_data_cv(revs, mapping, 0, max_l=int(args.max_l))
+        cnn = conv_net(W,
+                       weights=params_loaded,
+                       filter_hs=window_sizes,
+                       hidden_units=[100, num_classes],
+                       dropout_rate=[float(args.dropout)],
+                       rg=float(args.reg),
+                       s_h=max_sent_length,
+                       batch_size=b_s
+                       )
+        cnn.accuracy(datasets)

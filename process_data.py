@@ -164,8 +164,10 @@ if __name__ == "__main__":
         rvs, vcb = build_data([train_folder, dev_folder, test_folder], tg=True)
     elif args.mode == "cv":
         rvs, vcb = build_data(train_folder, s=int(args.folds), cv=True, tg=True)
-    else:
+    elif args.mode == "inf":
         rvs, vcb = build_data(test_folder)
+    elif args.mode == "acc":
+        rvs, vcb = build_data(test_folder, s=0, cv=True, tg=True)
 
     pd_data_num_words = pd.DataFrame(rvs)["num_words"]
     max_l = np.max(pd_data_num_words)
