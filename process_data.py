@@ -178,6 +178,7 @@ if __name__ == "__main__":
     pd_data_num_words = pd.DataFrame(rvs)["num_words"]
     max_l = np.max(pd_data_num_words)
     mean_l = np.mean(pd_data_num_words)
+    std_l = np.std(pd_data_num_words)
     class_dist = pd.DataFrame(rvs)["y"].values
     class_dist, _ = np.histogram(class_dist, bins=50)
 
@@ -189,6 +190,7 @@ if __name__ == "__main__":
     print "vocab size: " + str(l)
     print "max sentence length: " + str(max_l)
     print "average sentence length: " + str(mean_l)
+    print "standard deviation of sentence lengths: " + str(std_l)
     print "class distribution: " + str(class_dist)
 
     print "loading word2vec vectors...",
