@@ -529,4 +529,4 @@ if __name__ == "__main__":
                        s_h=max_sent_length,
                        batch_size=b_s
                        )
-        cnn.accuracy(datasets)
+        print "Accuracy = {0}".format(cnn.accuracy(datasets))
