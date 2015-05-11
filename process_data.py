@@ -29,10 +29,10 @@ def create_dict(d, r, v, s, cv, tg=True):
         for line in f:
             sen_array = line.split()
             lang = sen_array[1]
+            if lang != "fr":
+                continue
             if tg:
                 target = sen_array[0]
-                if target != "fr":
-                    continue
                 sent = sen_array[2:]
                 if target not in tg_dict:
                     tg_dict[target] = c
