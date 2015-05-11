@@ -167,7 +167,7 @@ if __name__ == "__main__":
     elif args.mode == "inf":
         rvs, vcb = build_data(test_folder)
     elif args.mode == "acc":
-        rvs, vcb = build_data(test_folder, s=0, cv=True, tg=True)
+        rvs, vcb = build_data(test_folder, s=1, cv=True, tg=True)
 
     pd_data_num_words = pd.DataFrame(rvs)["num_words"]
     max_l = np.max(pd_data_num_words)
