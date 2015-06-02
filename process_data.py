@@ -111,6 +111,7 @@ def load_bin_vec(vocab, w2v):
     wv = {}
     for lg in w2v:
         lgm = gensim.models.Word2Vec.load_word2vec_format(lg, binary=True)
+        print lg
         m = re.search('mikolov/([a-z]+)', lg)
         lg = m.group(1)
         wv[lg] = {}
@@ -178,7 +179,7 @@ if __name__ == "__main__":
     mean_l = np.mean(pd_data_num_words)
     std_l = np.std(pd_data_num_words)
     class_dist = pd.DataFrame(rvs)["y"].values
-    class_dist, _ = np.histogram(class_dist, bins=50)
+    class_dist, _ = np.histogram(class_dist, bins=7000)
 
     print "data loaded!"
     print "number of sentences: " + str(len(rvs))
