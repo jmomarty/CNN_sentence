@@ -35,10 +35,6 @@ def create_dict(d, r, v, s, cv, tg=True):
                 target = sen_array[1]
                 sent = sen_array[2:]
                 if target not in tg_dict:
-                    try:
-                        print line
-                    except:
-                        continue
                     tg_dict[target] = c
                     c += 1
                 t = tg_dict[target]
@@ -113,7 +109,6 @@ def load_bin_vec(vocab, w2v):
     for lg in w2v:
         lgm = gensim.models.Word2Vec.load_word2vec_format(lg, binary=True)
         m = re.search('mikolov/([a-z]+)', lg)
-        print lg
         lg = m.group(1)
         wv[lg] = {}
         for word in lgm.vocab:
