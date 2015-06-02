@@ -28,7 +28,10 @@ def create_dict(d, r, v, s, cv, tg=True):
     with codecs.open(d, "rb", encoding="utf-8") as f:
         for line in f:
             sen_array = line.split()
-            lang = sen_array[0]
+            try:
+                lang = sen_array[0]
+            except:
+                continue
             if lang != "fr":
                 continue
             if tg:
