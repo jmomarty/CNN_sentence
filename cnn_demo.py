@@ -102,7 +102,7 @@ class CNN(object):
         f = theano.function([x], test_y_pred)
         return f
 
-def sen2mat(sen, w2v, max_l=900, k=300, filter_h=5):
+def sen2mat(sen, w2v, max_l=50, k=300, filter_h=5):
 
     pad = filter_h - 1
     mat = np.zeros((max_l+2*pad,k),dtype=theano.config.floatX)
