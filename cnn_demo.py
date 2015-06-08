@@ -61,7 +61,7 @@ class CNN(object):
         rng = np.random.RandomState(3435)
         self.img_h = s_h
         self.img_w = s_w
-        filter_w = s_w
+        filter_w = reshape
         filter_shapes = []
         pool_sizes = []
         for filter_h in filter_hs:
