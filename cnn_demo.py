@@ -36,7 +36,7 @@ class CNN(object):
 
     def __init__(self,
                  weights,
-                 s_h=908,
+                 s_h=60,
                  s_w=300,
                  reshape=30,
                  feature_maps=100,
