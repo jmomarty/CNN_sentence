@@ -36,7 +36,7 @@ class CNN(object):
 
     def __init__(self,
                  weights,
-                 s_h=60,
+                 s_h=50,
                  s_w=300,
                  reshape=30,
                  feature_maps=100,
@@ -47,7 +47,6 @@ class CNN(object):
                  activations=None,
                  conv_non_linear="relu",
                  ):
-
 
 
         if not filter_hs:
