@@ -69,6 +69,7 @@ def build_data(splits, s=0, cv=None, tg=False):
 
     if cv:  # cross validation
         revs, vocab = create_dict(splits[0], revs, vocab, s, cv, tg)
+        print "ok"
     elif not tg:  # inference
         revs, vocab = create_dict(splits[0], revs, vocab, s, cv, tg)
     else:  # train/test split
