@@ -33,8 +33,6 @@ def create_dict(d, r, v, s, cv, tg=True):
                 lang = sen_array[1]
             except:
                 continue
-            if lang != "fr":
-                continue
             if tg:
                 target = sen_array[0]
                 sent = sen_array[2:]
