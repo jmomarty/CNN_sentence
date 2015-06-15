@@ -39,7 +39,7 @@ def create_dict(d, r, v, s, cv, tg=True):
                 try:
                     t = int(target.encode('utf-8'))
                 except:
-                    print target
+                    continue
             else:
                 lang = sen_array[0]
                 sent = sen_array[1:]
