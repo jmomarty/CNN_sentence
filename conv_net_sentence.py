@@ -227,8 +227,6 @@ class conv_net():
             test_layer0_output = conv_layer.predict(test_layer0_input, test_size)
             test_pred_layers.append(test_layer0_output.flatten(2))
         test_layer1_input = t.concatenate(test_pred_layers, 1)
-        truc = theano.function([self.sent], test_layer1_input, allow_input_downcast=True)
-        print truc(test_set_x)
         test_y_pred = self.classifier.predict(test_layer1_input)
         test_predict_all = theano.function([self.sent], test_y_pred, allow_input_downcast=True)
         output = open("prediction.txt", "wb")
@@ -376,7 +374,7 @@ def make_idx_data_cv(rvs, mpg, cv, max_l=51, filter_h=5):
 
     train, test = [], []
     for rev in rvs:
-        sent = get_idx_from_sent(rev["text"], mpg, "de", max_l, filter_h)
+        sent = get_idx_from_sent(rev["text"], mpg, "en", max_l, filter_h)
         sent.append(rev["y"])
         if rev["split"] == cv:
             test.append(sent)

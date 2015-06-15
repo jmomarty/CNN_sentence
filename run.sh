@@ -1,1 +1,0 @@
-./conv_net_sentence.py nonstatic word2vec --folds 1 --filter_hs 3 --epochs 10
