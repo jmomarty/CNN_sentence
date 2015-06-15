@@ -176,7 +176,7 @@ if __name__ == "__main__":
     mean_l = np.mean(pd_data_num_words)
     std_l = np.std(pd_data_num_words)
     class_dist = pd.DataFrame(rvs)["y"].values
-    class_dist, _ = np.histogram(class_dist, bins=7000)
+    class_dist, _ = np.histogram(class_dist, bins=8)
 
     print "data loaded!"
     print "number of sentences: " + str(len(rvs))
