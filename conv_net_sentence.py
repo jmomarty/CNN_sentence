@@ -111,7 +111,7 @@ class conv_net():
         dropout_cost = self.classifier.dropout_negative_log_likelihood(self.label, rg)
         self.grad_updates = sgd_updates_adadelta(self.params, dropout_cost, lr_decay, 1e-6, sqr_norm_lim)
 
-    def fit(self, dst, model_name, info_display_freq=50, save_freq=200, n_epochs=25, use_valid_set=True, shuffle_batch=True):
+    def fit(self, dst, model_name, info_display_freq=50, save_freq=50, n_epochs=25, use_valid_set=True, shuffle_batch=True):
 
         # shuffle dataset and assign to mini batches. if dataset size is not a multiple of mini batches, replicate
         # extra data (at random)
