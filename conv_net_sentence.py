@@ -374,7 +374,7 @@ def make_idx_data_cv(rvs, mpg, cv, max_l=51, filter_h=5):
 
     train, test = [], []
     for rev in rvs:
-        sent = get_idx_from_sent(rev["text"], mpg, "de", max_l, filter_h)
+        sent = get_idx_from_sent(rev["text"], mpg, "en", max_l, filter_h)
         sent.append(rev["y"])
         if rev["split"] == cv:
             test.append(sent)
