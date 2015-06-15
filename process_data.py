@@ -25,6 +25,7 @@ def create_dict(d, r, v, s, cv, tg=True):
 
     tg_dict = {}
     c = 0
+    skipped_line = 0
     with codecs.open(d, "rb", encoding="utf-8") as f:
         for line in f:
             sen_array = line.split()
@@ -39,6 +40,8 @@ def create_dict(d, r, v, s, cv, tg=True):
                 try:
                     t = int(target.encode('utf-8'))
                 except:
+                    print skipped_line
+                    skipped_line += 1
                     continue
             else:
                 lang = sen_array[0]
