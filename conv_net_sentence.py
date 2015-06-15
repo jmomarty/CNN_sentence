@@ -217,7 +217,7 @@ class conv_net():
 
     def predict(self, dst):
 
-        test_set_x = dst[1][:, :self.s_h]
+        test_set_x = dst[1][:, 10]
         print test_set_x
         test_pred_layers = []
         test_size = test_set_x.shape[0]
