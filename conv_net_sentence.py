@@ -217,8 +217,8 @@ class conv_net():
 
     def predict(self, dst):
 
-        test_set_x = dst[1][:, 10]
-        print test_set_x
+        test_set_x = dst[1][:, :self.s_h]
+        print test_set_x[:5,:6]
         test_pred_layers = []
         test_size = test_set_x.shape[0]
         test_layer0_input = self.words[t.cast(self.sent.flatten(), dtype="int32")].reshape((test_size, 1, self.s_h, self.s_w))
