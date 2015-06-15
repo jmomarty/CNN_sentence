@@ -473,7 +473,8 @@ if __name__ == "__main__":
                        dropout_rate=[float(args.dropout)],
                        rg=float(args.reg),
                        s_h=max_sent_length,
-                       batch_size=b_s
+                       batch_size=b_s,
+                       s_w=w2v_size
                        )
         perf = cnn.fit(datasets,
                        str(args.model_name),
@@ -493,7 +494,8 @@ if __name__ == "__main__":
                            dropout_rate=[float(args.dropout)],
                            rg=float(args.reg),
                            s_h=max_sent_length,
-                           batch_size=b_s
+                           batch_size=b_s,
+                           s_w=w2v_size
                            )
             perf = cnn.fit(datasets,
                            str(args.model_name),
@@ -514,7 +516,8 @@ if __name__ == "__main__":
                        dropout_rate=[float(args.dropout)],
                        rg=float(args.reg),
                        s_h=max_sent_length,
-                       batch_size=b_s
+                       batch_size=b_s,
+                       s_w=w2v_size
                        )
         cnn.predict(datasets)
     elif args.mode == 'acc':
@@ -527,6 +530,7 @@ if __name__ == "__main__":
                        dropout_rate=[float(args.dropout)],
                        rg=float(args.reg),
                        s_h=max_sent_length,
-                       batch_size=b_s
+                       batch_size=b_s,
+                       s_w=w2v_size
                        )
         print "Accuracy = {0}".format(cnn.accuracy(datasets))
