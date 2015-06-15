@@ -511,6 +511,7 @@ if __name__ == "__main__":
     elif args.mode == 'inf':
         print "Inference\n"
         datasets = make_idx_data_cv(revs, mapping, 0, max_l=int(args.max_l))
+        print W[:10,:10]
         cnn = conv_net(W,
                        weights=params_loaded,
                        filter_hs=window_sizes,
