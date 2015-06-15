@@ -55,6 +55,7 @@ def create_dict(d, r, v, s, cv, tg=True):
                     v[lang][word] = 1
             if cv:
                 datum = cd(t, lang, u" ".join(sent), len(sent), np.random.randint(0,s))
+                print "ok"
             else:
                 datum = cd(t, lang, u" ".join(sent), len(sent), s)
             r.append(datum)
@@ -69,7 +70,6 @@ def build_data(splits, s=0, cv=None, tg=False):
 
     if cv:  # cross validation
         revs, vocab = create_dict(splits[0], revs, vocab, s, cv, tg)
-        print "ok"
     elif not tg:  # inference
         revs, vocab = create_dict(splits[0], revs, vocab, s, cv, tg)
     else:  # train/test split
