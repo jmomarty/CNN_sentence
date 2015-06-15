@@ -17,7 +17,6 @@ def cd(k, lg, txt, nw, s):
              "text": txt,
              "num_words": nw,
              "split": s}
-    print datum
 
     return datum
 
@@ -53,7 +52,6 @@ def create_dict(d, r, v, s, cv, tg=True):
                     v[lang][word] = 1
             if cv:
                 datum = cd(t, lang, u" ".join(sent), len(sent), np.random.randint(0,s))
-                print "ok"
             else:
                 datum = cd(t, lang, u" ".join(sent), len(sent), s)
             r.append(datum)
