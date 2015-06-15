@@ -17,7 +17,6 @@ def cd(k, lg, txt, nw, s):
              "text": txt,
              "num_words": nw,
              "split": s}
-    print k
 
     return datum
 
