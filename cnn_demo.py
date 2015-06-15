@@ -80,7 +80,7 @@ class CNN(object):
             filter_shape = filter_shapes[i]
             pool_size = pool_sizes[i]
             c = 2*(len(filter_hs)-i)+1
-            conv_layer = LeNetConvPoolLayer(rng, ipt=layer1_input,image_shape=(batch_size, 1, s_h, s_w),
+            conv_layer = LeNetConvPoolLayer(rng, ipt=layer1_input,image_shape=(batch_size, 1, s_h, reshape),
                                             filter_shape=filter_shape, params_loaded= [weights[c-1],weights[c]], name_model = "cnet_"+str(i), poolsize=pool_size, non_linear=conv_non_linear)
             layer2_input = conv_layer.output.flatten(2)
             self.conv_layers.append(conv_layer)
