@@ -222,13 +222,13 @@ class conv_net():
         test_pred_layers = []
         test_size = test_set_x.shape[0]
         test_layer0_input = self.words[t.cast(self.sent.flatten(), dtype="int32")].reshape((test_size, 1, self.s_h, self.s_w))
-        truc = theano.function([self.sent], test_layer0_input, allow_input_downcast=True)
-        print truc(test_set_x)[:10,0,:10,:10]
         test_layer0_input = self.layer1.predict(test_layer0_input)
         for conv_layer in self.conv_layers:
             test_layer0_output = conv_layer.predict(test_layer0_input, test_size)
             test_pred_layers.append(test_layer0_output.flatten(2))
         test_layer1_input = t.concatenate(test_pred_layers, 1)
+        truc = theano.function([self.sent], test_layer1_input, allow_input_downcast=True)
+        print truc(test_set_x)
         test_y_pred = self.classifier.predict(test_layer1_input)
         test_predict_all = theano.function([self.sent], test_y_pred, allow_input_downcast=True)
         output = open("prediction.txt", "wb")
