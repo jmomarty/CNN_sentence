@@ -36,7 +36,10 @@ def create_dict(d, r, v, s, cv, tg=True):
                 #     tg_dict[target] = c
                 #     c += 1
                 # t = tg_dict[target]
-                t = int(str(target))
+                try:
+                    t = int(target.decode('utf-8'))
+                except:
+                    print target
             else:
                 lang = sen_array[0]
                 sent = sen_array[1:]
