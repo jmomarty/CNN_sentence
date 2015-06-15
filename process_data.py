@@ -32,10 +32,11 @@ def create_dict(d, r, v, s, cv, tg=True):
                 target = sen_array[0]
                 lang = sen_array[1]
                 sent = sen_array[2:]
-                if target not in tg_dict:
-                    tg_dict[target] = c
-                    c += 1
-                t = tg_dict[target]
+                # if target not in tg_dict:
+                #     tg_dict[target] = c
+                #     c += 1
+                # t = tg_dict[target]
+                t = int(target)
             else:
                 lang = sen_array[0]
                 sent = sen_array[1:]
