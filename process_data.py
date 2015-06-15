@@ -37,7 +37,7 @@ def create_dict(d, r, v, s, cv, tg=True):
                 #     c += 1
                 # t = tg_dict[target]
                 try:
-                    t = int(target.decode('utf-8'))
+                    t = int(target.encode('utf-8'))
                 except:
                     print target
             else:
